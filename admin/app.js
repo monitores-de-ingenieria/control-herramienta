@@ -3533,20 +3533,17 @@ function renderProfesoresCfg() {
     const sinRetViejos = sinRetornar.length - sinRetHoy.length;
     const nombreEsc = escapeAttr(p.nombre);
     const listaMaterias = (p.materias || []).length
-      ? `<div class="prof-materias-lista">${p.materias.map(m => {
+      ? `<div class="prof-horario-grid">${p.materias.map(m => {
           const horarios = (m.horarios && m.horarios.length)
             ? m.horarios
             : ((m.dias && m.dias.length) || m.horaInicio ? [{ dias: m.dias || [], horaInicio: m.horaInicio || "", horaFin: m.horaFin || "" }] : []);
-          const detalle = horarios.length
-            ? horarios.map(h => `<div class="pmi-horario">${(h.dias&&h.dias.length)?h.dias.join("/"):"sin días"}${h.horaInicio?" · "+h.horaInicio+"–"+(h.horaFin||""):""}</div>`).join("")
-            : '<div class="pmi-horario">sin horario definido</div>';
+          const franjas = horarios.length
+            ? horarios.map(h => `<div class="prof-horario-franja"><span class="prof-horario-dias">${(h.dias&&h.dias.length)?h.dias.join(" · "):"Sin días"}</span>${h.horaInicio?`<span class="prof-horario-hora">${h.horaInicio}–${h.horaFin||""}</span>`:""}</div>`).join("")
+            : '<div class="prof-horario-franja prof-horario-vacio">Sin horario definido</div>';
           return `
-          <div class="prof-materia-item">
-            <span class="pmi-punto"></span>
-            <div>
-              <span class="pmi-nombre">${m.codigo ? `<span class="pmi-codigo">${m.codigo}</span>` : ""}${m.nombre}</span>
-              ${detalle}
-            </div>
+          <div class="prof-horario-card">
+            <div class="prof-horario-materia">${m.codigo ? `<span class="pmi-codigo">${m.codigo}</span>` : ""}${m.nombre}</div>
+            ${franjas}
           </div>`;
         }).join("")}</div>`
       : "";

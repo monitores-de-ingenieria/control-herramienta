@@ -1180,6 +1180,23 @@ body.tema-claro #vista-herramientas-cfg .her-grid {
   border-color: var(--azul) !important;
   box-shadow: 0 0 0 3px rgba(56,139,253,0.12) !important;
 }
+/* Horario visual del profesor: cada materia como una mini-ficha con sus
+   franjas de día/hora, en vez de una lista de viñetas genérica. */
+.prof-horario-grid { margin-top: 11px; padding-top: 11px; border-top: 1px dashed var(--borde); display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
+.prof-horario-card { background: var(--bg); border: 1px solid var(--borde); border-left: 2.5px solid var(--azul); border-radius: 9px; padding: 8px 10px; }
+.prof-horario-materia { font-size: 11.5px; font-weight: 600; color: var(--texto); margin-bottom: 5px; }
+.prof-horario-franja { display: flex; align-items: center; justify-content: space-between; gap: 6px; font-size: 10.5px; color: var(--texto-dim); padding: 2px 0; }
+.prof-horario-dias { font-weight: 600; color: var(--azul); }
+.prof-horario-hora { font-family: 'SFMono-Regular', Consolas, monospace; }
+.prof-horario-vacio { font-style: italic; }
+
+/* ═══ Identidad "Historial" — reportes, gris pizarra. La tabla se mantiene:
+   es el formato correcto para revisar muchos registros con filtros/export. ═══ */
+.pagina-icono-historial {
+  border-radius: 10px !important;
+  background: rgba(100,116,139,0.14) !important;
+  color: #64748b !important;
+}
 
 /* ═══ Identidad "Materias" — catálogo académico agrupado alfabéticamente,
    violeta, cada materia como una ficha con su código como "lomo de libro" ═══ */

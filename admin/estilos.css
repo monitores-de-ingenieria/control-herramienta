@@ -1180,3 +1180,101 @@ body.tema-claro #vista-herramientas-cfg .her-grid {
   border-color: var(--azul) !important;
   box-shadow: 0 0 0 3px rgba(56,139,253,0.12) !important;
 }
+
+/* ═══ Identidad "Materias" — catálogo académico, violeta, "lomo de libro" ═══
+   Ícono cuadrado (no círculo, no el 8px recto de Auditoría) en violeta, y
+   el código de cada materia se ve como una etiqueta de lomo de libro. */
+.pagina-icono-materias {
+  border-radius: 10px !important;
+  background: rgba(139,92,246,0.14) !important;
+  color: #8b5cf6 !important;
+}
+.seccion-materias #materia-buscar:focus {
+  border-color: #8b5cf6 !important;
+  box-shadow: 0 0 0 3px rgba(139,92,246,0.12) !important;
+}
+/* Código de materia como etiqueta de lomo de libro: monoespaciada, violeta */
+.seccion-materias .pmi-codigo {
+  display: inline-block;
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .3px;
+  color: #8b5cf6;
+  background: rgba(139,92,246,0.12);
+  border: 1px solid rgba(139,92,246,0.28);
+  border-radius: 6px;
+  padding: 2px 8px;
+}
+/* Cada fila de la tabla con un filo violeta muy sutil, como el lomo de un libro en un estante */
+.seccion-materias table tbody tr {
+  border-left: 2.5px solid transparent;
+  transition: border-color .15s;
+}
+.seccion-materias table tbody tr:hover {
+  border-left-color: rgba(139,92,246,0.5);
+}
+
+/* ═══ Identidad "Laboratorios / Talleres" — espacios físicos, cian, plano arquitectónico ═══
+   Ícono cuadrado con borde punteado (plano/blueprint) en cian, distinto del
+   sólido violeta de Materias y del círculo azul de Profesores. */
+.pagina-icono-laboratorios {
+  border-radius: 10px !important;
+  background: rgba(6,182,212,0.14) !important;
+  color: #06b6d4 !important;
+  border: 1.5px dashed rgba(6,182,212,0.5) !important;
+}
+.seccion-laboratorios #lab-buscar:focus {
+  border-color: #06b6d4 !important;
+  box-shadow: 0 0 0 3px rgba(6,182,212,0.12) !important;
+}
+/* Textura sutil de "plano" (líneas finas) detrás de la lista, evocando un blueprint */
+.seccion-laboratorios .prof-lista {
+  background-image: linear-gradient(rgba(6,182,212,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(6,182,212,0.06) 1px, transparent 1px);
+  background-size: 18px 18px;
+  border-radius: 12px;
+  padding: 4px;
+}
+.seccion-laboratorios .prof-fila {
+  border-left: 2.5px solid rgba(6,182,212,0.4);
+}
+.seccion-laboratorios .est-circulo {
+  border-radius: 8px !important;
+}
+
+/* ═══ Identidad "Ciclos" — periodos académicos, naranja, círculo de reloj/ciclo ═══
+   Ícono circular naranja (como una esfera de reloj), distinto del cuadrado
+   violeta de Materias y del punteado cian de Laboratorios. */
+.pagina-icono-ciclos {
+  border-radius: 50% !important;
+  background: rgba(249,115,22,0.14) !important;
+  color: #f97316 !important;
+}
+.seccion-ciclos #ciclo-buscar:focus {
+  border-color: #f97316 !important;
+  box-shadow: 0 0 0 3px rgba(249,115,22,0.12) !important;
+}
+.seccion-ciclos .ciclo-anio-cuenta {
+  background: rgba(249,115,22,0.12) !important;
+  color: #f97316 !important;
+}
+.seccion-ciclos .prof-fila {
+  border-left: 2.5px solid rgba(249,115,22,0.4);
+}
+
+/* ═══ Identidad "Usuarios" — cuentas y accesos, fucsia, credencial con esquina cortada ═══
+   Ícono con la esquina superior derecha cortada (forma de gafete/credencial
+   de acceso), distinto de las formas circulares/cuadradas de los demás módulos. */
+.pagina-icono-usuarios {
+  border-radius: 8px !important;
+  background: rgba(236,72,153,0.14) !important;
+  color: #ec4899 !important;
+  clip-path: polygon(0 0, 78% 0, 100% 22%, 100% 100%, 0 100%);
+}
+.seccion-usuarios #usr-buscar:focus {
+  border-color: #ec4899 !important;
+  box-shadow: 0 0 0 3px rgba(236,72,153,0.12) !important;
+}
+/* Nota: el borde izquierdo de cada fila de usuario ya usa oro/azul para
+   distinguir Administrador vs Encargado — no lo pisamos con el fucsia del
+   módulo, que queda solo en el ícono de cabecera y el foco del buscador. */

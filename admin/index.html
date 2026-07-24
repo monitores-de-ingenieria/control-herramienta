@@ -441,10 +441,13 @@
 
       <div class="vista" id="vista-laboratorios">
         <div class="pagina-titulo">
-          <div><h2>Laboratorios / Talleres</h2><p>Lista de laboratorios y talleres disponibles para elegir en el formulario del estudiante</p></div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div class="pagina-icono pagina-icono-laboratorios"><i data-lucide=building-2></i></div>
+            <div><h2>Laboratorios / Talleres</h2><p>Lista de laboratorios y talleres disponibles para elegir en el formulario del estudiante</p></div>
+          </div>
           <button class="btn btn-verde" onclick="abrirModalLaboratorio()" style="padding:9px 18px;font-size:13px" title="Agregar un nuevo laboratorio o taller"><i data-lucide=plus style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Agregar laboratorio/taller</button>
         </div>
-        <div class="seccion-tabla">
+        <div class="seccion-tabla seccion-laboratorios">
           <div class="tabla-header">
             <h3>Lista de laboratorios / talleres</h3>
             <div class="filtros">
@@ -460,10 +463,13 @@
 
       <div class="vista" id="vista-ciclos-cfg">
         <div class="pagina-titulo">
-          <div><h2>Ciclos</h2><p>Ciclos académicos disponibles para elegir en el formulario del estudiante (ej. cuando empiece 2027)</p></div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div class="pagina-icono pagina-icono-ciclos"><i data-lucide=calendar-days></i></div>
+            <div><h2>Ciclos</h2><p>Ciclos académicos disponibles para elegir en el formulario del estudiante (ej. cuando empiece 2027)</p></div>
+          </div>
           <button class="btn btn-verde" onclick="abrirModalCiclo()" style="padding:9px 18px;font-size:13px" title="Agregar un ciclo nuevo"><i data-lucide=plus style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Agregar ciclo</button>
         </div>
-        <div class="seccion-tabla">
+        <div class="seccion-tabla seccion-ciclos">
           <div class="tabla-header">
             <h3>Lista de ciclos</h3>
             <div class="filtros">
@@ -570,10 +576,13 @@
 
       <div class="vista" id="vista-materias-cfg">
         <div class="pagina-titulo">
-          <div><h2>Materias</h2><p>Catálogo de materias con su código, para elegirlas al asignarle horario a un profesor</p></div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div class="pagina-icono pagina-icono-materias"><i data-lucide=book-open></i></div>
+            <div><h2>Materias</h2><p>Catálogo de materias con su código, para elegirlas al asignarle horario a un profesor</p></div>
+          </div>
           <button class="btn btn-verde" onclick="abrirModalMateria()" style="padding:9px 18px;font-size:13px" title="Agregar una nueva materia"><i data-lucide=plus style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Agregar materia</button>
         </div>
-        <div class="seccion-tabla">
+        <div class="seccion-tabla seccion-materias">
           <div class="tabla-header">
             <h3>Lista de materias</h3>
             <div class="filtros">
@@ -588,10 +597,13 @@
 
       <div class="vista" id="vista-usuarios-cfg">
         <div class="pagina-titulo">
-          <div><h2>Usuarios</h2><p>Crea cuentas de acceso y define qué puede ver cada una</p></div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div class="pagina-icono pagina-icono-usuarios"><i data-lucide=users-round></i></div>
+            <div><h2>Usuarios</h2><p>Crea cuentas de acceso y define qué puede ver cada una</p></div>
+          </div>
           <button class="btn btn-verde" onclick="abrirModalUsuario()" style="padding:9px 18px;font-size:13px" title="Crear una nueva cuenta de acceso"><i data-lucide=plus style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Agregar usuario</button>
         </div>
-        <div class="seccion-tabla">
+        <div class="seccion-tabla seccion-usuarios">
           <div class="tabla-header">
             <h3>Cuentas del sistema</h3>
             <div class="filtros">

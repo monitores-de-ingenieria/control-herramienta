@@ -1181,9 +1181,8 @@ body.tema-claro #vista-herramientas-cfg .her-grid {
   box-shadow: 0 0 0 3px rgba(56,139,253,0.12) !important;
 }
 
-/* ═══ Identidad "Materias" — catálogo académico, violeta, "lomo de libro" ═══
-   Ícono cuadrado (no círculo, no el 8px recto de Auditoría) en violeta, y
-   el código de cada materia se ve como una etiqueta de lomo de libro. */
+/* ═══ Identidad "Materias" — catálogo académico agrupado alfabéticamente,
+   violeta, cada materia como una ficha con su código como "lomo de libro" ═══ */
 .pagina-icono-materias {
   border-radius: 10px !important;
   background: rgba(139,92,246,0.14) !important;
@@ -1193,31 +1192,34 @@ body.tema-claro #vista-herramientas-cfg .her-grid {
   border-color: #8b5cf6 !important;
   box-shadow: 0 0 0 3px rgba(139,92,246,0.12) !important;
 }
-/* Código de materia como etiqueta de lomo de libro: monoespaciada, violeta */
-.seccion-materias .pmi-codigo {
-  display: inline-block;
-  font-family: 'SFMono-Regular', Consolas, monospace;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .3px;
-  color: #8b5cf6;
-  background: rgba(139,92,246,0.12);
-  border: 1px solid rgba(139,92,246,0.28);
-  border-radius: 6px;
-  padding: 2px 8px;
+.materia-letra-grupo { padding: 14px 18px; border-bottom: 1px solid var(--borde); }
+.materia-letra-grupo:last-child { border-bottom: none; }
+.materia-letra-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.materia-letra-inicial {
+  width: 26px; height: 26px; border-radius: 8px; flex-shrink: 0;
+  background: rgba(139,92,246,0.14); color: #8b5cf6; font-weight: 700; font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
 }
-/* Cada fila de la tabla con un filo violeta muy sutil, como el lomo de un libro en un estante */
-.seccion-materias table tbody tr {
-  border-left: 2.5px solid transparent;
-  transition: border-color .15s;
+.materia-letra-cuenta { font-size: 11px; color: var(--texto-dim); font-weight: 600; }
+.materia-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+.materia-card {
+  display: flex; align-items: stretch; background: var(--card2); border: 1px solid var(--borde);
+  border-radius: 10px; overflow: hidden; transition: border-color .15s, transform .15s;
 }
-.seccion-materias table tbody tr:hover {
-  border-left-color: rgba(139,92,246,0.5);
+.materia-card:hover { border-color: #8b5cf6; transform: translateY(-1px); }
+.materia-card-lomo {
+  flex-shrink: 0; width: 46px; display: flex; align-items: center; justify-content: center;
+  writing-mode: vertical-rl; text-orientation: mixed;
+  background: rgba(139,92,246,0.14); color: #8b5cf6;
+  font-family: 'SFMono-Regular', Consolas, monospace; font-weight: 700; font-size: 11px;
+  letter-spacing: .3px; padding: 8px 0;
 }
+.materia-card-cuerpo { flex: 1; min-width: 0; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; justify-content: space-between; }
+.materia-card-nombre { font-size: 13px; font-weight: 600; color: var(--texto); }
+.materia-card-acciones { display: flex; gap: 6px; }
 
-/* ═══ Identidad "Laboratorios / Talleres" — espacios físicos, cian, plano arquitectónico ═══
-   Ícono cuadrado con borde punteado (plano/blueprint) en cian, distinto del
-   sólido violeta de Materias y del círculo azul de Profesores. */
+/* ═══ Identidad "Laboratorios / Talleres" — directorio de espacios numerado,
+   cian, evocando un plano de planta en vez de una lista de personas ═══ */
 .pagina-icono-laboratorios {
   border-radius: 10px !important;
   background: rgba(6,182,212,0.14) !important;
@@ -1228,23 +1230,28 @@ body.tema-claro #vista-herramientas-cfg .her-grid {
   border-color: #06b6d4 !important;
   box-shadow: 0 0 0 3px rgba(6,182,212,0.12) !important;
 }
-/* Textura sutil de "plano" (líneas finas) detrás de la lista, evocando un blueprint */
-.seccion-laboratorios .prof-lista {
+.lab-directorio {
   background-image: linear-gradient(rgba(6,182,212,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(6,182,212,0.06) 1px, transparent 1px);
   background-size: 18px 18px;
-  border-radius: 12px;
-  padding: 4px;
+  padding: 10px; display: flex; flex-direction: column; gap: 8px;
 }
-.seccion-laboratorios .prof-fila {
-  border-left: 2.5px solid rgba(6,182,212,0.4);
+.lab-item {
+  display: flex; align-items: center; gap: 12px; background: var(--card);
+  border: 1px solid var(--borde); border-left: 2.5px solid rgba(6,182,212,0.5);
+  border-radius: 10px; padding: 11px 14px; transition: border-color .15s;
 }
-.seccion-laboratorios .est-circulo {
-  border-radius: 8px !important;
+.lab-item:hover { border-color: #06b6d4; }
+.lab-num {
+  font-family: 'SFMono-Regular', Consolas, monospace; font-weight: 700; font-size: 15px;
+  color: #06b6d4; background: rgba(6,182,212,0.12); border-radius: 8px;
+  width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
 }
+.lab-info { flex: 1; min-width: 0; }
+.lab-nombre { font-size: 13px; font-weight: 600; color: var(--texto); }
+.lab-sub { font-size: 11px; color: var(--texto-dim); margin-top: 2px; }
 
-/* ═══ Identidad "Ciclos" — periodos académicos, naranja, círculo de reloj/ciclo ═══
-   Ícono circular naranja (como una esfera de reloj), distinto del cuadrado
-   violeta de Materias y del punteado cian de Laboratorios. */
+/* ═══ Identidad "Ciclos" — línea de tiempo vertical por año, naranja,
+   pensada para periodos que se suceden en el tiempo, no filas sueltas ═══ */
 .pagina-icono-ciclos {
   border-radius: 50% !important;
   background: rgba(249,115,22,0.14) !important;
@@ -1254,17 +1261,35 @@ body.tema-claro #vista-herramientas-cfg .her-grid {
   border-color: #f97316 !important;
   box-shadow: 0 0 0 3px rgba(249,115,22,0.12) !important;
 }
-.seccion-ciclos .ciclo-anio-cuenta {
-  background: rgba(249,115,22,0.12) !important;
-  color: #f97316 !important;
+.ciclo-anio-cuenta { background: rgba(249,115,22,0.12); color: #f97316; font-size: 10px; font-weight: 600; padding: 2px 9px; border-radius: 20px; }
+.ciclo-timeline { padding: 18px; position: relative; }
+.ciclo-timeline-fila { display: flex; gap: 14px; position: relative; padding-bottom: 22px; }
+.ciclo-timeline-fila:last-child { padding-bottom: 0; }
+.ciclo-timeline-fila::before {
+  content: ""; position: absolute; left: 15px; top: 32px; bottom: 0; width: 1.5px;
+  background: rgba(249,115,22,0.25);
 }
-.seccion-ciclos .prof-fila {
-  border-left: 2.5px solid rgba(249,115,22,0.4);
+.ciclo-timeline-fila:last-child::before { display: none; }
+.ciclo-timeline-punto {
+  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; z-index: 1;
+  background: var(--card); border: 1.5px solid #f97316; color: #f97316;
+  display: flex; align-items: center; justify-content: center;
 }
+.ciclo-timeline-contenido { flex: 1; min-width: 0; }
+.ciclo-anio-header { display: flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 700; margin-bottom: 10px; }
+.ciclo-timeline-items { display: flex; flex-wrap: wrap; gap: 8px; }
+.ciclo-chip {
+  display: flex; align-items: center; gap: 8px; background: var(--card);
+  border: 1px solid var(--borde); border-radius: 20px; padding: 6px 8px 6px 14px;
+  font-size: 12px; transition: border-color .15s;
+}
+.ciclo-chip:hover { border-color: #f97316; }
+.ciclo-chip-nombre { font-weight: 600; color: var(--texto); white-space: nowrap; }
+.ciclo-chip-acciones { display: flex; gap: 4px; }
+.ciclo-chip-acciones .btn { padding: 4px 8px; font-size: 11px; }
 
-/* ═══ Identidad "Usuarios" — cuentas y accesos, fucsia, credencial con esquina cortada ═══
-   Ícono con la esquina superior derecha cortada (forma de gafete/credencial
-   de acceso), distinto de las formas circulares/cuadradas de los demás módulos. */
+/* ═══ Identidad "Usuarios" — cuentas y accesos, fucsia, dos columnas por rol
+   con los permisos como checklist en vez de una lista plana con chips ═══ */
 .pagina-icono-usuarios {
   border-radius: 8px !important;
   background: rgba(236,72,153,0.14) !important;
@@ -1275,6 +1300,23 @@ body.tema-claro #vista-herramientas-cfg .her-grid {
   border-color: #ec4899 !important;
   box-shadow: 0 0 0 3px rgba(236,72,153,0.12) !important;
 }
-/* Nota: el borde izquierdo de cada fila de usuario ya usa oro/azul para
-   distinguir Administrador vs Encargado — no lo pisamos con el fucsia del
-   módulo, que queda solo en el ícono de cabecera y el foco del buscador. */
+/* Nota: el color oro/azul de cada tarjeta sigue distinguiendo Administrador
+   vs Encargado — el fucsia del módulo queda en el ícono de cabecera y el
+   foco del buscador, para no pisar ese código de color de rol. */
+.usr-columnas { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; padding: 16px; }
+.usr-columna { display: flex; flex-direction: column; gap: 10px; }
+.usr-columna-header { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--texto-dim); padding-bottom: 8px; border-bottom: 1px solid var(--borde); }
+.usr-columna-cuenta { background: var(--card2); color: var(--texto-dim); font-size: 10px; font-weight: 700; padding: 1px 8px; border-radius: 20px; margin-left: auto; }
+.usr-columna-vacio { font-size: 12px; color: var(--texto-dim); padding: 10px 0; }
+.usr-card { background: var(--card); border: 1px solid var(--borde); border-radius: 12px; padding: 13px 15px; transition: border-color .15s; }
+.usr-card:hover { border-color: var(--verde); }
+.usr-card.es-admin { border-left: 2.5px solid var(--amarillo); }
+.usr-card.es-encargado { border-left: 2.5px solid var(--azul); }
+.usr-card-top { display: flex; align-items: center; gap: 12px; }
+.usr-card-top .usr-info { flex: 1; min-width: 0; }
+.usr-card-top .usr-acciones { display: flex; gap: 6px; flex-shrink: 0; }
+.usr-permisos { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--borde); display: flex; flex-direction: column; gap: 5px; }
+.usr-permiso-fila { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--texto-dim); }
+.usr-permiso-fila i { color: var(--verde); flex-shrink: 0; width: 13px; height: 13px; }
+.usr-permiso-total i { color: var(--amarillo); }
+.usr-permiso-vacio i { color: var(--texto-dim); }

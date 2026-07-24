@@ -3749,22 +3749,34 @@ function renderMateriasCfg() {
     wrap.innerHTML = '<div class="vacio"><div class="vacio-icono"><i data-lucide="book-open" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>No hay materias registradas todavía.</p></div>';
     return;
   }
-  wrap.innerHTML = '<table><thead><tr><th>#</th><th>Código</th><th>Nombre</th><th>Acciones</th></tr></thead><tbody>'
-    + lista.map((m, i) => {
-        const nombreEsc = escapeAttr(m.nombre);
-        const codigoEsc = escapeAttr(m.codigo || "");
-        const local = m.local ? ' <span style="font-size:10px;color:var(--texto-dim)">(respaldo)</span>' : '';
-        return '<tr>'
-          + '<td style="color:var(--texto-dim)">' + (i + 1) + '</td>'
-          + '<td>' + (m.codigo ? '<span class="pmi-codigo">' + escapeHtml(m.codigo) + '</span>' : '<span style="color:var(--texto-dim)">—</span>') + '</td>'
-          + '<td><div class="est-nombre">' + escapeHtml(m.nombre) + local + '</div></td>'
-          + '<td><div class="acciones-celda">'
-          + '<button class="btn btn-outline" onclick="abrirModalMateria(\'' + m.id + '\',\'' + codigoEsc + '\',\'' + nombreEsc + '\',' + (m.local||false) + ')" title="Editar materia">Editar</button>'
-          + '<button class="btn btn-rojo" onclick="eliminarMateria(\'' + m.id + '\',\'' + nombreEsc + '\',' + (m.local||false) + ')" title="Eliminar materia"><i data-lucide="trash-2" style="width:1em;height:1em;vertical-align:-2px"></i></button>'
-          + '</div></td>'
-          + '</tr>';
-      }).join("")
-    + '</tbody></table>';
+  // Catálogo agrupado alfabéticamente (como un estante de libros), en vez de
+  // una tabla genérica: cada materia es una "ficha" con su código como lomo.
+  const porLetra = {};
+  lista.forEach(m => {
+    const letra = (m.nombre || "?").trim().charAt(0).toUpperCase() || "#";
+    (porLetra[letra] = porLetra[letra] || []).push(m);
+  });
+  const letras = Object.keys(porLetra).sort();
+  wrap.innerHTML = letras.map(letra => {
+    const grupo = porLetra[letra];
+    return '<div class="materia-letra-grupo">'
+      + '<div class="materia-letra-header"><span class="materia-letra-inicial">' + letra + '</span><span class="materia-letra-cuenta">' + grupo.length + ' materia' + (grupo.length === 1 ? '' : 's') + '</span></div>'
+      + '<div class="materia-grid">'
+      + grupo.map(m => {
+          const nombreEsc = escapeAttr(m.nombre);
+          const codigoEsc = escapeAttr(m.codigo || "");
+          const local = m.local ? ' <span style="font-size:10px;color:var(--texto-dim)">(respaldo)</span>' : '';
+          return '<div class="materia-card">'
+            + '<div class="materia-card-lomo">' + (m.codigo ? escapeHtml(m.codigo) : '—') + '</div>'
+            + '<div class="materia-card-cuerpo">'
+            + '<div class="materia-card-nombre">' + escapeHtml(m.nombre) + local + '</div>'
+            + '<div class="materia-card-acciones">'
+            + '<button class="btn btn-outline" onclick="abrirModalMateria(\'' + m.id + '\',\'' + codigoEsc + '\',\'' + nombreEsc + '\',' + (m.local||false) + ')" title="Editar materia">Editar</button>'
+            + '<button class="btn btn-rojo" onclick="eliminarMateria(\'' + m.id + '\',\'' + nombreEsc + '\',' + (m.local||false) + ')" title="Eliminar materia"><i data-lucide="trash-2" style="width:1em;height:1em;vertical-align:-2px"></i></button>'
+            + '</div></div></div>';
+        }).join('')
+      + '</div></div>';
+  }).join('');
 }
 
 window.abrirModalMateria = function(id = null, codigo = "", nombre = "", esLocal = false) {
@@ -3941,25 +3953,24 @@ function renderLaboratoriosCfg() {
     wrap.innerHTML = '<div class="vacio"><div class="vacio-icono"><i data-lucide="building-2" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>No hay laboratorios registrados.</p></div>';
     return;
   }
-  wrap.innerHTML = lista.map(l => {
+  // Directorio de espacios numerado (como un plano de planta), en vez de la
+  // lista de tarjetas de persona que usan Profesores/Ciclos.
+  wrap.innerHTML = '<div class="lab-directorio">' + lista.map((l, i) => {
     const local = l.local ? '<span style="font-size:10px;color:var(--texto-dim);margin-left:6px">(respaldo)</span>' : '';
     const nombreEsc = escapeAttr(l.nombre);
     return `
-      <div class="prof-fila">
-        <div class="prof-fila-top">
-          <div class="est-avatar">
-            <div class="est-circulo" style="background:${colorEstudiante(l.nombre)}22;color:${colorEstudiante(l.nombre)}"><i data-lucide="building-2" style="width:1em;height:1em;vertical-align:-2px"></i></div>
-            <div style="min-width:0;flex:1">
-              <div class="est-nombre">${l.nombre}${local}</div>
-            </div>
-          </div>
-          <div class="acciones-celda">
-            <button class="btn btn-outline" onclick="abrirModalLaboratorio('${l.id}','${nombreEsc}',${l.local||false})" title="Editar">Editar</button>
-            ${l.local ? "" : `<button class="btn btn-rojo" onclick="eliminarLaboratorio('${l.id}','${nombreEsc}')" title="Eliminar"><i data-lucide="trash-2" style="width:1em;height:1em;vertical-align:-2px"></i></button>`}
-          </div>
+      <div class="lab-item">
+        <div class="lab-num">${String(i + 1).padStart(2, "0")}</div>
+        <div class="lab-info">
+          <div class="lab-nombre">${l.nombre}${local}</div>
+          <div class="lab-sub">Espacio disponible en el formulario</div>
+        </div>
+        <div class="acciones-celda">
+          <button class="btn btn-outline" onclick="abrirModalLaboratorio('${l.id}','${nombreEsc}',${l.local||false})" title="Editar">Editar</button>
+          ${l.local ? "" : `<button class="btn btn-rojo" onclick="eliminarLaboratorio('${l.id}','${nombreEsc}')" title="Eliminar"><i data-lucide="trash-2" style="width:1em;height:1em;vertical-align:-2px"></i></button>`}
         </div>
       </div>`;
-  }).join("");
+  }).join("") + '</div>';
 }
 
 window.abrirModalLaboratorio = function(id = null, nombre = "", esLocal = false) {
@@ -4085,34 +4096,30 @@ function renderCiclosCfg() {
   });
   const anios = Object.keys(porAnio).sort((a, b) => Number(b) - Number(a));
 
-  wrap.innerHTML = anios.map(anio => {
+  wrap.innerHTML = '<div class="ciclo-timeline">' + anios.map(anio => {
     const ciclosDelAnio = porAnio[anio];
     return `
-      <div class="ciclo-anio-grupo">
-        <div class="ciclo-anio-header"><i data-lucide="calendar-days" style="width:1em;height:1em;vertical-align:-2px"></i> ${anio} <span class="ciclo-anio-cuenta">${ciclosDelAnio.length} ciclo${ciclosDelAnio.length !== 1 ? "s" : ""}</span></div>
-        <div class="ciclo-anio-fila">
-          ${ciclosDelAnio.map(c => {
-            const local = c.local ? ' <span style="font-size:10px;color:var(--texto-dim)">(respaldo)</span>' : '';
-            const nombreEsc = escapeAttr(c.nombre);
-            return `
-              <div class="prof-fila" style="flex:1;min-width:210px">
-                <div class="prof-fila-top">
-                  <div class="est-avatar">
-                    <div class="est-circulo" style="background:${colorEstudiante(c.nombre)}22;color:${colorEstudiante(c.nombre)}"><i data-lucide="calendar-days" style="width:1em;height:1em;vertical-align:-2px"></i></div>
-                    <div style="min-width:0;flex:1">
-                      <div class="est-nombre">${c.nombre}${local}</div>
-                    </div>
-                  </div>
-                  <div class="acciones-celda">
+      <div class="ciclo-timeline-fila">
+        <div class="ciclo-timeline-punto"><i data-lucide="calendar-days" style="width:1em;height:1em;vertical-align:-2px"></i></div>
+        <div class="ciclo-timeline-contenido">
+          <div class="ciclo-anio-header">${anio} <span class="ciclo-anio-cuenta">${ciclosDelAnio.length} ciclo${ciclosDelAnio.length !== 1 ? "s" : ""}</span></div>
+          <div class="ciclo-timeline-items">
+            ${ciclosDelAnio.map(c => {
+              const local = c.local ? ' <span style="font-size:10px;color:var(--texto-dim)">(respaldo)</span>' : '';
+              const nombreEsc = escapeAttr(c.nombre);
+              return `
+                <div class="ciclo-chip">
+                  <span class="ciclo-chip-nombre">${c.nombre}${local}</span>
+                  <span class="ciclo-chip-acciones">
                     <button class="btn btn-outline" onclick="abrirModalCiclo('${c.id}','${nombreEsc}',${c.local||false})" title="Editar">Editar</button>
                     ${c.local ? "" : `<button class="btn btn-rojo" onclick="eliminarCiclo('${c.id}','${nombreEsc}')" title="Eliminar"><i data-lucide="trash-2" style="width:1em;height:1em;vertical-align:-2px"></i></button>`}
-                  </div>
-                </div>
-              </div>`;
-          }).join("")}
+                  </span>
+                </div>`;
+            }).join("")}
+          </div>
         </div>
       </div>`;
-  }).join("");
+  }).join("") + '</div>';
 }
 
 window.abrirModalCiclo = function(id = null, nombre = "", esLocal = false) {
@@ -4218,29 +4225,42 @@ function renderUsuariosCfg() {
     laboratorios:"Talleres", historial:"Historial",
     "profesores-cfg":"Profesores", "herramientas-cfg":"Herramientas", "auditoria-cfg":"Auditoría"
   };
-  wrap.innerHTML = lista.map(u => {
+  const tarjetaUsr = (u) => {
     const esAdmin = u.rol === "administrador";
-    const rolBadge = esAdmin
-      ? '<span class="badge badge-entregada"><i data-lucide="crown" style="width:1em;height:1em;vertical-align:-2px"></i> Administrador</span>'
-      : '<span class="badge badge-retornada"><i data-lucide="lock" style="width:1em;height:1em;vertical-align:-2px"></i> Encargado</span>';
     const inicialesU = ((u.nombre||"?").trim().split(/\s+/).map(p=>p[0]).slice(0,2).join("")||"?").toUpperCase();
     const secciones = esAdmin
-      ? '<span class="usr-chip-sec" style="color:var(--texto-dim)">Acceso total al sistema</span>'
-      : ((u.secciones||[]).map(s => `<span class="usr-chip-sec">${etiquetasSecciones[s]||s}</span>`).join("") || '<span class="usr-chip-sec">Sin secciones asignadas</span>');
+      ? '<div class="usr-permiso-fila usr-permiso-total"><i data-lucide="check" style="width:1em;height:1em;vertical-align:-2px"></i> Acceso total al sistema</div>'
+      : ((u.secciones||[]).map(s => `<div class="usr-permiso-fila"><i data-lucide="check" style="width:1em;height:1em;vertical-align:-2px"></i> ${etiquetasSecciones[s]||s}</div>`).join("") || '<div class="usr-permiso-fila usr-permiso-vacio"><i data-lucide="x" style="width:1em;height:1em;vertical-align:-2px"></i> Sin secciones asignadas</div>');
     return `
-      <div class="usr-fila ${esAdmin ? "es-admin" : "es-encargado"}">
-        <div class="usr-avatar" style="background:${esAdmin ? "#eab30822" : "var(--azul)22"};color:${esAdmin ? "#eab308" : "var(--azul)"}">${inicialesU}</div>
-        <div class="usr-info">
-          <div class="usr-nombre-fila">${u.nombre || "—"} ${rolBadge}</div>
-          <div class="usr-email"><i data-lucide="mail" style="width:1em;height:1em;vertical-align:-2px"></i> ${u.email || "—"}</div>
-          <div class="usr-secciones">${secciones}</div>
+      <div class="usr-card ${esAdmin ? "es-admin" : "es-encargado"}">
+        <div class="usr-card-top">
+          <div class="usr-avatar" style="background:${esAdmin ? "#eab30822" : "var(--azul)22"};color:${esAdmin ? "#eab308" : "var(--azul)"}">${inicialesU}</div>
+          <div class="usr-info">
+            <div class="usr-nombre-fila">${u.nombre || "—"}</div>
+            <div class="usr-email"><i data-lucide="mail" style="width:1em;height:1em;vertical-align:-2px"></i> ${u.email || "—"}</div>
+          </div>
+          <div class="usr-acciones">
+            <button class="btn btn-outline" onclick="abrirModalUsuario('${u.id}')" title="Editar usuario">Editar</button>
+            <button class="btn btn-rojo" onclick="eliminarUsuario('${u.id}','${(u.nombre||"").replace(/'/g,"\\'")}')" title="Revocar acceso y eliminar usuario"><i data-lucide="trash-2" style="width:1em;height:1em;vertical-align:-2px"></i></button>
+          </div>
         </div>
-        <div class="usr-acciones">
-          <button class="btn btn-outline" onclick="abrirModalUsuario('${u.id}')" title="Editar usuario">Editar</button>
-          <button class="btn btn-rojo" onclick="eliminarUsuario('${u.id}','${(u.nombre||"").replace(/'/g,"\\'")}')" title="Revocar acceso y eliminar usuario"><i data-lucide="trash-2" style="width:1em;height:1em;vertical-align:-2px"></i></button>
-        </div>
+        <div class="usr-permisos">${secciones}</div>
       </div>`;
-  }).join("");
+  };
+  // Dos columnas por rol (Administradores / Encargados) con permisos como
+  // checklist, en vez de una sola lista plana con chips.
+  const admins = lista.filter(u => u.rol === "administrador");
+  const encargados = lista.filter(u => u.rol !== "administrador");
+  wrap.innerHTML = '<div class="usr-columnas">'
+    + '<div class="usr-columna">'
+    + '<div class="usr-columna-header"><i data-lucide="crown" style="width:1em;height:1em;vertical-align:-2px"></i> Administradores <span class="usr-columna-cuenta">' + admins.length + '</span></div>'
+    + (admins.length ? admins.map(tarjetaUsr).join("") : '<div class="usr-columna-vacio">Sin administradores</div>')
+    + '</div>'
+    + '<div class="usr-columna">'
+    + '<div class="usr-columna-header"><i data-lucide="lock" style="width:1em;height:1em;vertical-align:-2px"></i> Encargados <span class="usr-columna-cuenta">' + encargados.length + '</span></div>'
+    + (encargados.length ? encargados.map(tarjetaUsr).join("") : '<div class="usr-columna-vacio">Sin encargados</div>')
+    + '</div>'
+    + '</div>';
 }
 
 document.getElementById("usr-buscar")?.addEventListener("input", renderUsuariosCfg);

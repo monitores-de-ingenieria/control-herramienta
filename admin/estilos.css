@@ -1358,3 +1358,13 @@ body.tema-claro #vista-herramientas-cfg .her-grid {
   background: rgba(217,70,239,0.14) !important;
   color: #d946ef !important;
 }
+
+/* Fix: el buscador (lupa + placeholder) se veía pegado/encimado en
+   algunos inputs (ej. Buscar profesor). Refuerza el espacio con
+   !important para que gane sobre cualquier regla de padding genérica. */
+.buscar-wrap input {
+  padding-left: 34px !important;
+}
+.buscar-wrap .buscar-icono {
+  left: 11px !important;
+}

@@ -1337,3 +1337,24 @@ body.tema-claro #vista-herramientas-cfg .her-grid {
 .usr-permiso-fila i { color: var(--verde); flex-shrink: 0; width: 13px; height: 13px; }
 .usr-permiso-total i { color: var(--amarillo); }
 .usr-permiso-vacio i { color: var(--texto-dim); }
+
+/* ═══ Identidad "Solicitudes" — esmeralda, la cola principal ═══ */
+.pagina-icono-solicitudes {
+  border-radius: 10px !important;
+  background: rgba(16,185,129,0.14) !important;
+  color: #10b981 !important;
+}
+
+/* ═══ Identidad "Préstamos a Profesores" — teal ═══ */
+.pagina-icono-prestamos-prof {
+  border-radius: 50% !important;
+  background: rgba(20,184,166,0.14) !important;
+  color: #14b8a6 !important;
+}
+
+/* ═══ Identidad "Herramientas Prestadas" — fucsia ═══ */
+.pagina-icono-prestadas {
+  border-radius: 10px !important;
+  background: rgba(217,70,239,0.14) !important;
+  color: #d946ef !important;
+}

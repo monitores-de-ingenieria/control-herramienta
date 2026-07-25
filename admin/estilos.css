@@ -641,7 +641,7 @@ h1, h2, h3,
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
-.pagina-icono i { width: 19px; height: 19px; }
+.pagina-icono i, .pagina-icono svg { width: 19px; height: 19px; }
 
 .toolbar-tabla {
   padding: 16px 18px;
@@ -709,7 +709,7 @@ h1, h2, h3,
 .buscar-wrap { position: relative; }
 .buscar-wrap input { padding-left: 32px; }
 .buscar-wrap .buscar-icono { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--texto-dim); pointer-events: none; opacity: .7; }
-.buscar-wrap .buscar-icono i { width: 14px; height: 14px; display: block; }
+.buscar-wrap .buscar-icono i, .buscar-wrap .buscar-icono svg { width: 14px; height: 14px; display: block; }
 
 table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
 th {

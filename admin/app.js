@@ -1026,7 +1026,7 @@ function renderTabla() {
             </td>
             <td style="white-space:nowrap"><span class="badge badge-dot badge-${s.estado}">${s.estado}</span>${s.tieneIncidencias ? ' <span class="badge badge-cancelada" title="Tiene incidencias"><i data-lucide=alert-triangle style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i></span>' : ''}${s.estado === "pendiente" && (Date.now() - fechaDe(s.creadoEn).getTime()) > 15*60*1000 ? ' <span class="badge badge-cancelada" title="Pendiente hace más de 15 minutos">⏰</span>' : ''}</td>
             <td>
-              <div style="display:flex;gap:6px">
+              <div style="display:flex;gap:6px;align-items:center">
                 <button class="btn btn-outline" onclick="event.stopPropagation();abrirModal('${s.id}')"><i data-lucide="eye" style="width:1em;height:1em;vertical-align:-2px"></i> Ver</button>
                 ${s.estado === "pendiente" ? `<button class="btn btn-verde" onclick="event.stopPropagation();entregar('${s.id}')" title="Registrar la entrega de esta solicitud"><i data-lucide=check style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Entregar</button>` : ""}
                 ${s.estado === "entregada" ? `<button class="btn btn-azul" onclick="event.stopPropagation();retornar('${s.id}')"><i data-lucide="corner-up-left" style="width:1em;height:1em;vertical-align:-2px"></i> Retornar</button>` : ""}
@@ -2705,7 +2705,7 @@ function extRenderTabla() {
               <td style="font-size:12px;color:var(--texto-dim);max-width:200px">${herramientasTexto}</td>
               <td style="font-size:12px;color:var(--texto-dim)">${fecha}</td>
               <td>${badgeEstado}</td>
-              <td><div style="display:flex;gap:6px;flex-wrap:wrap">${acciones}</div></td>
+              <td><div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">${acciones}</div></td>
             </tr>`;
         }).join("")}
       </tbody>

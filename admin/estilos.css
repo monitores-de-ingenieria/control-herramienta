@@ -1373,3 +1373,100 @@ body.tema-claro #vista-herramientas-cfg .her-grid {
 .buscar-wrap .buscar-icono {
   left: 11px !important;
 }
+
+/* ═══════════════════════════════════════════
+   CONDUCE — DOCUMENTO PROFESIONAL (membrete, tabla, firmas)
+   Se ve como "papel" incluso en el tema oscuro del panel,
+   porque es la vista previa de un documento que se imprime.
+═══════════════════════════════════════════ */
+.modal-conduce-caja { padding: 0; overflow: visible; background: transparent; border: none; box-shadow: none; }
+.modal-conduce-caja .modal-titulo { margin: 0 0 16px; border-radius: 16px; }
+.modal-conduce-caja .modal-acciones { margin: 16px 4px 4px; }
+
+.conduce-doc {
+  background: #ffffff;
+  color: #1a1a1a;
+  border-radius: 10px;
+  padding: 32px 36px;
+  font-family: Georgia, 'Times New Roman', serif;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+}
+
+.conduce-membrete {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding-bottom: 16px; margin-bottom: 18px;
+  border-bottom: 3px solid #1a1a1a;
+}
+.conduce-membrete-empresa { display: flex; align-items: center; gap: 12px; }
+.conduce-logo { width: 34px; height: auto; flex-shrink: 0; }
+.conduce-empresa-nombre { font-size: 16px; font-weight: 700; color: #1a1a1a; letter-spacing: .01em; }
+.conduce-empresa-sub { font-size: 11px; color: #555; font-family: Arial, sans-serif; text-transform: uppercase; letter-spacing: .04em; }
+.conduce-membrete-doc { text-align: right; }
+.conduce-doc-titulo { font-size: 12px; font-family: Arial, sans-serif; text-transform: uppercase; letter-spacing: .08em; color: #555; margin-bottom: 4px; }
+.conduce-doc-numero { font-size: 18px; font-weight: 700; color: #b91c1c; font-family: Arial, sans-serif; letter-spacing: .02em; }
+
+.conduce-info-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px;
+  margin-bottom: 20px; font-family: Arial, sans-serif;
+}
+.conduce-info-item label {
+  display: block; font-size: 9.5px; text-transform: uppercase; letter-spacing: .07em;
+  color: #888; font-weight: 700; margin-bottom: 3px;
+}
+.conduce-info-item div { font-size: 13.5px; color: #1a1a1a; }
+
+.conduce-tabla { width: 100%; border-collapse: collapse; margin-bottom: 28px; font-family: Arial, sans-serif; font-size: 13px; }
+.conduce-tabla thead th {
+  background: #1a1a1a; color: #fff; text-align: left; padding: 8px 10px;
+  font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em;
+}
+.conduce-tabla td { padding: 7px 10px; border-bottom: 1px solid #ddd; }
+.conduce-tabla .conduce-td-cant { width: 70px; text-align: center; font-weight: 700; }
+.conduce-tabla tfoot td { border-top: 2px solid #1a1a1a; border-bottom: none; font-weight: 700; padding-top: 10px; }
+
+.conduce-firmas {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 40px;
+  margin-top: 50px; font-family: Arial, sans-serif;
+}
+.conduce-firma { text-align: center; }
+.conduce-firma-linea { border-top: 1.5px solid #1a1a1a; margin-bottom: 6px; }
+.conduce-firma-nombre { font-size: 12.5px; font-weight: 700; color: #1a1a1a; min-height: 16px; }
+.conduce-firma-cargo { font-size: 10.5px; color: #666; text-transform: uppercase; letter-spacing: .04em; margin-top: 2px; }
+
+.conduce-pie {
+  margin-top: 24px; padding-top: 10px; border-top: 1px dashed #ccc;
+  font-family: Arial, sans-serif; font-size: 9.5px; color: #999; text-align: center;
+}
+
+/* ═══════════════════════════════════════════
+   IMPRESIÓN — solo el conduce, sin panel/sidebar/topbar
+   (antes no existía NINGUNA regla de impresión: @media print
+   imprimía el panel completo tal cual se ve en pantalla)
+═══════════════════════════════════════════ */
+@media print {
+  @page { size: letter; margin: 1.2cm; }
+
+  body * { visibility: hidden; }
+
+  #modal-conduce, #modal-conduce * { visibility: visible; }
+
+  #modal-conduce {
+    position: absolute; inset: 0; z-index: 9999;
+    display: block; background: #fff; backdrop-filter: none;
+    padding: 0; margin: 0;
+  }
+  .modal-conduce-caja {
+    max-width: none; width: 100%; margin: 0; padding: 0;
+    box-shadow: none;
+  }
+  .modal-conduce-caja .modal-titulo,
+  .modal-conduce-caja .modal-acciones,
+  .modal-cerrar {
+    display: none !important;
+  }
+  .conduce-doc {
+    box-shadow: none; border-radius: 0; padding: 0;
+  }
+  .conduce-firmas { margin-top: 70px; }
+  .conduce-tabla thead th { background: #1a1a1a !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}

@@ -26,7 +26,8 @@ import {
   serverTimestamp,
   addDoc,
   limit,
-  onSnapshot
+  onSnapshot,
+  runTransaction
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -2816,6 +2817,22 @@ window.extSeleccionarHerramienta = function(item, nombre) {
   input.blur();
 };
 
+// ── NÚMERO CORRELATIVO REAL DEL CONDUCE ──
+// Usa un contador atómico en Firestore (transacción) para que dos salidas
+// registradas al mismo tiempo NUNCA reciban el mismo número. Reinicia cada año.
+async function obtenerSiguienteNumeroConduce() {
+  const anio = new Date().getFullYear();
+  const contadorRef = doc(db, "contadores", `conduce_${anio}`);
+  const numero = await runTransaction(db, async (transaccion) => {
+    const snap = await transaccion.get(contadorRef);
+    const actual = snap.exists() ? (snap.data().ultimo || 0) : 0;
+    const siguiente = actual + 1;
+    transaccion.set(contadorRef, { ultimo: siguiente, actualizadoEn: serverTimestamp() }, { merge: true });
+    return siguiente;
+  });
+  return `CND-${anio}-${String(numero).padStart(5, "0")}`;
+}
+
 window.confirmarNuevoPrestamoExt = async function() {
   const departamento = document.getElementById("ext-departamento").value.trim();
   const responsable  = document.getElementById("ext-responsable").value.trim();
@@ -2828,10 +2845,12 @@ window.confirmarNuevoPrestamoExt = async function() {
   const btn = document.getElementById("ext-btn-confirmar");
   btn.disabled = true; btn.textContent = "Guardando...";
   try {
+    const numeroConduce = await obtenerSiguienteNumeroConduce();
     await addDoc(collection(db, "prestamos_externos"), {
       departamento, responsable, herramientas,
       estado: "prestado",
       tieneIncidencias: false,
+      numeroConduce,
       creadoEn: serverTimestamp()
     });
     mostrarToast('<i data-lucide="circle-check" style="width:1em;height:1em;vertical-align:-2px"></i> Salida registrada correctamente');
@@ -2952,23 +2971,66 @@ window.confirmarRetornoExt = async function() {
 window.generarConduce = function(id) {
   const p = todosPrestamosExt.find(x => x.id === id);
   if (!p) return;
-  const fecha = p.creadoEn?.toDate ? p.creadoEn.toDate().toLocaleString("es-DO") : "—";
+  const fecha = p.creadoEn?.toDate ? p.creadoEn.toDate().toLocaleString("es-DO", { dateStyle: "long", timeStyle: "short" }) : "—";
+  const fechaImpresion = new Date().toLocaleString("es-DO", { dateStyle: "medium", timeStyle: "short" });
   const totalHerConduce = (p.herramientas || []).reduce((sum, h) => sum + (h.cantidad || 1), 0);
-  const herramientasHtml = (p.herramientas || []).map(h =>
-    `<div class="modal-herramienta-item"><span>${escapeHtml(h.nombre)}</span><span style="font-weight:700">×${h.cantidad}</span></div>`
-  ).join("") || "—";
+  // Compatibilidad: préstamos creados antes de que existiera el número correlativo real
+  const numero = p.numeroConduce || `S/N-${p.id.slice(0, 6).toUpperCase()}`;
+  const filasHerramientas = (p.herramientas || []).map(h => `
+    <tr>
+      <td class="conduce-td-cant">${h.cantidad}</td>
+      <td>${escapeHtml(h.nombre)}</td>
+    </tr>`).join("") || `<tr><td colspan="2" style="text-align:center;color:#888">Sin herramientas registradas</td></tr>`;
+
   document.getElementById("conduce-contenido").innerHTML = `
-    <div class="modal-campo"><label>Número de conduce</label><div class="valor">${p.id.slice(0,8).toUpperCase()}</div></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-      <div class="modal-campo"><label>Departamento</label><div class="valor">${escapeHtml(p.departamento) || "—"}</div></div>
-      <div class="modal-campo"><label>Responsable que retira</label><div class="valor">${escapeHtml(p.responsable) || "—"}</div></div>
+    <div class="conduce-doc">
+      <div class="conduce-membrete">
+        <div class="conduce-membrete-empresa">
+          <svg class="conduce-logo" viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg">
+            <rect x="18" y="8" width="70" height="10" rx="3" fill="#c0392b"/>
+            <rect x="14" y="16" width="78" height="112" rx="6" fill="#e74c3c"/>
+            <rect x="20" y="95" width="31" height="30" rx="3" fill="#c0392b"/>
+            <rect x="53" y="95" width="31" height="30" rx="3" fill="#c0392b"/>
+          </svg>
+          <div>
+            <div class="conduce-empresa-nombre">Taller Mecánica Industrial</div>
+            <div class="conduce-empresa-sub">Control de Herramientas</div>
+          </div>
+        </div>
+        <div class="conduce-membrete-doc">
+          <div class="conduce-doc-titulo">Conduce de Salida</div>
+          <div class="conduce-doc-numero">${numero}</div>
+        </div>
+      </div>
+
+      <div class="conduce-info-grid">
+        <div class="conduce-info-item"><label>Departamento</label><div>${escapeHtml(p.departamento) || "—"}</div></div>
+        <div class="conduce-info-item"><label>Responsable que retira</label><div>${escapeHtml(p.responsable) || "—"}</div></div>
+        <div class="conduce-info-item"><label>Fecha de salida</label><div>${fecha}</div></div>
+        <div class="conduce-info-item"><label>Estado actual</label><div>${p.estado === "prestado" ? "Prestado" : "Devuelto"}</div></div>
+      </div>
+
+      <table class="conduce-tabla">
+        <thead><tr><th class="conduce-td-cant">Cant.</th><th>Herramienta</th></tr></thead>
+        <tbody>${filasHerramientas}</tbody>
+        <tfoot><tr><td class="conduce-td-cant">${totalHerConduce}</td><td>Total de herramientas entregadas</td></tr></tfoot>
+      </table>
+
+      <div class="conduce-firmas">
+        <div class="conduce-firma">
+          <div class="conduce-firma-linea"></div>
+          <div class="conduce-firma-nombre">${escapeHtml(p.responsable) || "—"}</div>
+          <div class="conduce-firma-cargo">Recibe (Responsable)</div>
+        </div>
+        <div class="conduce-firma">
+          <div class="conduce-firma-linea"></div>
+          <div class="conduce-firma-nombre">&nbsp;</div>
+          <div class="conduce-firma-cargo">Entrega (Encargado del Taller)</div>
+        </div>
+      </div>
+
+      <div class="conduce-pie">Documento generado por Control de Herramientas — Taller Mecánica Industrial · Impreso el ${fechaImpresion}</div>
     </div>
-    <div class="modal-campo"><label>Fecha de salida</label><div class="valor">${fecha}</div></div>
-    <div class="modal-campo">
-      <label>Herramientas entregadas <span style="color:var(--verde);font-weight:800">(${totalHerConduce} en total)</span></label>
-      <div class="modal-herramientas">${herramientasHtml}</div>
-    </div>
-    <div class="modal-campo"><label>Estado actual</label><span class="badge badge-${p.estado === "prestado" ? "entregada" : "retornada"}">${p.estado === "prestado" ? "Prestado" : "Devuelto"}</span></div>
   `;
   document.getElementById("modal-conduce").classList.add("abierto");
 };

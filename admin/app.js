@@ -175,7 +175,6 @@ onAuthStateChanged(auth, async user => {
     cargarPrestamosExternos();
     cargarHerramientasCfg();
     cargarProfesoresCfg();
-    cargarMateriasCfg();
     cargarLaboratoriosCfg();
     cargarCiclosCfg();
     cargarUsuariosCfg();
@@ -3475,23 +3474,6 @@ let profCfgEditar = null;
 let profCfgLista  = [];
 
 const PROFESORES_RESPALDO_ADMIN = ["Daniel Camejo","José Peña","Julio Durán","Víctor Félix"];
-// Respaldo inicial de materias — igual que PROFESORES_RESPALDO_ADMIN, se usa
-// solo mientras la colección "materias" está vacía; en cuanto agregues una
-// desde el panel, ya vive en Firestore y esta lista deja de hacer falta
-// para esa materia. Mismos nombres que LABORATORIOS_RESPALDO_ADMIN porque en
-// este taller cada materia se llama igual que el taller donde se imparte.
-// Sin código todavía — edítalas desde el panel en cuanto sepas el código
-// real de cada una (ej. IMC105004).
-const MATERIAS_RESPALDO_ADMIN = [
-  { codigo: "", nombre: "Taller mecánica básica" },
-  { codigo: "", nombre: "Lab. ciencia de los materiales" },
-  { codigo: "", nombre: "Máquinas especiales" },
-  { codigo: "", nombre: "Taller de procesos industriales" },
-  { codigo: "", nombre: "Taller de soldadura" },
-  { codigo: "", nombre: "Taller máquinas y herramientas I" },
-  { codigo: "", nombre: "Taller máquinas y herramientas II" }
-];
-
 async function cargarProfesoresCfg() {
   try {
     onSnapshot(query(collection(db, "profesores"), orderBy("nombre", "asc")), snap => {
@@ -3542,7 +3524,7 @@ function renderProfesoresCfg() {
             : '<div class="prof-horario-franja prof-horario-vacio">Sin horario definido</div>';
           return `
           <div class="prof-horario-card">
-            <div class="prof-horario-materia">${m.codigo ? `<span class="pmi-codigo">${m.codigo}</span>` : ""}${m.nombre}</div>
+            <div class="prof-horario-materia">${m.nombre}</div>
             ${franjas}
           </div>`;
         }).join("")}</div>`
@@ -3604,30 +3586,22 @@ window.profAgregarFilaMateria = function(m = {}) {
   const fila = document.createElement("div");
   fila.className = "prof-materia-fila";
   const opciones = materiasDisponiblesGlobal();
-  const codigoActual = m.codigo || "";
   const nombreActual = m.nombre || "";
-  // Si el código/nombre guardado no está en el catálogo (ej. se escribió
-  // antes de existir Materias, o la materia se borró del catálogo después),
-  // se agrega igual como opción para no perder el dato ya guardado.
-  const opcionesCodigo = opciones.filter(o => o.codigo);
-  if (codigoActual && !opcionesCodigo.some(o => o.codigo === codigoActual)) opcionesCodigo.unshift({ codigo: codigoActual, nombre: nombreActual });
+  // Si el taller guardado ya no está en Laboratorios/Talleres (se borró
+  // después), se agrega igual como opción para no perder el dato guardado.
   const opcionesNombre = [...opciones];
-  if (nombreActual && !opcionesNombre.some(o => o.nombre === nombreActual)) opcionesNombre.unshift({ codigo: codigoActual, nombre: nombreActual });
+  if (nombreActual && !opcionesNombre.some(o => o.nombre === nombreActual)) opcionesNombre.unshift({ nombre: nombreActual });
 
   fila.innerHTML = `
     <div class="pm-header">
-      <select class="pm-codigo" onchange="profSincronizarMateria(this,'codigo')">
-        <option value="">Código...</option>
-        ${opcionesCodigo.map(o => `<option value="${o.codigo.replace(/"/g,'&quot;')}"${o.codigo===codigoActual?" selected":""}>${o.codigo}</option>`).join("")}
+      <select class="pm-nombre">
+        <option value="">Elige el laboratorio/taller...</option>
+        ${opcionesNombre.map(o => `<option value="${o.nombre.replace(/"/g,'&quot;')}"${o.nombre===nombreActual?" selected":""}>${o.nombre}</option>`).join("")}
       </select>
-      <select class="pm-nombre" onchange="profSincronizarMateria(this,'nombre')">
-        <option value="">Elige la materia...</option>
-        ${opcionesNombre.map(o => `<option value="${o.nombre.replace(/"/g,'&quot;')}" data-codigo="${o.codigo.replace(/"/g,'&quot;')}"${o.nombre===nombreActual?" selected":""}>${o.nombre}</option>`).join("")}
-      </select>
-      <button type="button" class="btn-quitar-fila" onclick="this.closest('.prof-materia-fila').remove()" title="Quitar esta materia">×</button>
+      <button type="button" class="btn-quitar-fila" onclick="this.closest('.prof-materia-fila').remove()" title="Quitar este taller">×</button>
     </div>
     <div class="pm-horarios-wrap"></div>
-    <button type="button" class="pm-btn-horario" onclick="profAgregarHorario(this)"><i data-lucide="clock" style="width:1em;height:1em;vertical-align:-2px"></i> Agregar horario a esta materia</button>`;
+    <button type="button" class="pm-btn-horario" onclick="profAgregarHorario(this)"><i data-lucide="clock" style="width:1em;height:1em;vertical-align:-2px"></i> Agregar horario a este taller</button>`;
   wrap.appendChild(fila);
 
   // Compatibilidad: materias guardadas antes de que existiera "horarios"
@@ -3671,169 +3645,15 @@ window.profAgregarHorario = function(btnRef, h = {}) {
   wrapHorarios.appendChild(horarioRow);
 };
 
-// El picker del profesor jala ÚNICAMENTE del catálogo de Materias
-// (materiaCfgLista, que ya combina Firestore + respaldo) — no escanea lo que
-// cada profesor tenga escrito, para que el catálogo sea la única fuente.
+// El picker del profesor jala del catálogo de Laboratorios/Talleres
+// (labCfgLista) — así el estudiante siempre elige un taller que
+// realmente tiene un profesor asignado, sin catálogo duplicado.
 function materiasDisponiblesGlobal() {
-  return (materiaCfgLista || [])
-    .filter(m => m.nombre)
-    .map(m => ({ codigo: m.codigo || "", nombre: m.nombre }))
+  return (labCfgLista || [])
+    .filter(l => l.nombre)
+    .map(l => ({ nombre: l.nombre }))
     .sort((a, b) => a.nombre.localeCompare(b.nombre));
 }
-
-// Código y Materia están enlazados: como cada código es único por materia,
-// elegir uno completa el otro automáticamente.
-window.profSincronizarMateria = function(select, tipo) {
-  const fila = select.closest(".prof-materia-fila");
-  if (!select.value) return;
-  if (tipo === "codigo") {
-    const codigo = select.value;
-    const opciones = materiasDisponiblesGlobal();
-    const match = opciones.find(o => o.codigo === codigo);
-    if (match) {
-      const selNombre = fila.querySelector(".pm-nombre");
-      if ([...selNombre.options].some(op => op.value === match.nombre)) selNombre.value = match.nombre;
-    }
-  } else {
-    // El option del nombre ya trae su código en data-codigo.
-    const opt = select.selectedOptions[0];
-    const codigo = opt?.dataset.codigo || "";
-    if (codigo) {
-      const selCodigo = fila.querySelector(".pm-codigo");
-      if ([...selCodigo.options].some(op => op.value === codigo)) selCodigo.value = codigo;
-    }
-  }
-};
-
-// ══════════════════════════════════════════════
-// ── MATERIAS (catálogo con código, independiente de los profesores) ──
-// ══════════════════════════════════════════════
-
-let materiaCfgEditar = null;
-let materiaCfgLista = [];
-
-async function cargarMateriasCfg() {
-  try {
-    onSnapshot(query(collection(db, "materias"), orderBy("nombre", "asc")), snap => {
-      const todosValidos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      const nombresFirestore = new Set(todosValidos.map(m => m.nombre.toLowerCase()));
-      const eliminadas = new Set(todosValidos.filter(m => m.eliminada).map(m => m.nombre.toLowerCase()));
-      const enFirestore = todosValidos.filter(m => !m.eliminada);
-      const delRespaldo = MATERIAS_RESPALDO_ADMIN
-        .filter(m => !nombresFirestore.has(m.nombre.toLowerCase()) && !eliminadas.has(m.nombre.toLowerCase()))
-        .map((m, i) => ({ id: "local-" + i, codigo: m.codigo || "", nombre: m.nombre, local: true }));
-      materiaCfgLista = [...enFirestore, ...delRespaldo].sort((a, b) => a.nombre.localeCompare(b.nombre));
-      renderMateriasCfg();
-    }, err => {
-      console.error("Error cargando materias:", err);
-      const w = document.getElementById("materia-cfg-wrap");
-      if (w) w.innerHTML = '<div class="vacio" style="padding:20px"><div class="vacio-icono"><i data-lucide="triangle-alert" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>No se pudo cargar (' + (err.code || err.message) + '). Revisa las reglas de Firestore para la colección "materias".</p></div>';
-    });
-  } catch(e) {
-    const w = document.getElementById("materia-cfg-wrap");
-    if (w) w.innerHTML = '<div class="cargando">Error al cargar materias.</div>';
-  }
-}
-
-function renderMateriasCfg() {
-  const wrap = document.getElementById("materia-cfg-wrap");
-  if (!wrap) return;
-  const buscar = (document.getElementById("materia-buscar")?.value || "").toLowerCase();
-  const lista = buscar
-    ? materiaCfgLista.filter(m => m.nombre.toLowerCase().includes(buscar) || (m.codigo || "").toLowerCase().includes(buscar))
-    : materiaCfgLista;
-  if (!lista.length) {
-    wrap.innerHTML = '<div class="vacio"><div class="vacio-icono"><i data-lucide="book-open" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>No hay materias registradas todavía.</p></div>';
-    return;
-  }
-  // Catálogo agrupado alfabéticamente (como un estante de libros), en vez de
-  // una tabla genérica: cada materia es una "ficha" con su código como lomo.
-  const porLetra = {};
-  lista.forEach(m => {
-    const letra = (m.nombre || "?").trim().charAt(0).toUpperCase() || "#";
-    (porLetra[letra] = porLetra[letra] || []).push(m);
-  });
-  const letras = Object.keys(porLetra).sort();
-  wrap.innerHTML = letras.map(letra => {
-    const grupo = porLetra[letra];
-    return '<div class="materia-letra-grupo">'
-      + '<div class="materia-letra-header"><span class="materia-letra-inicial">' + letra + '</span><span class="materia-letra-cuenta">' + grupo.length + ' materia' + (grupo.length === 1 ? '' : 's') + '</span></div>'
-      + '<div class="materia-grid">'
-      + grupo.map(m => {
-          const nombreEsc = escapeAttr(m.nombre);
-          const codigoEsc = escapeAttr(m.codigo || "");
-          const local = m.local ? ' <span style="font-size:10px;color:var(--texto-dim)">(respaldo)</span>' : '';
-          return '<div class="materia-card">'
-            + '<div class="materia-card-lomo">' + (m.codigo ? escapeHtml(m.codigo) : '—') + '</div>'
-            + '<div class="materia-card-cuerpo">'
-            + '<div class="materia-card-nombre">' + escapeHtml(m.nombre) + local + '</div>'
-            + '<div class="materia-card-acciones">'
-            + '<button class="btn btn-outline" onclick="abrirModalMateria(\'' + m.id + '\',\'' + codigoEsc + '\',\'' + nombreEsc + '\',' + (m.local||false) + ')" title="Editar materia">Editar</button>'
-            + '<button class="btn btn-rojo" onclick="eliminarMateria(\'' + m.id + '\',\'' + nombreEsc + '\',' + (m.local||false) + ')" title="Eliminar materia"><i data-lucide="trash-2" style="width:1em;height:1em;vertical-align:-2px"></i></button>'
-            + '</div></div></div>';
-        }).join('')
-      + '</div></div>';
-  }).join('');
-}
-
-window.abrirModalMateria = function(id = null, codigo = "", nombre = "", esLocal = false) {
-  materiaCfgEditar = esLocal ? null : id;
-  window._materiaLocalNombre = esLocal ? nombre : null;
-  document.getElementById("materia-modal-titulo").textContent = id ? "Editar materia" : "+ Agregar materia";
-  document.getElementById("materia-input-codigo").value = codigo;
-  document.getElementById("materia-input-nombre").value = nombre;
-  document.getElementById("modal-materia-cfg").classList.add("abierto");
-};
-
-window.cerrarModalMateria = function() {
-  document.getElementById("modal-materia-cfg").classList.remove("abierto");
-  materiaCfgEditar = null;
-};
-
-window.guardarMateria = async function() {
-  const codigo = document.getElementById("materia-input-codigo").value.trim().toUpperCase();
-  const nombre = document.getElementById("materia-input-nombre").value.trim();
-  if (!nombre) { mostrarToast("Escribe el nombre de la materia", "rojo"); return; }
-  const btn = document.getElementById("materia-btn-guardar");
-  btn.disabled = true; btn.textContent = "Guardando...";
-  try {
-    if (materiaCfgEditar) {
-      await updateDoc(doc(db, "materias", materiaCfgEditar), { codigo, nombre });
-      mostrarToast('<i data-lucide="circle-check" style="width:1em;height:1em;vertical-align:-2px"></i> Materia actualizada');
-      registrarAuditoria("materia", "editar", `Editó la materia "${nombre}"${codigo ? " (" + codigo + ")" : ""}`);
-    } else {
-      await addDoc(collection(db, "materias"), { codigo, nombre, creadoEn: serverTimestamp() });
-      mostrarToast(window._materiaLocalNombre ? '<i data-lucide="circle-check" style="width:1em;height:1em;vertical-align:-2px"></i> Materia de respaldo guardada en Firestore' : '<i data-lucide="circle-check" style="width:1em;height:1em;vertical-align:-2px"></i> Materia agregada');
-      registrarAuditoria("materia", "crear", `Agregó la materia "${nombre}"${codigo ? " (" + codigo + ")" : ""}`);
-      // Si veníamos de una materia "de respaldo" y le cambiaron el nombre,
-      // marcamos el nombre original como eliminado para que no reaparezca
-      // duplicado desde MATERIAS_RESPALDO_ADMIN.
-      if (window._materiaLocalNombre && window._materiaLocalNombre !== nombre) {
-        await addDoc(collection(db, "materias"), { nombre: window._materiaLocalNombre, eliminada: true, creadoEn: serverTimestamp() });
-      }
-    }
-    cerrarModalMateria();
-  } catch(e) { mostrarToast("Error al guardar: " + e.message, "rojo"); }
-  finally { btn.disabled = false; btn.textContent = "Guardar"; }
-};
-
-window.eliminarMateria = async function(id, nombre, esLocal = false) {
-  if (!confirm('¿Eliminar la materia "' + nombre + '" del catálogo? (Los profesores que ya la tengan asignada no se ven afectados).')) return;
-  try {
-    if (esLocal) {
-      await addDoc(collection(db, "materias"), { nombre, eliminada: true, creadoEn: serverTimestamp() });
-    } else {
-      await deleteDoc(doc(db, "materias", id));
-    }
-    mostrarToast("Materia eliminada del catálogo");
-    registrarAuditoria("materia", "eliminar", `Eliminó la materia "${nombre}"`);
-  } catch(e) { mostrarToast("Error al eliminar", "rojo"); }
-};
-
-document.getElementById("materia-buscar")?.addEventListener("input", renderMateriasCfg);
-document.getElementById("modal-materia-cfg")?.addEventListener("click", e => {
-  if (e.target === document.getElementById("modal-materia-cfg")) cerrarModalMateria();
-});
 
 window.cerrarModalProfesor = function() {
   document.getElementById("modal-profesor-cfg").classList.remove("abierto");
@@ -3855,7 +3675,6 @@ window.guardarProfesor = async function() {
       };
     }).filter(h => h.dias.length || h.horaInicio);
     return {
-      codigo: fila.querySelector(".pm-codigo").value.trim().toUpperCase(),
       nombre: fila.querySelector(".pm-nombre").value.trim(),
       horarios
     };

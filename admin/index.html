@@ -185,7 +185,6 @@
 
       <div class="nav-grupo">Configuración</div>
       <div class="nav-item" data-vista="profesores-cfg" title="Profesores"><span class="nav-icono"><i data-lucide="user-round"></i></span><span class="nav-texto">Profesores</span></div>
-      <div class="nav-item" data-vista="materias-cfg" title="Materias"><span class="nav-icono"><i data-lucide="book-open"></i></span><span class="nav-texto">Materias</span></div>
       <div class="nav-item" data-vista="laboratorios" title="Laboratorios / Talleres"><span class="nav-icono"><i data-lucide="building-2"></i></span><span class="nav-texto">Laboratorios / Talleres</span></div>
       <div class="nav-item" data-vista="ciclos-cfg" title="Ciclos"><span class="nav-icono"><i data-lucide="calendar-days"></i></span><span class="nav-texto">Ciclos</span></div>
       <div class="nav-item" data-vista="usuarios-cfg" id="nav-usuarios" title="Usuarios"><span class="nav-icono"><i data-lucide="users-round"></i></span><span class="nav-texto">Usuarios</span></div>
@@ -455,7 +454,7 @@
             </div>
           </div>
           <div class="prof-resumen" id="lab-resumen"></div>
-          <div id="lab-cfg-wrap" class="prof-lista">
+          <div id="lab-cfg-wrap">
             <div class="cargando"><div class="spinner"></div>Cargando laboratorios...</div>
           </div>
         </div>
@@ -574,27 +573,6 @@
         </div>
       </div>
 
-      <div class="vista" id="vista-materias-cfg">
-        <div class="pagina-titulo">
-          <div style="display:flex;align-items:center;gap:12px">
-            <div class="pagina-icono pagina-icono-materias"><i data-lucide=book-open></i></div>
-            <div><h2>Materias</h2><p>Catálogo de materias con su código, para elegirlas al asignarle horario a un profesor</p></div>
-          </div>
-          <button class="btn btn-verde" onclick="abrirModalMateria()" style="padding:9px 18px;font-size:13px" title="Agregar una nueva materia"><i data-lucide=plus style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Agregar materia</button>
-        </div>
-        <div class="seccion-tabla seccion-materias">
-          <div class="tabla-header">
-            <h3>Lista de materias</h3>
-            <div class="filtros">
-              <input type="text" id="materia-buscar" placeholder="Buscar materia...">
-            </div>
-          </div>
-          <div id="materia-cfg-wrap">
-            <div class="cargando"><div class="spinner"></div>Cargando materias...</div>
-          </div>
-        </div>
-      </div>
-
       <div class="vista" id="vista-usuarios-cfg">
         <div class="pagina-titulo">
           <div style="display:flex;align-items:center;gap:12px">
@@ -666,36 +644,13 @@
         style="width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--borde);border-radius:8px;color:var(--texto);font-size:14px">
     </div>
     <div class="modal-campo">
-      <label style="margin:0">Materias que imparte</label>
+      <label style="margin:0">Laboratorios/Talleres asignados</label>
       <div id="prof-materias-wrap" style="display:flex;flex-direction:column;gap:10px;margin-top:8px;max-height:340px;overflow-y:auto"></div>
       <button type="button" class="btn-agregar-materia" onclick="profAgregarFilaMateria()"><i data-lucide=plus style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Agregar materia</button>
     </div>
     <div class="modal-acciones">
       <button class="btn btn-outline" onclick="cerrarModalProfesor()">Cancelar</button>
       <button class="btn btn-verde" id="prof-btn-guardar" onclick="guardarProfesor()"><i data-lucide=check-circle style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Guardar</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="modal-materia-cfg">
-  <div class="modal" style="max-width:420px">
-    <div class="modal-titulo">
-      <span id="materia-modal-titulo"><i data-lucide=plus style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Agregar materia</span>
-      <button class="modal-cerrar" onclick="cerrarModalMateria()"><i data-lucide=x style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i></button>
-    </div>
-    <div class="modal-campo">
-      <label>Código</label>
-      <input type="text" id="materia-input-codigo" placeholder="Ej. IMC105004"
-        style="width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--borde);border-radius:8px;color:var(--texto);font-size:14px;text-transform:uppercase">
-    </div>
-    <div class="modal-campo">
-      <label>Nombre</label>
-      <input type="text" id="materia-input-nombre" placeholder="Ej. Taller de Soldadura"
-        style="width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--borde);border-radius:8px;color:var(--texto);font-size:14px">
-    </div>
-    <div class="modal-acciones">
-      <button class="btn btn-outline" onclick="cerrarModalMateria()">Cancelar</button>
-      <button class="btn btn-verde" id="materia-btn-guardar" onclick="guardarMateria()"><i data-lucide=check-circle style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Guardar</button>
     </div>
   </div>
 </div>
@@ -811,7 +766,6 @@
         <label style="display:flex;gap:6px;align-items:center;font-size:13px;font-weight:400;cursor:pointer"><input type="checkbox" class="usr-seccion-chk" value="ciclos-cfg"> Ciclos</label>
         <label style="display:flex;gap:6px;align-items:center;font-size:13px;font-weight:400;cursor:pointer"><input type="checkbox" class="usr-seccion-chk" value="historial"> Historial</label>
         <label style="display:flex;gap:6px;align-items:center;font-size:13px;font-weight:400;cursor:pointer"><input type="checkbox" class="usr-seccion-chk" value="profesores-cfg"> Profesores (cfg)</label>
-        <label style="display:flex;gap:6px;align-items:center;font-size:13px;font-weight:400;cursor:pointer"><input type="checkbox" class="usr-seccion-chk" value="materias-cfg"> Materias</label>
         <label style="display:flex;gap:6px;align-items:center;font-size:13px;font-weight:400;cursor:pointer"><input type="checkbox" class="usr-seccion-chk" value="herramientas-cfg"> Herramientas</label>
         <label style="display:flex;gap:6px;align-items:center;font-size:13px;font-weight:400;cursor:pointer"><input type="checkbox" class="usr-seccion-chk" value="auditoria-cfg"> Auditoría</label>
       </div>

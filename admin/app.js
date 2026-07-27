@@ -3975,32 +3975,35 @@ function renderCiclosCfg() {
   });
   const anios = Object.keys(porAnio).sort((a, b) => Number(b) - Number(a));
 
-  wrap.innerHTML = '<div class="ciclo-timeline">' + anios.map(anio => {
+  wrap.innerHTML = anios.map(anio => {
     const ciclosDelAnio = porAnio[anio];
     return `
-      <div class="ciclo-timeline-fila">
-        <div class="ciclo-timeline-punto"><i data-lucide="calendar-days" style="width:1em;height:1em;vertical-align:-2px"></i></div>
-        <div class="ciclo-timeline-contenido">
-          <div class="ciclo-anio-header">${anio} <span class="ciclo-anio-cuenta">${ciclosDelAnio.length} ciclo${ciclosDelAnio.length !== 1 ? "s" : ""}</span></div>
-          <div class="ciclo-timeline-items">
-            ${ciclosDelAnio.map(c => {
-              const local = c.local ? ' <span style="font-size:10px;color:var(--texto-dim)">(respaldo)</span>' : '';
-              const nombreEsc = escapeAttr(c.nombre);
-              const actual = c.actual ? ' <span style="font-size:10px;font-weight:800;color:var(--verde)">• ACTUAL</span>' : '';
-              return `
-                <div class="ciclo-chip"${c.actual ? ' style="border-color:var(--verde);box-shadow:0 0 0 1px var(--verde)"' : ''}>
-                  <span class="ciclo-chip-nombre">${c.nombre}${local}${actual}</span>
-                  <span class="ciclo-chip-acciones">
+      <div class="ciclo-anio-grupo">
+        <div class="ciclo-anio-header"><i data-lucide="calendar-days" style="width:1em;height:1em;vertical-align:-2px"></i> ${anio} <span class="ciclo-anio-cuenta">${ciclosDelAnio.length} ciclo${ciclosDelAnio.length !== 1 ? "s" : ""}</span></div>
+        <div class="ciclo-anio-fila">
+          ${ciclosDelAnio.map(c => {
+            const local = c.local ? ' <span style="font-size:10px;color:var(--texto-dim)">(respaldo)</span>' : '';
+            const nombreEsc = escapeAttr(c.nombre);
+            return `
+              <div class="prof-fila" style="flex:1;min-width:210px${c.actual ? ";border-color:var(--verde);box-shadow:0 0 0 1px var(--verde)" : ""}">
+                <div class="prof-fila-top">
+                  <div class="est-avatar">
+                    <div class="est-circulo" style="background:${colorEstudiante(c.nombre)}22;color:${colorEstudiante(c.nombre)}"><i data-lucide="calendar-days" style="width:1em;height:1em;vertical-align:-2px"></i></div>
+                    <div style="min-width:0;flex:1">
+                      <div class="est-nombre">${c.nombre}${local}${c.actual ? ' <span style="font-size:10px;font-weight:800;color:var(--verde)">• ACTUAL</span>' : ""}</div>
+                    </div>
+                  </div>
+                  <div class="acciones-celda">
                     ${c.actual ? "" : `<button class="btn btn-outline" onclick="marcarCicloActual('${c.id}','${nombreEsc}',${c.local||false})" title="Marcar como el ciclo actual (el que el formulario preselecciona)"><i data-lucide="star" style="width:1em;height:1em;vertical-align:-2px"></i></button>`}
                     <button class="btn btn-outline" onclick="abrirModalCiclo('${c.id}','${nombreEsc}',${c.local||false})" title="Editar">Editar</button>
                     ${c.local ? "" : `<button class="btn btn-rojo" onclick="eliminarCiclo('${c.id}','${nombreEsc}')" title="Eliminar"><i data-lucide="trash-2" style="width:1em;height:1em;vertical-align:-2px"></i></button>`}
-                  </span>
-                </div>`;
-            }).join("")}
-          </div>
+                  </div>
+                </div>
+              </div>`;
+          }).join("")}
         </div>
       </div>`;
-  }).join("") + '</div>';
+  }).join("");
 }
 
 window.abrirModalCiclo = function(id = null, nombre = "", esLocal = false) {

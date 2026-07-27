@@ -44,13 +44,16 @@
 
     <div class="topbar">
       <button class="btn-toggle-sidebar" id="btn-toggle-sidebar" title="Colapsar menú"><i data-lucide=menu style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i></button>
-      <span class="topbar-logo"></span>
       <div>
         <div class="topbar-titulo">Control de Herramientas</div>
         <div class="topbar-sub">Taller Mecánica Industrial</div>
       </div>
       <div class="topbar-spacer"></div>
-      <button class="btn-tema" id="btn-tema" onclick="toggleTema()"><i data-lucide=sun style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Claro</button>
+      <button class="switch-tema" id="btn-tema" onclick="toggleTema()" role="switch" aria-checked="false" aria-label="Cambiar entre tema claro y oscuro" title="Cambiar tema">
+        <i data-lucide=sun class="switch-tema-icono switch-tema-icono-sol" style="width:13px;height:13px"></i>
+        <i data-lucide=moon class="switch-tema-icono switch-tema-icono-luna" style="width:13px;height:13px"></i>
+        <span class="switch-tema-perilla"></span>
+      </button>
       <div class="topbar-admin">
         <div class="avatar" id="admin-avatar">A</div>
         <div>

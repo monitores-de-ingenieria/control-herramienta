@@ -200,12 +200,6 @@ h1, h2, h3,
   z-index: 5;
 }
 
-.topbar-logo {
-  width: 30px; height: 30px; flex-shrink: 0;
-  background-image: var(--logo-utesa);
-  background-size: contain; background-repeat: no-repeat; background-position: center;
-  display: inline-block;
-}
 .topbar-titulo { font-weight: 600; font-size: 13.5px; color: var(--texto); letter-spacing: -.2px; }
 .topbar-sub { font-size: 11px; color: var(--texto-dim); }
 .topbar-spacer { flex: 1; }
@@ -227,20 +221,37 @@ h1, h2, h3,
 }
 .btn-toggle-sidebar:hover { background: var(--hover); color: var(--texto); }
 
-.btn-tema {
+.switch-tema {
+  position: relative;
+  width: 52px; height: 28px;
   background: var(--card2);
   border: 1px solid var(--borde);
-  color: var(--texto);
-  border-radius: 8px;
-  padding: 6px 13px;
-  font-size: 11.5px;
-  font-weight: 600;
+  border-radius: 999px;
   cursor: pointer;
-  display: flex; align-items: center; gap: 6px;
+  padding: 0;
+  flex-shrink: 0;
   margin-right: 12px;
   transition: border-color .15s, background .15s;
 }
-.btn-tema:hover { border-color: var(--verde); background: var(--verde-glow); }
+.switch-tema:hover { border-color: var(--verde); }
+.switch-tema-perilla {
+  position: absolute; top: 2px; left: 2px;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--gradiente-verde);
+  box-shadow: var(--sombra-sm);
+  transform: translateX(24px); /* por defecto: tema oscuro activo → cerca de la luna */
+  transition: transform .25s cubic-bezier(.4,0,.2,1);
+}
+body.tema-claro .switch-tema-perilla { transform: translateX(0); } /* tema claro activo → cerca del sol */
+.switch-tema-icono {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  opacity: .35; transition: opacity .2s; pointer-events: none;
+}
+.switch-tema-icono-sol { left: 7px; color: #fbbf24; }
+.switch-tema-icono-luna { right: 7px; color: #93c5fd; }
+body.tema-claro .switch-tema-icono-sol { opacity: 1; }
+body:not(.tema-claro) .switch-tema-icono-luna { opacity: 1; }
 
 /* ═══════════════════════════════════════════
    SIDEBAR — más limpio, sin bloques sólidos pesados

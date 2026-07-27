@@ -3028,7 +3028,7 @@ window.generarConduce = function(id) {
         </div>
       </div>
 
-      <div class="conduce-pie">Documento generado por Control de Herramientas — Taller Mecánica Industrial · Impreso el ${fechaImpresion}</div>
+      <div class="conduce-pie">Impreso el ${fechaImpresion}</div>
     </div>
   `;
   document.getElementById("modal-conduce").classList.add("abierto");
@@ -4306,12 +4306,13 @@ window.exportarHerramientasPDF = function() {
 
 // ── TEMA ──
 function aplicarTema(tema) {
+  const btn = document.getElementById('btn-tema');
   if (tema === 'claro') {
     document.body.classList.add('tema-claro');
-    document.getElementById('btn-tema').textContent = 'Oscuro';
+    if (btn) btn.setAttribute('aria-checked', 'false'); // switch "apagado" = tema claro
   } else {
     document.body.classList.remove('tema-claro');
-    document.getElementById('btn-tema').textContent = 'Claro';
+    if (btn) btn.setAttribute('aria-checked', 'true'); // switch "encendido" = tema oscuro
   }
   localStorage.setItem('tema-admin', tema);
 }

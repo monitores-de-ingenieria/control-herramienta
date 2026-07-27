@@ -255,6 +255,50 @@ let herramientasDisponibles = [];
 let cantidadesSeleccionadas = {};
 let datosSolicitudPendiente = null;
 
+// ---- Modal de confirmación moderno (reemplaza al confirm() nativo) ----
+// Autocontenido (crea su propio DOM) para no depender de markup fijo en el
+// HTML, con el mismo estilo visual que el resto de modales del formulario.
+function confirmarPersonalizado(mensaje, opciones = {}) {
+  const { titulo = "¿Deseas continuar?", textoSi = "Aceptar", textoNo = "Cancelar", icono = "❓" } = opciones;
+  return new Promise((resolve) => {
+    const modal = document.createElement("div");
+    modal.id = "modal-confirm-custom";
+    modal.style.cssText = `
+      position:fixed;inset:0;background:rgba(0,0,0,0.6);
+      display:flex;align-items:center;justify-content:center;
+      z-index:10000;padding:16px;
+    `;
+    modal.innerHTML = `
+      <div style="background:#fff;border-radius:12px;max-width:400px;width:100%;box-shadow:0 4px 24px rgba(0,0,0,0.18);overflow:hidden">
+        <div style="background:var(--verde-oscuro);padding:18px 20px 14px;text-align:center">
+          <div style="font-size:26px;margin-bottom:6px">${icono}</div>
+          <h2 style="margin:0;color:#fff;font-size:16px;font-weight:800;line-height:1.3">${titulo}</h2>
+        </div>
+        <div style="padding:18px 20px">
+          <p id="confirm-custom-msg" style="margin:0 0 18px;font-size:14px;color:var(--texto);line-height:1.6;white-space:pre-line">${mensaje}</p>
+          <div style="display:flex;gap:10px">
+            <button id="confirm-custom-no" style="flex:1;padding:13px;border-radius:8px;border:1.5px solid #c8c8c8;background:#fff;color:var(--gris);font-size:14px;font-weight:600;cursor:pointer">${textoNo}</button>
+            <button id="confirm-custom-si" class="btn-enviar" style="flex:1;margin:0">${textoSi}</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+
+    const btnSi = document.getElementById("confirm-custom-si");
+    const btnNo = document.getElementById("confirm-custom-no");
+    const limpiar = (resultado) => {
+      modal.remove();
+      resolve(resultado);
+    };
+    btnSi.onclick = () => limpiar(true);
+    btnNo.onclick = () => limpiar(false);
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) limpiar(false); // clic fuera de la tarjeta = cancelar
+    });
+  });
+}
+
 // ---- Modal duplicado ----
 let solicitudExistenteId   = null;
 let solicitudExistente     = null;
@@ -870,7 +914,11 @@ btnEnviar.addEventListener("click", async (e) => {
     if (solicitudActiva) {
       btnEnviar.disabled = false;
       btnEnviar.textContent = "Enviar Solicitud";
-      if (confirm("Ya tienes una solicitud activa hoy. ¿Quieres agregar herramientas a esa solicitud?\n\nPresiona 'Aceptar' para agregar. Presiona 'Cancelar' para no hacer nada.")) {
+      const quiereAgregar = await confirmarPersonalizado(
+        "Ya tienes una solicitud activa hoy.\n¿Quieres agregar herramientas a esa solicitud?",
+        { titulo: "Solicitud ya existente", icono: "⚠️", textoSi: "Sí, agregar", textoNo: "No, cancelar" }
+      );
+      if (quiereAgregar) {
         abrirModalDuplicado(solicitudActiva, herramientasDisponibles);
       }
       return; // Nunca se crea una solicitud nueva cuando ya hay una activa hoy.

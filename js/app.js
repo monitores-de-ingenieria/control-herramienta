@@ -55,6 +55,26 @@ const seccionAdicional   = document.getElementById("seccion-adicional");
 const inputMatriculaAdicional = document.getElementById("matricula-adicional");
 const btnBuscarAdicional      = document.getElementById("btn-buscar-adicional");
 
+// ---- Autoformato de matrícula: el estudiante solo escribe números y los
+// guiones se insertan solos, con el formato N-NN-NNNN (ej. 1-19-0117) ----
+function formatearMatricula(valor) {
+  const digitos = valor.replace(/\D/g, "").slice(0, 7);
+  let resultado = digitos;
+  if (digitos.length > 1) resultado = digitos.slice(0, 1) + "-" + digitos.slice(1);
+  if (digitos.length > 3) resultado = digitos.slice(0, 1) + "-" + digitos.slice(1, 3) + "-" + digitos.slice(3);
+  return resultado;
+}
+function activarAutoformatoMatricula(input) {
+  if (!input) return;
+  input.addEventListener("input", () => {
+    const cursorAlFinal = input.selectionStart === input.value.length;
+    input.value = formatearMatricula(input.value);
+    if (cursorAlFinal) input.selectionStart = input.selectionEnd = input.value.length;
+  });
+}
+activarAutoformatoMatricula(document.getElementById("matricula"));
+activarAutoformatoMatricula(inputMatriculaAdicional);
+
 // ---- Cámara ----
 const btnCamara       = document.getElementById("btn-camara");
 const inputCamara     = document.getElementById("input-camara");
@@ -468,13 +488,16 @@ function llenarCiclos(ciclos) {
   ciclos.forEach(c => {
     const opt = document.createElement("option");
     opt.value = c.nombre;
-    opt.textContent = c.nombre;
+    opt.textContent = c.actual ? `${c.nombre} (actual)` : c.nombre;
     selectCiclo.insertBefore(opt, opcionNueva);
   });
 
   const datos = obtenerDatosGuardados();
+  const cicloActual = ciclos.find(c => c.actual === true);
   if (datos?.ciclo && [...selectCiclo.options].some(o => o.value === datos.ciclo)) {
     selectCiclo.value = datos.ciclo;
+  } else if (cicloActual) {
+    selectCiclo.value = cicloActual.nombre;
   } else if (ciclos[0]) {
     selectCiclo.value = ciclos[0].nombre;
   }

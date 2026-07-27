@@ -3776,10 +3776,12 @@ function renderLaboratoriosCfg() {
     const nombreEsc = escapeAttr(l.nombre);
     return `
       <div class="lab-item">
-        <div class="lab-num">${String(i + 1).padStart(2, "0")}</div>
-        <div class="lab-info">
-          <div class="lab-nombre">${l.nombre}${local}</div>
-          <div class="lab-sub">Espacio disponible en el formulario</div>
+        <div class="lab-item-top">
+          <div class="lab-num">${String(i + 1).padStart(2, "0")}</div>
+          <div class="lab-info">
+            <div class="lab-nombre">${l.nombre}${local}</div>
+            <div class="lab-sub">Espacio disponible en el formulario</div>
+          </div>
         </div>
         <div class="acciones-celda">
           <button class="btn btn-outline" onclick="abrirModalLaboratorio('${l.id}','${nombreEsc}',${l.local||false})" title="Editar">Editar</button>

@@ -2099,7 +2099,7 @@ function herFotoHtmlPorNombre(nombre, size = 32) {
 }
 
 window.anular = async function(id) {
-  if (!confirm("¿Seguro que deseas anular esta solicitud?")) return;
+  if (!(await confirmarPersonalizado("¿Seguro que deseas anular esta solicitud?"))) return;
   try {
     const s = todasSolicitudes.find(x => x.id === id);
     await updateDoc(doc(db, "solicitudes", id), { estado: "cancelada" });
@@ -3435,7 +3435,7 @@ window.guardarHerramienta = async function() {
 };
 
 window.eliminarHerramienta = async function(id, nombre, esLocal = false) {
-  if (!confirm('¿Eliminar "' + nombre + '"? Esta acción no se puede deshacer.')) return;
+  if (!(await confirmarPersonalizado('¿Eliminar "' + nombre + '"? Esta acción no se puede deshacer.'))) return;
   try {
     if (esLocal) {
       await addDoc(collection(db, "herramientas"), { nombre, cantidadDisponible: 0, eliminada: true, creadoEn: serverTimestamp() });
@@ -3769,7 +3769,7 @@ window.guardarProfesor = async function() {
 };
 
 window.eliminarProfesor = async function(id, nombre) {
-  if (!confirm('¿Eliminar al profesor "' + nombre + '"?')) return;
+  if (!(await confirmarPersonalizado('¿Eliminar al profesor "' + nombre + '"?'))) return;
   try {
     // "eliminado:true" en vez de borrar el documento — si no, un profesor
     // cuyo nombre coincide con el respaldo (PROFESORES_RESPALDO_ADMIN)
@@ -3898,7 +3898,7 @@ window.guardarLaboratorio = async function() {
 };
 
 window.eliminarLaboratorio = async function(id, nombre) {
-  if (!confirm('¿Eliminar "' + nombre + '"?')) return;
+  if (!(await confirmarPersonalizado('¿Eliminar "' + nombre + '"?'))) return;
   try {
     // "eliminado:true" en vez de borrar el documento — mismo motivo que en
     // Profesores: si no, uno cuyo nombre está en LABORATORIOS_RESPALDO_ADMIN
@@ -3975,30 +3975,35 @@ function renderCiclosCfg() {
   });
   const anios = Object.keys(porAnio).sort((a, b) => Number(b) - Number(a));
 
-  wrap.innerHTML = '<div class="ciclo-timeline">' + anios.map(anio => {
+  wrap.innerHTML = anios.map(anio => {
     const ciclosDelAnio = porAnio[anio];
     return `
-      <div class="ciclo-timeline-fila">
-        <div class="ciclo-timeline-punto"><i data-lucide="calendar-days" style="width:1em;height:1em;vertical-align:-2px"></i></div>
-        <div class="ciclo-timeline-contenido">
-          <div class="ciclo-anio-header">${anio} <span class="ciclo-anio-cuenta">${ciclosDelAnio.length} ciclo${ciclosDelAnio.length !== 1 ? "s" : ""}</span></div>
-          <div class="ciclo-timeline-items">
-            ${ciclosDelAnio.map(c => {
-              const local = c.local ? ' <span style="font-size:10px;color:var(--texto-dim)">(respaldo)</span>' : '';
-              const nombreEsc = escapeAttr(c.nombre);
-              return `
-                <div class="ciclo-chip">
-                  <span class="ciclo-chip-nombre">${c.nombre}${local}</span>
-                  <span class="ciclo-chip-acciones">
+      <div class="ciclo-anio-grupo">
+        <div class="ciclo-anio-header"><i data-lucide="calendar-days" style="width:1em;height:1em;vertical-align:-2px"></i> ${anio} <span class="ciclo-anio-cuenta">${ciclosDelAnio.length} ciclo${ciclosDelAnio.length !== 1 ? "s" : ""}</span></div>
+        <div class="ciclo-anio-fila">
+          ${ciclosDelAnio.map(c => {
+            const local = c.local ? ' <span style="font-size:10px;color:var(--texto-dim)">(respaldo)</span>' : '';
+            const nombreEsc = escapeAttr(c.nombre);
+            return `
+              <div class="prof-fila" style="flex:1;min-width:210px${c.actual ? ";border-color:var(--verde);box-shadow:0 0 0 1px var(--verde)" : ""}">
+                <div class="prof-fila-top">
+                  <div class="est-avatar">
+                    <div class="est-circulo" style="background:${colorEstudiante(c.nombre)}22;color:${colorEstudiante(c.nombre)}"><i data-lucide="calendar-days" style="width:1em;height:1em;vertical-align:-2px"></i></div>
+                    <div style="min-width:0;flex:1">
+                      <div class="est-nombre">${c.nombre}${local}${c.actual ? ' <span style="font-size:10px;font-weight:800;color:var(--verde)">• ACTUAL</span>' : ""}</div>
+                    </div>
+                  </div>
+                  <div class="acciones-celda">
+                    ${c.actual ? "" : `<button class="btn btn-outline" onclick="marcarCicloActual('${c.id}','${nombreEsc}',${c.local||false})" title="Marcar como el ciclo actual (el que el formulario preselecciona)"><i data-lucide="star" style="width:1em;height:1em;vertical-align:-2px"></i></button>`}
                     <button class="btn btn-outline" onclick="abrirModalCiclo('${c.id}','${nombreEsc}',${c.local||false})" title="Editar">Editar</button>
                     ${c.local ? "" : `<button class="btn btn-rojo" onclick="eliminarCiclo('${c.id}','${nombreEsc}')" title="Eliminar"><i data-lucide="trash-2" style="width:1em;height:1em;vertical-align:-2px"></i></button>`}
-                  </span>
-                </div>`;
-            }).join("")}
-          </div>
+                  </div>
+                </div>
+              </div>`;
+          }).join("")}
         </div>
       </div>`;
-  }).join("") + '</div>';
+  }).join("");
 }
 
 window.abrirModalCiclo = function(id = null, nombre = "", esLocal = false) {
@@ -4050,12 +4055,40 @@ window.guardarCiclo = async function() {
 };
 
 window.eliminarCiclo = async function(id, nombre) {
-  if (!confirm('¿Eliminar el ciclo "' + nombre + '"?')) return;
+  if (!(await confirmarPersonalizado('¿Eliminar el ciclo "' + nombre + '"?'))) return;
   try {
     await updateDoc(doc(db, "ciclos", id), { eliminado: true });
     mostrarToast("Ciclo eliminado");
     registrarAuditoria("ciclo", "eliminar", `Eliminó el ciclo "${nombre}"`);
   } catch(e) { mostrarToast("Error al eliminar", "rojo"); }
+};
+
+// Marca este ciclo como el "actual": el formulario del estudiante lo
+// preselecciona automaticamente en vez de adivinar por orden. Solo puede
+// haber uno marcado a la vez, asi que se desmarca cualquier otro.
+window.marcarCicloActual = async function(id, nombre, esLocal) {
+  const btn = event?.currentTarget;
+  if (btn) btn.disabled = true;
+  try {
+    let idReal = id;
+    if (esLocal) {
+      const ref = await addDoc(collection(db, "ciclos"), { nombre, actual: true });
+      idReal = ref.id;
+    }
+    const snap = await getDocs(collection(db, "ciclos"));
+    await Promise.all(snap.docs.map(d => {
+      const esEste = d.id === idReal;
+      if (esLocal && esEste) return Promise.resolve(); // ya se creo con actual:true
+      return updateDoc(doc(db, "ciclos", d.id), { actual: esEste });
+    }));
+    if (!esLocal) await updateDoc(doc(db, "ciclos", idReal), { actual: true });
+    mostrarToast(`✓ "${nombre}" marcado como el ciclo actual`);
+    registrarAuditoria("ciclo", "editar", `Marcó "${nombre}" como el ciclo actual`);
+  } catch(e) {
+    mostrarToast("Error al marcar el ciclo actual: " + e.message, "rojo");
+  } finally {
+    if (btn) btn.disabled = false;
+  }
 };
 
 document.getElementById("ciclo-buscar")?.addEventListener("input", renderCiclosCfg);
@@ -4222,7 +4255,7 @@ window.guardarUsuario = async function() {
 };
 
 window.eliminarUsuario = async function(id, nombre) {
-  if (!confirm(`¿Eliminar el acceso de "${nombre}"? Ya no podrá iniciar sesión en el panel.`)) return;
+  if (!(await confirmarPersonalizado(`¿Eliminar el acceso de "${nombre}"? Ya no podrá iniciar sesión en el panel.`))) return;
   try {
     await deleteDoc(doc(db, "usuarios", id));
     mostrarToast("Usuario eliminado, su acceso fue revocado");

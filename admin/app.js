@@ -3214,6 +3214,7 @@ function renderHerramientasCfg(lista) {
         </div>
         <div class="her-cuerpo">
           <div class="her-nombre">${escapeHtml(h.nombre)}${local}</div>
+          ${h.usoInterno ? `<div style="font-size:10px;color:#fbbf24;font-weight:700;margin-bottom:4px">🔒 Uso interno — no visible para estudiantes</div>` : ''}
           ${h.practica ? `<div style="font-size:10px;color:var(--verde);font-weight:700;margin-bottom:6px"><i data-lucide="tag" style="width:1em;height:1em;vertical-align:-2px"></i> ${h.practica}</div>` : ''}
           <div class="her-fila-stock">
             <span class="her-stock-badge">${cantidad} disp.</span>
@@ -3257,6 +3258,7 @@ window.abrirModalHerramienta = function(id = null, nombre = "", cantidad = 1, es
   document.getElementById("her-input-categoria").value = categoriaFinal;
   document.getElementById("her-input-cantidad").value = cantidad;
   document.getElementById("her-input-practica").value = datosActuales?.practica || "";
+  document.getElementById("her-input-uso-interno").checked = !!(datosActuales?.usoInterno);
   document.getElementById("her-input-foto").value = "";
   document.getElementById("her-progreso-wrap").style.display = "none";
   document.getElementById("her-foto-exito").style.display = "none";
@@ -3358,11 +3360,12 @@ window.guardarHerramienta = async function() {
   const categoria = document.getElementById("her-input-categoria").value;
   const cantidad  = parseInt(document.getElementById("her-input-cantidad").value) || 0;
   const practica  = document.getElementById("her-input-practica").value.trim();
+  const usoInterno = document.getElementById("her-input-uso-interno").checked;
   if (!nombre) { mostrarToast("Escribe el nombre de la herramienta", "rojo"); return; }
   const btn = document.getElementById("her-btn-guardar");
   btn.disabled = true; btn.textContent = "Guardando...";
   const nombreFinal = nombre;
-  const datos = { nombre: nombreFinal, cantidadDisponible: cantidad, categoria, practica };
+  const datos = { nombre: nombreFinal, cantidadDisponible: cantidad, categoria, practica, usoInterno };
   // No perder codigo/icono del respaldo al editar solo cantidad/nombre.
   if (herCfgCodigoLocal) datos.codigo = herCfgCodigoLocal;
   if (herCfgIconoLocal)  datos.icono  = herCfgIconoLocal;
@@ -3382,6 +3385,7 @@ window.guardarHerramienta = async function() {
       cambios.push(`cantidad: ${cantidadAntes} <i data-lucide="chevron-right" style="width:1em;height:1em;vertical-align:-2px"></i> ${cantidad} (${signo}${diferencia})`);
     }
     if ((antes.practica || "") !== (practica || "")) cambios.push(`práctica/combo: "${antes.practica || "ninguna"}" <i data-lucide="chevron-right" style="width:1em;height:1em;vertical-align:-2px"></i> "${practica || "ninguna"}"`);
+    if (!!antes.usoInterno !== usoInterno) cambios.push(usoInterno ? "marcada como uso interno (oculta para estudiantes)" : "ya no es de uso interno (vuelve a estar visible para estudiantes)");
     if (herFotoArchivo) cambios.push("foto actualizada");
     return cambios.length ? ` — ${cambios.join(" · ")}` : " (sin cambios detectados)";
   }

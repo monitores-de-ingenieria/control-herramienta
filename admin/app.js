@@ -2095,7 +2095,7 @@ function herFotoHtmlPorNombre(nombre, size = 32) {
 }
 
 window.anular = async function(id) {
-  if (!(await confirmarPersonalizado("¿Seguro que deseas anular esta solicitud?"))) return;
+  if (!confirm("¿Seguro que deseas anular esta solicitud?")) return;
   try {
     const s = todasSolicitudes.find(x => x.id === id);
     await updateDoc(doc(db, "solicitudes", id), { estado: "cancelada" });
@@ -3370,7 +3370,7 @@ window.guardarHerramienta = async function() {
 };
 
 window.eliminarHerramienta = async function(id, nombre, esLocal = false) {
-  if (!(await confirmarPersonalizado('¿Eliminar "' + nombre + '"? Esta acción no se puede deshacer.'))) return;
+  if (!confirm('¿Eliminar "' + nombre + '"? Esta acción no se puede deshacer.')) return;
   try {
     if (esLocal) {
       await addDoc(collection(db, "herramientas"), { nombre, cantidadDisponible: 0, eliminada: true, creadoEn: serverTimestamp() });
@@ -3875,7 +3875,7 @@ window.guardarProfesor = async function() {
 };
 
 window.eliminarProfesor = async function(id, nombre) {
-  if (!(await confirmarPersonalizado('¿Eliminar al profesor "' + nombre + '"?'))) return;
+  if (!confirm('¿Eliminar al profesor "' + nombre + '"?')) return;
   try {
     // "eliminado:true" en vez de borrar el documento — si no, un profesor
     // cuyo nombre coincide con el respaldo (PROFESORES_RESPALDO_ADMIN)
@@ -4003,7 +4003,7 @@ window.guardarLaboratorio = async function() {
 };
 
 window.eliminarLaboratorio = async function(id, nombre) {
-  if (!(await confirmarPersonalizado('¿Eliminar "' + nombre + '"?'))) return;
+  if (!confirm('¿Eliminar "' + nombre + '"?')) return;
   try {
     // "eliminado:true" en vez de borrar el documento — mismo motivo que en
     // Profesores: si no, uno cuyo nombre está en LABORATORIOS_RESPALDO_ADMIN
@@ -4160,7 +4160,7 @@ window.guardarCiclo = async function() {
 };
 
 window.eliminarCiclo = async function(id, nombre) {
-  if (!(await confirmarPersonalizado('¿Eliminar el ciclo "' + nombre + '"?'))) return;
+  if (!confirm('¿Eliminar el ciclo "' + nombre + '"?')) return;
   try {
     await updateDoc(doc(db, "ciclos", id), { eliminado: true });
     mostrarToast("Ciclo eliminado");
@@ -4347,7 +4347,7 @@ window.guardarUsuario = async function() {
 };
 
 window.eliminarUsuario = async function(id, nombre) {
-  if (!(await confirmarPersonalizado(`¿Eliminar el acceso de "${nombre}"? Ya no podrá iniciar sesión en el panel.`))) return;
+  if (!confirm(`¿Eliminar el acceso de "${nombre}"? Ya no podrá iniciar sesión en el panel.`)) return;
   try {
     await deleteDoc(doc(db, "usuarios", id));
     mostrarToast("Usuario eliminado, su acceso fue revocado");

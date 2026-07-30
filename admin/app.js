@@ -1361,7 +1361,12 @@ function renderReciboEntrega() {
 window.renderEntregaPickerGrid = function() {
   const wrap = document.getElementById("entrega-picker-grid");
   const q = (document.getElementById("entrega-picker-buscar").value || "").toLowerCase();
-  const lista = (_herListaActual || []).filter(h => h.nombre.toLowerCase().includes(q));
+  // Igual que el formulario público del estudiante: esto termina entregándose
+  // a un estudiante, así que las herramientas de uso interno del taller no
+  // deben ofrecerse aquí tampoco (a diferencia de los pickers de Herramientas
+  // Prestadas / Préstamos a Profesores, que sí son 100% internos y las deben
+  // seguir mostrando).
+  const lista = (_herListaActual || []).filter(h => !h.usoInterno && h.nombre.toLowerCase().includes(q));
   if (!lista.length) {
     wrap.innerHTML = '<div class="vacio" style="grid-column:1/-1"><div class="vacio-icono"><i data-lucide="toolbox" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>Sin resultados.</p></div>';
     return;
@@ -1824,7 +1829,9 @@ window.retornar = function(id) {
 window.renderRetornoPickerGrid = function() {
   const wrap = document.getElementById("retorno-picker-grid");
   const q = (document.getElementById("retorno-picker-buscar").value || "").toLowerCase();
-  const lista = (_herListaActual || []).filter(h => h.nombre.toLowerCase().includes(q));
+  // Misma razón que en renderEntregaPickerGrid: esto es una solicitud de
+  // estudiante, así que las herramientas de uso interno no aplican aquí.
+  const lista = (_herListaActual || []).filter(h => !h.usoInterno && h.nombre.toLowerCase().includes(q));
   if (!lista.length) { wrap.innerHTML = '<div class="vacio" style="grid-column:1/-1"><div class="vacio-icono"><i data-lucide="toolbox" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>Sin resultados.</p></div>'; return; }
   wrap.innerHTML = lista.map(h => {
     const fotoUrl = h.fotoUrl || (h.codigo ? '../img/herramientas/' + h.codigo + '.jpg' : '');

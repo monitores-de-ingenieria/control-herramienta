@@ -1112,6 +1112,12 @@
         style="width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--borde);border-radius:8px;color:var(--texto);font-size:14px">
     </div>
     <div class="modal-campo">
+      <label>Límite por estudiante, por solicitud</label>
+      <input type="number" id="her-input-limite-estudiante" min="1" placeholder="Vacío = 1 (por defecto)"
+        style="width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--borde);border-radius:8px;color:var(--texto);font-size:14px">
+      <small style="color:var(--texto-dim);font-size:11px">Normalmente un estudiante solo puede marcar 1 unidad de cada herramienta (nadie necesita 2 martillos). Sube este número para materiales gastables como electrodos, cinta, etc.</small>
+    </div>
+    <div class="modal-campo">
       <label>Práctica / combo (ej: Soldadura)</label>
       <input type="text" id="her-input-practica" list="her-practica-lista" placeholder="Dejar vacío = sin agrupar"
         style="width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--borde);border-radius:8px;color:var(--texto);font-size:14px">

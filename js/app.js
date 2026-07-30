@@ -35,7 +35,17 @@ document.getElementById("btn-ir-formulario").addEventListener("click", () => {
 });
 
 // ---- Formulario ----
-const MAX_POR_ESTUDIANTE = 1; // tope de unidades por herramienta, por solicitud
+const MAX_POR_ESTUDIANTE = 1; // tope de unidades por herramienta, por solicitud (por defecto)
+
+// Algunas herramientas (materiales gastables como electrodos, cinta, etc.)
+// necesitan permitir más de 1 unidad por estudiante. Eso se configura por
+// herramienta desde el panel admin ("Límite por estudiante"); si no se
+// configuró nada, se usa el tope general de 1.
+function limiteEstudiantePara(h) {
+  return (h && Number.isFinite(h.limitePorEstudiante) && h.limitePorEstudiante > 0)
+    ? h.limitePorEstudiante
+    : MAX_POR_ESTUDIANTE;
+}
 const form              = document.getElementById("form-solicitud");
 const selectProfesor    = document.getElementById("profesor");
 const selectLaboratorio = document.getElementById("laboratorio");
@@ -440,7 +450,7 @@ function agregarComboCompleto(practica) {
   tools.forEach(h => {
     const key = claveHerramienta(h);
     const max = Number.isFinite(h.cantidadDisponible) ? h.cantidadDisponible : 5;
-    const limite = Math.min(max, MAX_POR_ESTUDIANTE);
+    const limite = Math.min(max, limiteEstudiantePara(h));
     if (max === 0) { sinDisponibilidad.push(h.nombre); return; }
     if ((cantidadesSeleccionadas[key] || 0) >= limite) return; // ya está al tope
 
@@ -478,15 +488,16 @@ gridHerramientas.addEventListener("click", (e) => {
   const accion = btn.dataset.accion;
   const info = herramientasDisponibles.find(h => claveHerramienta(h) === codigo);
   const maxDisponible = info && Number.isFinite(info.cantidadDisponible) ? info.cantidadDisponible : 5;
-  const limite = Math.min(maxDisponible, MAX_POR_ESTUDIANTE);
+  const limiteEstudiante = limiteEstudiantePara(info);
+  const limite = Math.min(maxDisponible, limiteEstudiante);
 
   let cantidad = cantidadesSeleccionadas[codigo] || 0;
 
   if (accion === "sumar") {
     if (cantidad >= limite) {
-      const msg = maxDisponible < MAX_POR_ESTUDIANTE
+      const msg = maxDisponible < limiteEstudiante
         ? `Solo hay ${maxDisponible} disponible(s) de "${info ? info.nombre : codigo}".`
-        : `Máximo ${MAX_POR_ESTUDIANTE} unidad(es) de "${info ? info.nombre : codigo}" por estudiante.`;
+        : `Máximo ${limiteEstudiante} unidad(es) de "${info ? info.nombre : codigo}" por estudiante.`;
       mostrarError(msg);
       return;
     }
@@ -770,10 +781,18 @@ function abrirModalDuplicado(solicitud, herramientasDisp) {
     const codigo = btn.dataset.mcodigo;
     const accion = btn.dataset.maccion;
     const info = herramientasDisp.find(h => claveHerramienta(h) === codigo);
-    const max = info && Number.isFinite(info.cantidadDisponible) ? info.cantidadDisponible : 5;
+    const maxDisponible = info && Number.isFinite(info.cantidadDisponible) ? info.cantidadDisponible : 5;
+    const limiteEstudiante = limiteEstudiantePara(info);
+    const max = Math.min(maxDisponible, limiteEstudiante);
     let cant = cantidadesModalExtra[codigo] || 0;
     if (accion === "sumar") {
-      if (cant >= max) { mostrarError(`Solo hay ${max} disponible(s).`); return; }
+      if (cant >= max) {
+        const msg = maxDisponible < limiteEstudiante
+          ? `Solo hay ${maxDisponible} disponible(s).`
+          : `Máximo ${limiteEstudiante} unidad(es) por estudiante.`;
+        mostrarError(msg);
+        return;
+      }
       cant += 1;
     }
     if (accion === "restar" && cant > 0) cant -= 1;

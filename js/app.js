@@ -337,7 +337,8 @@ function crearTarjetaHerramienta(h) {
   card.innerHTML = `
     <div class="icono">
       <img src="${h.imagen}" alt="${h.nombre}"
-           onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'icono-respaldo',textContent:'${h.icono || "🔧"}'}))">
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="icono-respaldo" style="display:none">${h.icono || "🔧"}</div>
     </div>
     <div class="nombre">${h.nombre}</div>
     <div class="disponible">Disp. ${maxDisponible}</div>
@@ -694,7 +695,8 @@ function abrirModalDuplicado(solicitud, herramientasDisp) {
       <div class="tarjeta-herramienta">
         <div class="icono">
           <img src="${h.imagen}" alt="${h.nombre}"
-               onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'icono-respaldo',textContent:'${h.icono || "🔧"}'}))">
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="icono-respaldo" style="display:none">${h.icono || "🔧"}</div>
         </div>
         <div class="nombre">${h.nombre}</div>
         <div class="disponible">Disp. ${max}</div>

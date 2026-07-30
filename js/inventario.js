@@ -147,11 +147,19 @@ export async function cargarHerramientas() {
       h => !nombresFirestore.has(h.nombre.toLowerCase())
     );
 
+    // Uso interno del taller (marcadas desde el panel admin): son herramientas
+    // propias del taller que sí se prestan a profesores/departamentos por
+    // "Herramientas Prestadas" o "Préstamos a Profesores", pero que NO deben
+    // ofrecerse aquí en el formulario público del estudiante. Se filtran acá,
+    // en el único punto donde se arma el catálogo, para que tanto el grid
+    // principal como el modal de "adicionales" queden cubiertos por igual.
+    const enFirestoreVisible = enFirestore.filter(h => !h.usoInterno);
+
     // Combinar — las de Firestore usan su cantidad actualizada
     // y construimos la imagen priorizando la foto subida desde el panel
     // admin (fotoUrl), y solo si no hay foto personalizada caemos a la
     // ruta estática por código (img/herramientas/CODIGO.jpg).
-    const firestoreConImagen = enFirestore.map(h => ({
+    const firestoreConImagen = enFirestoreVisible.map(h => ({
       ...h,
       imagen: normalizarFotoUrl(h.fotoUrl) || (h.codigo ? `img/herramientas/${h.codigo}.jpg` : (h.imagen || '')),
       icono:  h.icono  || '🔧'

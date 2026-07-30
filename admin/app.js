@@ -1370,7 +1370,8 @@ window.renderEntregaPickerGrid = function() {
     const fotoUrl = h.fotoUrl || (h.codigo ? '../img/herramientas/' + h.codigo + '.jpg' : '');
     const icono = h.icono || '<i data-lucide="wrench" style="width:1em;height:1em;vertical-align:-2px"></i>';
     const foto = fotoUrl
-      ? `<img src="${fotoUrl}" onerror="this.parentNode.innerHTML='<span class=\'her-foto-fallback\'>${icono}</span>'">`
+      ? `<img src="${fotoUrl}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+         <span class="her-foto-fallback" style="display:none">${icono}</span>`
       : `<span class="her-foto-fallback">${icono}</span>`;
     const enRecibo = _entregaAdicionales[h.nombre] || 0;
     return `
@@ -1497,7 +1498,8 @@ window.renderPickerFotosSolicitud = function renderPickerFotosSolicitud() {
     const fotoUrl = h.fotoUrl || (h.codigo ? '../img/herramientas/' + h.codigo + '.jpg' : '');
     const icono = h.icono || '<i data-lucide="wrench" style="width:1em;height:1em;vertical-align:-2px"></i>';
     const foto = fotoUrl
-      ? `<img src="${fotoUrl}" onerror="this.parentNode.innerHTML='${icono}'">`
+      ? `<img src="${fotoUrl}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+         <span style="display:none">${icono}</span>`
       : icono;
     const cant = _solPickerCant[h.nombre] || 0;
     const nombreEsc = escapeAttr(h.nombre);
@@ -1828,7 +1830,8 @@ window.renderRetornoPickerGrid = function() {
     const fotoUrl = h.fotoUrl || (h.codigo ? '../img/herramientas/' + h.codigo + '.jpg' : '');
     const icono = h.icono || '<i data-lucide="wrench" style="width:1em;height:1em;vertical-align:-2px"></i>';
     const foto = fotoUrl
-      ? `<img src="${fotoUrl}" onerror="this.parentNode.innerHTML='<span class=\'her-foto-fallback\'>${icono}</span>'">`
+      ? `<img src="${fotoUrl}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+         <span class="her-foto-fallback" style="display:none">${icono}</span>`
       : `<span class="her-foto-fallback">${icono}</span>`;
     return `
       <div class="her-card" onclick="retornoPickerAgregar('${escapeAttr(h.nombre)}')" title="Agregar al recibo de retorno">
@@ -2281,7 +2284,8 @@ window.renderPPPickerGridInline = function() {
     const fotoUrl = h.fotoUrl || (h.codigo ? '../img/herramientas/' + h.codigo + '.jpg' : '');
     const icono = h.icono || '<i data-lucide="wrench" style="width:1em;height:1em;vertical-align:-2px"></i>';
     const foto = fotoUrl
-      ? `<img src="${fotoUrl}" onerror="this.parentNode.innerHTML='<span class=\'her-foto-fallback\'>${icono}</span>'">`
+      ? `<img src="${fotoUrl}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+         <span class="her-foto-fallback" style="display:none">${icono}</span>`
       : `<span class="her-foto-fallback">${icono}</span>`;
     const enRecibo = _ppNuevoCant[h.nombre] || 0;
     return `
@@ -2404,7 +2408,8 @@ function renderPickerFotosPP() {
     const fotoUrl = h.fotoUrl || (h.codigo ? '../img/herramientas/' + h.codigo + '.jpg' : '');
     const icono = h.icono || '<i data-lucide="wrench" style="width:1em;height:1em;vertical-align:-2px"></i>';
     const foto = fotoUrl
-      ? `<img src="${fotoUrl}" onerror="this.parentNode.innerHTML='<span class=\'her-foto-fallback\'>${icono}</span>'">`
+      ? `<img src="${fotoUrl}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+         <span class="her-foto-fallback" style="display:none">${icono}</span>`
       : `<span class="her-foto-fallback">${icono}</span>`;
     const cant = _ppPickerCant[h.nombre] || 0;
     const nombreEsc = escapeAttr(h.nombre);
@@ -2536,7 +2541,8 @@ window.renderPPRetornoPickerGrid = function() {
     const fotoUrl = h.fotoUrl || (h.codigo ? '../img/herramientas/' + h.codigo + '.jpg' : '');
     const icono = h.icono || '<i data-lucide="wrench" style="width:1em;height:1em;vertical-align:-2px"></i>';
     const foto = fotoUrl
-      ? `<img src="${fotoUrl}" onerror="this.parentNode.innerHTML='<span class=\'her-foto-fallback\'>${icono}</span>'">`
+      ? `<img src="${fotoUrl}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+         <span class="her-foto-fallback" style="display:none">${icono}</span>`
       : `<span class="her-foto-fallback">${icono}</span>`;
     return `
       <div class="her-card" onclick="ppRetornoAgregarAdicional('${escapeAttr(h.nombre)}')" title="Agregar al retorno">
@@ -2735,12 +2741,29 @@ window.renderExtPickerGrid = function() {
   const wrap = document.getElementById("ext-picker-grid");
   const q = (document.getElementById("ext-picker-buscar").value || "").toLowerCase();
   const lista = (_herListaActual || []).filter(h => h.nombre.toLowerCase().includes(q));
-  if (!lista.length) { wrap.innerHTML = '<div class="vacio" style="grid-column:1/-1"><div class="vacio-icono"><i data-lucide="toolbox" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>Sin resultados.</p></div>'; return; }
+
+  // Tarjeta fija para registrar sobre la marcha una herramienta que no está
+  // en el inventario (ej. una propia del taller, de uso interno) sin salir
+  // de este modal ni perder lo que ya se agregó al recibo.
+  const tarjetaNueva = `
+    <div class="her-card her-card-nueva" onclick="abrirModalHerramientaDesdeExtPicker()" title="Registrar una herramienta que no está en el inventario">
+      <div class="her-foto-wrap" style="display:flex;align-items:center;justify-content:center">
+        <span class="her-foto-fallback"><i data-lucide="plus" style="width:1.4em;height:1.4em;vertical-align:-2px"></i></span>
+      </div>
+      <div class="her-cuerpo"><div class="her-nombre">+ Nueva herramienta</div></div>
+    </div>`;
+
+  if (!lista.length) {
+    const mensaje = q ? `No se encontró "${escapeHtml(q)}".` : "Sin resultados.";
+    wrap.innerHTML = `<div class="vacio" style="grid-column:1/-1"><div class="vacio-icono"><i data-lucide="toolbox" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>${mensaje}</p></div>` + tarjetaNueva;
+    return;
+  }
   wrap.innerHTML = lista.map(h => {
     const fotoUrl = h.fotoUrl || (h.codigo ? '../img/herramientas/' + h.codigo + '.jpg' : '');
     const icono = h.icono || '<i data-lucide="wrench" style="width:1em;height:1em;vertical-align:-2px"></i>';
     const foto = fotoUrl
-      ? `<img src="${fotoUrl}" onerror="this.parentNode.innerHTML='<span class=\'her-foto-fallback\'>${icono}</span>'">`
+      ? `<img src="${fotoUrl}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+         <span class="her-foto-fallback" style="display:none">${icono}</span>`
       : `<span class="her-foto-fallback">${icono}</span>`;
     const enRecibo = _extNuevoCant[h.nombre] || 0;
     return `
@@ -2748,7 +2771,22 @@ window.renderExtPickerGrid = function() {
         <div class="her-foto-wrap">${foto}${enRecibo > 0 ? `<span class="her-ribbon popular">x${enRecibo}</span>` : ""}</div>
         <div class="her-cuerpo"><div class="her-nombre">${escapeHtml(h.nombre)}</div></div>
       </div>`;
-  }).join("");
+  }).join("") + tarjetaNueva;
+};
+
+// Se pone en true justo antes de abrir "Agregar herramienta" desde este picker,
+// y se lee en guardarHerramienta()/cerrarModalHerramienta() para saber si hay
+// que devolver el flujo al recibo del préstamo externo en vez de solo cerrar.
+let _volverAExtPickerTrasGuardarHerramienta = false;
+
+window.abrirModalHerramientaDesdeExtPicker = function() {
+  const nombreSugerido = document.getElementById("ext-picker-buscar").value.trim();
+  _volverAExtPickerTrasGuardarHerramienta = true;
+  abrirModalHerramienta(null, nombreSugerido, 1, false, "");
+  // Por defecto, marcada como uso interno: si la estás registrando desde acá
+  // es porque no estaba en el inventario, y lo más común en ese caso es que
+  // sea una herramienta propia del taller. Se puede desmarcar si no aplica.
+  document.getElementById("her-input-uso-interno").checked = true;
 };
 
 window.extNuevoAgregar = function(nombre) {
@@ -2897,7 +2935,8 @@ window.renderExtRetornoPickerGrid = function() {
     const fotoUrl = h.fotoUrl || (h.codigo ? '../img/herramientas/' + h.codigo + '.jpg' : '');
     const icono = h.icono || '<i data-lucide="wrench" style="width:1em;height:1em;vertical-align:-2px"></i>';
     const foto = fotoUrl
-      ? `<img src="${fotoUrl}" onerror="this.parentNode.innerHTML='<span class=\'her-foto-fallback\'>${icono}</span>'">`
+      ? `<img src="${fotoUrl}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+         <span class="her-foto-fallback" style="display:none">${icono}</span>`
       : `<span class="her-foto-fallback">${icono}</span>`;
     return `
       <div class="her-card" onclick="extRetornoAgregarAdicional('${escapeAttr(h.nombre)}')" title="Agregar al retorno">
@@ -3214,6 +3253,7 @@ function renderHerramientasCfg(lista) {
         </div>
         <div class="her-cuerpo">
           <div class="her-nombre">${escapeHtml(h.nombre)}${local}</div>
+          ${h.usoInterno ? `<div style="font-size:10px;color:#fbbf24;font-weight:700;margin-bottom:4px">🔒 Uso interno — no visible para estudiantes</div>` : ''}
           ${h.practica ? `<div style="font-size:10px;color:var(--verde);font-weight:700;margin-bottom:6px"><i data-lucide="tag" style="width:1em;height:1em;vertical-align:-2px"></i> ${h.practica}</div>` : ''}
           <div class="her-fila-stock">
             <span class="her-stock-badge">${cantidad} disp.</span>
@@ -3233,6 +3273,27 @@ let herFotoUrlActual = "";
 let herFotoUrlEsReal = false; // true = venía de fotoUrl en Firestore; false = ruta de respaldo armada solo para preview
 let herCfgCodigoLocal = null;
 let herCfgIconoLocal = null;
+let herIconoLimpiarFlag = false; // true = el admin pidió quitar el ícono de repuesto en este guardado
+
+function mostrarPreviewIconoHer() {
+  const wrap = document.getElementById("her-icono-repuesto-wrap");
+  const prev = document.getElementById("her-icono-repuesto-preview");
+  if (!wrap || !prev) return;
+  if (herCfgIconoLocal) {
+    wrap.style.display = "block";
+    prev.innerHTML = herCfgIconoLocal;
+  } else {
+    wrap.style.display = "none";
+    prev.innerHTML = "";
+  }
+}
+
+window.restablecerIconoHerramienta = function() {
+  herCfgIconoLocal = null;
+  herIconoLimpiarFlag = true;
+  mostrarPreviewIconoHer();
+  mostrarToast('<i data-lucide="circle-check" style="width:1em;height:1em;vertical-align:-2px"></i> Se quitará al guardar');
+};
 
 window.abrirModalHerramienta = function(id = null, nombre = "", cantidad = 1, esLocal = false, categoria = "") {
   herCfgEditar      = esLocal ? null : id;
@@ -3246,6 +3307,8 @@ window.abrirModalHerramienta = function(id = null, nombre = "", cantidad = 1, es
   const refLista = HERRAMIENTAS_LISTA.find(h => h.nombre.toLowerCase() === nombre.toLowerCase());
   herCfgCodigoLocal = datosActuales?.codigo || refLista?.codigo || null;
   herCfgIconoLocal  = datosActuales?.icono  || refLista?.icono  || null;
+  herIconoLimpiarFlag = false;
+  mostrarPreviewIconoHer();
   herFotoUrlEsReal  = !!datosActuales?.fotoUrl;
   herFotoUrlActual  = datosActuales?.fotoUrl || (herCfgCodigoLocal ? '../img/herramientas/' + herCfgCodigoLocal + '.jpg' : '') || "";
   document.getElementById("her-modal-titulo").textContent = id ? "Editar herramienta" : "+ Agregar herramienta";
@@ -3257,6 +3320,7 @@ window.abrirModalHerramienta = function(id = null, nombre = "", cantidad = 1, es
   document.getElementById("her-input-categoria").value = categoriaFinal;
   document.getElementById("her-input-cantidad").value = cantidad;
   document.getElementById("her-input-practica").value = datosActuales?.practica || "";
+  document.getElementById("her-input-uso-interno").checked = !!(datosActuales?.usoInterno);
   document.getElementById("her-input-foto").value = "";
   document.getElementById("her-progreso-wrap").style.display = "none";
   document.getElementById("her-foto-exito").style.display = "none";
@@ -3281,6 +3345,8 @@ function mostrarPreviewHer(url) {
 window.cerrarModalHerramienta = function() {
   document.getElementById("modal-herramienta-cfg").classList.remove("abierto");
   herCfgEditar = null;
+  herIconoLimpiarFlag = false;
+  _volverAExtPickerTrasGuardarHerramienta = false;
 };
 
 window.herFotoError = function(img) {
@@ -3358,14 +3424,19 @@ window.guardarHerramienta = async function() {
   const categoria = document.getElementById("her-input-categoria").value;
   const cantidad  = parseInt(document.getElementById("her-input-cantidad").value) || 0;
   const practica  = document.getElementById("her-input-practica").value.trim();
+  const usoInterno = document.getElementById("her-input-uso-interno").checked;
   if (!nombre) { mostrarToast("Escribe el nombre de la herramienta", "rojo"); return; }
   const btn = document.getElementById("her-btn-guardar");
   btn.disabled = true; btn.textContent = "Guardando...";
   const nombreFinal = nombre;
-  const datos = { nombre: nombreFinal, cantidadDisponible: cantidad, categoria, practica };
+  const datos = { nombre: nombreFinal, cantidadDisponible: cantidad, categoria, practica, usoInterno };
   // No perder codigo/icono del respaldo al editar solo cantidad/nombre.
   if (herCfgCodigoLocal) datos.codigo = herCfgCodigoLocal;
-  if (herCfgIconoLocal)  datos.icono  = herCfgIconoLocal;
+  if (herIconoLimpiarFlag) {
+    datos.icono = null; // fuerza a Firestore a borrar el valor viejo (roto)
+  } else if (herCfgIconoLocal) {
+    datos.icono = herCfgIconoLocal;
+  }
 
   // Para que la auditoría diga QUÉ cambió (no solo "editó la herramienta"),
   // comparamos contra los valores que tenía antes de este guardado.
@@ -3382,6 +3453,8 @@ window.guardarHerramienta = async function() {
       cambios.push(`cantidad: ${cantidadAntes} <i data-lucide="chevron-right" style="width:1em;height:1em;vertical-align:-2px"></i> ${cantidad} (${signo}${diferencia})`);
     }
     if ((antes.practica || "") !== (practica || "")) cambios.push(`práctica/combo: "${antes.practica || "ninguna"}" <i data-lucide="chevron-right" style="width:1em;height:1em;vertical-align:-2px"></i> "${practica || "ninguna"}"`);
+    if (!!antes.usoInterno !== usoInterno) cambios.push(usoInterno ? "marcada como uso interno (oculta para estudiantes)" : "ya no es de uso interno (vuelve a estar visible para estudiantes)");
+    if (herIconoLimpiarFlag && antes.icono) cambios.push("quitó el ícono de repuesto roto");
     if (herFotoArchivo) cambios.push("foto actualizada");
     return cambios.length ? ` — ${cambios.join(" · ")}` : " (sin cambios detectados)";
   }
@@ -3427,6 +3500,13 @@ window.guardarHerramienta = async function() {
       // que no vuelva a aparecer duplicado desde HERRAMIENTAS_LISTA.
       if (herCfgNombreLocal && herCfgNombreLocal !== nombreFinal) {
         await addDoc(collection(db, "herramientas"), { nombre: herCfgNombreLocal, cantidadDisponible: 0, eliminada: true, creadoEn: serverTimestamp() });
+      }
+      // Veníamos del picker de "Nueva salida" (Herramientas Prestadas): en vez
+      // de solo cerrar, agregamos la herramienta recién creada al recibo que
+      // ya se estaba armando, sin perder departamento/responsable ya escritos.
+      if (_volverAExtPickerTrasGuardarHerramienta) {
+        extNuevoAgregar(nombreFinal);
+        _volverAExtPickerTrasGuardarHerramienta = false;
       }
     }
     cerrarModalHerramienta();

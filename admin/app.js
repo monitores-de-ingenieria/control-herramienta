@@ -1370,7 +1370,7 @@ window.renderEntregaPickerGrid = function() {
     const fotoUrl = h.fotoUrl || (h.codigo ? '../img/herramientas/' + h.codigo + '.jpg' : '');
     const icono = h.icono || '<i data-lucide="wrench" style="width:1em;height:1em;vertical-align:-2px"></i>';
     const foto = fotoUrl
-      ? `<img src="${fotoUrl}" onerror="this.parentNode.innerHTML='<span class=\\'her-foto-fallback\\'>${icono}</span>'">`
+      ? `<img src="${fotoUrl}" onerror="this.parentNode.innerHTML='<span class=\'her-foto-fallback\'>${icono}</span>'">`
       : `<span class="her-foto-fallback">${icono}</span>`;
     const enRecibo = _entregaAdicionales[h.nombre] || 0;
     return `
@@ -1828,7 +1828,7 @@ window.renderRetornoPickerGrid = function() {
     const fotoUrl = h.fotoUrl || (h.codigo ? '../img/herramientas/' + h.codigo + '.jpg' : '');
     const icono = h.icono || '<i data-lucide="wrench" style="width:1em;height:1em;vertical-align:-2px"></i>';
     const foto = fotoUrl
-      ? `<img src="${fotoUrl}" onerror="this.parentNode.innerHTML='<span class=\\'her-foto-fallback\\'>${icono}</span>'">`
+      ? `<img src="${fotoUrl}" onerror="this.parentNode.innerHTML='<span class=\'her-foto-fallback\'>${icono}</span>'">`
       : `<span class="her-foto-fallback">${icono}</span>`;
     return `
       <div class="her-card" onclick="retornoPickerAgregar('${escapeAttr(h.nombre)}')" title="Agregar al recibo de retorno">
@@ -2281,7 +2281,7 @@ window.renderPPPickerGridInline = function() {
     const fotoUrl = h.fotoUrl || (h.codigo ? '../img/herramientas/' + h.codigo + '.jpg' : '');
     const icono = h.icono || '<i data-lucide="wrench" style="width:1em;height:1em;vertical-align:-2px"></i>';
     const foto = fotoUrl
-      ? `<img src="${fotoUrl}" onerror="this.parentNode.innerHTML='<span class=\\'her-foto-fallback\\'>${icono}</span>'">`
+      ? `<img src="${fotoUrl}" onerror="this.parentNode.innerHTML='<span class=\'her-foto-fallback\'>${icono}</span>'">`
       : `<span class="her-foto-fallback">${icono}</span>`;
     const enRecibo = _ppNuevoCant[h.nombre] || 0;
     return `
@@ -2404,7 +2404,7 @@ function renderPickerFotosPP() {
     const fotoUrl = h.fotoUrl || (h.codigo ? '../img/herramientas/' + h.codigo + '.jpg' : '');
     const icono = h.icono || '<i data-lucide="wrench" style="width:1em;height:1em;vertical-align:-2px"></i>';
     const foto = fotoUrl
-      ? `<img src="${fotoUrl}" onerror="this.parentNode.innerHTML='<span class=\\'her-foto-fallback\\'>${icono}</span>'">`
+      ? `<img src="${fotoUrl}" onerror="this.parentNode.innerHTML='<span class=\'her-foto-fallback\'>${icono}</span>'">`
       : `<span class="her-foto-fallback">${icono}</span>`;
     const cant = _ppPickerCant[h.nombre] || 0;
     const nombreEsc = escapeAttr(h.nombre);
@@ -2536,7 +2536,7 @@ window.renderPPRetornoPickerGrid = function() {
     const fotoUrl = h.fotoUrl || (h.codigo ? '../img/herramientas/' + h.codigo + '.jpg' : '');
     const icono = h.icono || '<i data-lucide="wrench" style="width:1em;height:1em;vertical-align:-2px"></i>';
     const foto = fotoUrl
-      ? `<img src="${fotoUrl}" onerror="this.parentNode.innerHTML='<span class=\\'her-foto-fallback\\'>${icono}</span>'">`
+      ? `<img src="${fotoUrl}" onerror="this.parentNode.innerHTML='<span class=\'her-foto-fallback\'>${icono}</span>'">`
       : `<span class="her-foto-fallback">${icono}</span>`;
     return `
       <div class="her-card" onclick="ppRetornoAgregarAdicional('${escapeAttr(h.nombre)}')" title="Agregar al retorno">
@@ -2740,7 +2740,7 @@ window.renderExtPickerGrid = function() {
     const fotoUrl = h.fotoUrl || (h.codigo ? '../img/herramientas/' + h.codigo + '.jpg' : '');
     const icono = h.icono || '<i data-lucide="wrench" style="width:1em;height:1em;vertical-align:-2px"></i>';
     const foto = fotoUrl
-      ? `<img src="${fotoUrl}" onerror="this.parentNode.innerHTML='<span class=\\'her-foto-fallback\\'>${icono}</span>'">`
+      ? `<img src="${fotoUrl}" onerror="this.parentNode.innerHTML='<span class=\'her-foto-fallback\'>${icono}</span>'">`
       : `<span class="her-foto-fallback">${icono}</span>`;
     const enRecibo = _extNuevoCant[h.nombre] || 0;
     return `
@@ -2897,7 +2897,7 @@ window.renderExtRetornoPickerGrid = function() {
     const fotoUrl = h.fotoUrl || (h.codigo ? '../img/herramientas/' + h.codigo + '.jpg' : '');
     const icono = h.icono || '<i data-lucide="wrench" style="width:1em;height:1em;vertical-align:-2px"></i>';
     const foto = fotoUrl
-      ? `<img src="${fotoUrl}" onerror="this.parentNode.innerHTML='<span class=\\'her-foto-fallback\\'>${icono}</span>'">`
+      ? `<img src="${fotoUrl}" onerror="this.parentNode.innerHTML='<span class=\'her-foto-fallback\'>${icono}</span>'">`
       : `<span class="her-foto-fallback">${icono}</span>`;
     return `
       <div class="her-card" onclick="extRetornoAgregarAdicional('${escapeAttr(h.nombre)}')" title="Agregar al retorno">

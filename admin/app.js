@@ -2776,7 +2776,7 @@ function extRenderTabla() {
     return `
       <div class="ext-card${p.tieneIncidencias ? ' con-incidencia' : ''}">
         <div class="ext-card-top">
-          <div class="ext-icono-depto"><i data-lucide="building-2"></i></div>
+          <div class="ext-icono-depto">${ini}</div>
           <div>
             <div class="pp-nombre">${escapeHtml(p.departamento) || "—"}</div>
             <div class="pp-lab">Responsable: ${escapeHtml(p.responsable) || "—"}</div>

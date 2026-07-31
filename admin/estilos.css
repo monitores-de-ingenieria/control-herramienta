@@ -1024,6 +1024,7 @@ tr:hover td { background: var(--hover); }
   width: 38px; height: 38px; border-radius: 8px; flex-shrink: 0;
   background: rgba(217,70,239,0.12); color: #d946ef;
   display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 16px;
 }
 .ext-perforado {
   height: 0; border-top: 1.5px dashed var(--borde); margin: 0 -15px 11px;

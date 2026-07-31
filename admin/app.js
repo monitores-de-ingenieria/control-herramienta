@@ -2755,8 +2755,8 @@ function extRenderTabla() {
               ? '<span class="badge badge-cancelada">Con incidencias</span>'
               : '<span class="badge badge-retornada">Devuelto</span>';
           const acciones = p.estado === "prestado"
-            ? `<button class="btn btn-azul" onclick="abrirRetornoExt('${p.id}')" title="Registrar el retorno de las herramientas"><i data-lucide=corner-up-left style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Retornar</button> <button class="btn btn-outline" onclick="generarConduce('${p.id}')" title="Generar el conduce de salida imprimible"><i data-lucide=file-text style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Conduce</button>`
-            : `<span style="font-size:11px;color:var(--verde);font-weight:700"><i data-lucide=check style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Completada</span> <button class="btn btn-outline" onclick="generarConduce('${p.id}')" title="Generar el conduce de salida imprimible"><i data-lucide=file-text style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Conduce</button>`;
+            ? `<button class="btn btn-azul" onclick="abrirRetornoExt('${p.id}')" title="Registrar el retorno de las herramientas"><i data-lucide=corner-up-left style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Retornar</button> <button class="btn btn-outline" onclick="generarConduce('${p.id}')" title="Generar el conduce de salida imprimible" style="padding:7px 9px"><i data-lucide=file-text style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i></button>`
+            : `<span style="font-size:11px;color:var(--verde);font-weight:700"><i data-lucide=check style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Completada</span> <button class="btn btn-outline" onclick="generarConduce('${p.id}')" title="Generar el conduce de salida imprimible" style="padding:7px 9px"><i data-lucide=file-text style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i></button>`;
           return `
             <tr>
               <td>
@@ -2769,7 +2769,7 @@ function extRenderTabla() {
               <td style="font-size:12px;color:var(--texto-dim);max-width:200px">${herramientasTexto}</td>
               <td style="font-size:12px;color:var(--texto-dim)">${fecha}</td>
               <td>${badgeEstado}</td>
-              <td><div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">${acciones}</div></td>
+              <td><div style="display:flex;gap:6px;flex-wrap:nowrap;align-items:center">${acciones}</div></td>
             </tr>`;
         }).join("")}
       </tbody>

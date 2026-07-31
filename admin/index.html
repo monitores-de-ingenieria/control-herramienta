@@ -12,6 +12,54 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="estilos.css">
+<style id="skeleton-estilos">
+/* ============================================================
+   SKELETON LOADERS
+   No subiste estilos.css, así que dejo esto inline aquí mismo.
+   Lo ideal es mover este bloque a estilos.css tal cual está.
+   Usa las mismas variables (--card2, --borde) que ya usa el
+   resto del panel, así que hereda el tema claro/oscuro solo.
+   ============================================================ */
+@keyframes skel-shimmer { 0% { background-position: -300px 0; } 100% { background-position: calc(300px + 100%) 0; } }
+
+.skel, .skel-num, .skel-line, .skel-circle, .skel-block, .skel-bar {
+  display: block;
+  background: linear-gradient(90deg, var(--card2) 25%, var(--borde) 37%, var(--card2) 63%);
+  background-size: 300px 100%;
+  animation: skel-shimmer 1.4s ease-in-out infinite;
+  border-radius: 6px;
+  color: transparent !important;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .skel, .skel-num, .skel-line, .skel-circle, .skel-block, .skel-bar { animation: none; opacity: .6; }
+}
+
+.skel-num { display: inline-block; width: 44px; height: 20px; vertical-align: middle; border-radius: 5px; }
+.skel-line { height: 11px; margin: 5px 0; border-radius: 4px; }
+.skel-circle { border-radius: 50%; flex-shrink: 0; }
+
+/* Filas tipo "lista" (icono + 2 líneas de texto) — dashboard, listas de config */
+.skel-lista .skel-fila { display: flex; align-items: center; gap: 10px; padding: 9px 4px; }
+.skel-lista .skel-fila + .skel-fila { border-top: 1px solid var(--borde); }
+.skel-fila-textos { flex: 1; min-width: 0; }
+
+/* Filas tipo "tabla" */
+.skel-tabla-fila { display: flex; align-items: center; gap: 16px; padding: 12px 16px; }
+.skel-tabla-fila + .skel-tabla-fila { border-top: 1px solid var(--borde); }
+.skel-tabla-fila .skel-line:last-child { margin-left: auto; }
+
+/* Tarjetas tipo grid (pp-grid, her-grid) */
+.skel-tarjeta { background: var(--card2); border: 1px solid var(--borde); border-radius: 10px; padding: 12px; }
+
+/* Gráficos tipo donut/gauge */
+.skel-donut-wrap { display: flex; align-items: center; gap: 18px; }
+.skel-donut-textos { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+
+/* Gráficos de barras / área */
+.skel-barras-wrap { display: flex; align-items: flex-end; gap: 8px; height: 120px; }
+.skel-barras-wrap .skel-bar { flex: 1; border-radius: 6px 6px 0 0; }
+</style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -156,27 +204,27 @@
         <div class="kpi-grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))" id="dash-kpis">
           <div class="kpi-card" data-vista="solicitudes" data-estado="pendiente" title="Ver solicitudes pendientes de hoy">
             <div class="kpi-icono"><i data-lucide="clipboard-list"></i></div>
-            <div><div class="kpi-label">Pendientes hoy</div><div class="kpi-numero" id="res-pendientes">—</div><div class="kpi-sub" id="res-pendientes-trend"></div></div>
+            <div><div class="kpi-label">Pendientes hoy</div><div class="kpi-numero" id="res-pendientes"><span class="skel skel-num" aria-hidden="true"></span></div><div class="kpi-sub" id="res-pendientes-trend"></div></div>
           </div>
           <div class="kpi-card" data-vista="solicitudes" data-estado="entregada" title="Ver solicitudes entregadas hoy">
             <div class="kpi-icono"><i data-lucide=check-circle style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i></div>
-            <div><div class="kpi-label">Entregadas hoy</div><div class="kpi-numero" id="res-prestadas">—</div><div class="kpi-sub" id="res-prestadas-trend"></div></div>
+            <div><div class="kpi-label">Entregadas hoy</div><div class="kpi-numero" id="res-prestadas"><span class="skel skel-num" aria-hidden="true"></span></div><div class="kpi-sub" id="res-prestadas-trend"></div></div>
           </div>
           <div class="kpi-card" data-vista="solicitudes" data-estado="retornada" title="Ver solicitudes retornadas hoy">
             <div class="kpi-icono"><i data-lucide=corner-up-left style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i></div>
-            <div><div class="kpi-label">Retornadas hoy</div><div class="kpi-numero" id="res-hoy">—</div><div class="kpi-sub" id="res-hoy-trend"></div></div>
+            <div><div class="kpi-label">Retornadas hoy</div><div class="kpi-numero" id="res-hoy"><span class="skel skel-num" aria-hidden="true"></span></div><div class="kpi-sub" id="res-hoy-trend"></div></div>
           </div>
           <div class="kpi-card" data-vista="solicitudes" data-estado="entregada" title="Herramientas actualmente prestadas y sin retornar">
             <div class="kpi-icono"><i data-lucide="toolbox"></i></div>
-            <div><div class="kpi-label">Herramientas afuera</div><div class="kpi-numero" id="res-afuera">—</div></div>
+            <div><div class="kpi-label">Herramientas afuera</div><div class="kpi-numero" id="res-afuera"><span class="skel skel-num" aria-hidden="true"></span></div></div>
           </div>
           <div class="kpi-card" data-vista="prestamos-prof" title="Ver profesores con préstamos activos">
             <div class="kpi-icono"><i data-lucide="graduation-cap"></i></div>
-            <div><div class="kpi-label">Profesores c/préstamo</div><div class="kpi-numero" id="res-prof-activos">—</div></div>
+            <div><div class="kpi-label">Profesores c/préstamo</div><div class="kpi-numero" id="res-prof-activos"><span class="skel skel-num" aria-hidden="true"></span></div></div>
           </div>
           <div class="kpi-card rojo" id="dash-kpi-incidencias" onclick="verIncidencias()" title="Ver incidencias abiertas">
             <div class="kpi-icono"><i data-lucide="triangle-alert"></i></div>
-            <div><div class="kpi-label">Incidencias abiertas</div><div class="kpi-numero" id="dash-incidencias">—</div></div>
+            <div><div class="kpi-label">Incidencias abiertas</div><div class="kpi-numero" id="dash-incidencias"><span class="skel skel-num" aria-hidden="true"></span></div></div>
           </div>
         </div>
 
@@ -184,17 +232,39 @@
 
           <div class="dash-panel">
             <div class="dash-panel-header"><h3><i data-lucide=pie-chart style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Solicitudes de hoy</h3><span style="font-size:10px;color:var(--texto-dim)">clic en un estado</span></div>
-            <div id="grafico-estado-hoy" style="padding:14px"><div class="cargando"><div class="spinner"></div>Calculando...</div></div>
+            <div id="grafico-estado-hoy" style="padding:14px"><div class="skel-donut-wrap" aria-hidden="true">
+              <span class="skel skel-circle" style="width:96px;height:96px"></span>
+              <span class="skel-donut-textos">
+                <span class="skel skel-line" style="width:85%"></span>
+                <span class="skel skel-line" style="width:60%"></span>
+                <span class="skel skel-line" style="width:70%"></span>
+                <span class="skel skel-line" style="width:45%"></span>
+              </span>
+            </div></div>
           </div>
 
           <div class="dash-panel">
             <div class="dash-panel-header"><h3><i data-lucide=tag style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Categorías más usadas</h3><span style="font-size:10px;color:var(--texto-dim)">clic para filtrar</span></div>
-            <div id="grafico-categorias" style="padding:14px"><div class="cargando"><div class="spinner"></div>Calculando...</div></div>
+            <div id="grafico-categorias" style="padding:14px"><div class="skel-donut-wrap" aria-hidden="true">
+              <span class="skel skel-circle" style="width:96px;height:96px"></span>
+              <span class="skel-donut-textos">
+                <span class="skel skel-line" style="width:75%"></span>
+                <span class="skel skel-line" style="width:55%"></span>
+                <span class="skel skel-line" style="width:65%"></span>
+                <span class="skel skel-line" style="width:40%"></span>
+              </span>
+            </div></div>
           </div>
 
           <div class="dash-panel">
             <div class="dash-panel-header"><h3><i data-lucide=target style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Tasa de incidencias</h3><span style="font-size:10px;color:var(--texto-dim)">clic para ver</span></div>
-            <div id="grafico-gauge-incidencias" style="padding:14px;cursor:pointer" onclick="verIncidencias()" title="Ver incidencias abiertas"><div class="cargando"><div class="spinner"></div>Calculando...</div></div>
+            <div id="grafico-gauge-incidencias" style="padding:14px;cursor:pointer" onclick="verIncidencias()" title="Ver incidencias abiertas"><div class="skel-donut-wrap" aria-hidden="true">
+              <span class="skel skel-circle" style="width:96px;height:96px"></span>
+              <span class="skel-donut-textos">
+                <span class="skel skel-line" style="width:65%"></span>
+                <span class="skel skel-line" style="width:40%"></span>
+              </span>
+            </div></div>
           </div>
 
         </div>
@@ -203,12 +273,26 @@
 
           <div class="dash-panel">
             <div class="dash-panel-header"><h3><i data-lucide=trending-up style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Tendencia — últimos 7 días</h3><span style="font-size:10px;color:var(--texto-dim)">clic en un día</span></div>
-            <div id="grafico-semana" style="padding:14px"><div class="cargando"><div class="spinner"></div>Calculando...</div></div>
+            <div id="grafico-semana" style="padding:14px"><div class="skel-barras-wrap" aria-hidden="true">
+              <span class="skel skel-bar" style="height:45%"></span>
+              <span class="skel skel-bar" style="height:65%"></span>
+              <span class="skel skel-bar" style="height:38%"></span>
+              <span class="skel skel-bar" style="height:80%"></span>
+              <span class="skel skel-bar" style="height:55%"></span>
+              <span class="skel skel-bar" style="height:70%"></span>
+              <span class="skel skel-bar" style="height:50%"></span>
+            </div></div>
           </div>
 
           <div class="dash-panel">
             <div class="dash-panel-header"><h3>Herramientas más solicitadas</h3><span style="font-size:10px;color:var(--texto-dim)">clic para abrir</span></div>
-            <div id="grafico-herramientas" style="padding:14px"><div class="cargando"><div class="spinner"></div>Calculando...</div></div>
+            <div id="grafico-herramientas" style="padding:14px"><div class="skel-barras-wrap" aria-hidden="true">
+              <span class="skel skel-bar" style="height:75%"></span>
+              <span class="skel skel-bar" style="height:55%"></span>
+              <span class="skel skel-bar" style="height:90%"></span>
+              <span class="skel skel-bar" style="height:40%"></span>
+              <span class="skel skel-bar" style="height:60%"></span>
+            </div></div>
           </div>
 
         </div>
@@ -217,12 +301,20 @@
 
           <div class="dash-panel">
             <div class="dash-panel-header"><h3>Stock bajo</h3><span style="font-size:10px;color:var(--texto-dim)">clic para gestionar</span></div>
-            <div id="dash-stock-bajo" style="padding:12px"><div class="cargando"><div class="spinner"></div>Calculando...</div></div>
+            <div id="dash-stock-bajo" style="padding:12px"><div class="skel-lista" aria-hidden="true">
+              <div class="skel-fila"><span class="skel skel-circle" style="width:34px;height:34px"></span><span class="skel-fila-textos"><span class="skel skel-line" style="width:55%"></span><span class="skel skel-line" style="width:30%;height:8px"></span></span></div>
+              <div class="skel-fila"><span class="skel skel-circle" style="width:34px;height:34px"></span><span class="skel-fila-textos"><span class="skel skel-line" style="width:65%"></span><span class="skel skel-line" style="width:35%;height:8px"></span></span></div>
+              <div class="skel-fila"><span class="skel skel-circle" style="width:34px;height:34px"></span><span class="skel-fila-textos"><span class="skel skel-line" style="width:45%"></span><span class="skel skel-line" style="width:25%;height:8px"></span></span></div>
+            </div></div>
           </div>
 
           <div class="dash-panel">
             <div class="dash-panel-header"><h3><i data-lucide=clock style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Actividad reciente</h3><span style="font-size:10px;color:var(--texto-dim)">últimos movimientos</span></div>
-            <div id="dash-actividad" style="padding:12px"><div class="cargando"><div class="spinner"></div>Calculando...</div></div>
+            <div id="dash-actividad" style="padding:12px"><div class="skel-lista" aria-hidden="true">
+              <div class="skel-fila"><span class="skel skel-circle" style="width:30px;height:30px"></span><span class="skel-fila-textos"><span class="skel skel-line" style="width:70%"></span></span><span class="skel skel-line" style="width:36px;height:8px"></span></div>
+              <div class="skel-fila"><span class="skel skel-circle" style="width:30px;height:30px"></span><span class="skel-fila-textos"><span class="skel skel-line" style="width:55%"></span></span><span class="skel skel-line" style="width:36px;height:8px"></span></div>
+              <div class="skel-fila"><span class="skel skel-circle" style="width:30px;height:30px"></span><span class="skel-fila-textos"><span class="skel skel-line" style="width:60%"></span></span><span class="skel skel-line" style="width:36px;height:8px"></span></div>
+            </div></div>
           </div>
 
         </div>
@@ -281,7 +373,13 @@
           </div>
 
           <div id="tabla-solicitudes-wrap">
-            <div class="cargando"><div class="spinner"></div>Cargando solicitudes...</div>
+            <div class="skel-tabla" aria-hidden="true">
+              <div class="skel-tabla-fila"><span class="skel skel-line" style="width:18px"></span><span class="skel skel-line" style="width:64px"></span><span class="skel skel-circle" style="width:28px;height:28px"></span><span class="skel skel-line" style="width:130px"></span><span class="skel skel-line" style="width:90px"></span><span class="skel skel-line" style="width:90px"></span><span class="skel skel-line" style="width:70px"></span><span class="skel skel-line" style="width:64px"></span><span class="skel skel-line" style="width:78px"></span></div>
+              <div class="skel-tabla-fila" style="opacity:.85"><span class="skel skel-line" style="width:18px"></span><span class="skel skel-line" style="width:64px"></span><span class="skel skel-circle" style="width:28px;height:28px"></span><span class="skel skel-line" style="width:110px"></span><span class="skel skel-line" style="width:80px"></span><span class="skel skel-line" style="width:100px"></span><span class="skel skel-line" style="width:70px"></span><span class="skel skel-line" style="width:64px"></span><span class="skel skel-line" style="width:78px"></span></div>
+              <div class="skel-tabla-fila" style="opacity:.7"><span class="skel skel-line" style="width:18px"></span><span class="skel skel-line" style="width:64px"></span><span class="skel skel-circle" style="width:28px;height:28px"></span><span class="skel skel-line" style="width:140px"></span><span class="skel skel-line" style="width:95px"></span><span class="skel skel-line" style="width:85px"></span><span class="skel skel-line" style="width:70px"></span><span class="skel skel-line" style="width:64px"></span><span class="skel skel-line" style="width:78px"></span></div>
+              <div class="skel-tabla-fila" style="opacity:.55"><span class="skel skel-line" style="width:18px"></span><span class="skel skel-line" style="width:64px"></span><span class="skel skel-circle" style="width:28px;height:28px"></span><span class="skel skel-line" style="width:100px"></span><span class="skel skel-line" style="width:90px"></span><span class="skel skel-line" style="width:90px"></span><span class="skel skel-line" style="width:70px"></span><span class="skel skel-line" style="width:64px"></span><span class="skel skel-line" style="width:78px"></span></div>
+              <div class="skel-tabla-fila" style="opacity:.4"><span class="skel skel-line" style="width:18px"></span><span class="skel skel-line" style="width:64px"></span><span class="skel skel-circle" style="width:28px;height:28px"></span><span class="skel skel-line" style="width:120px"></span><span class="skel skel-line" style="width:85px"></span><span class="skel skel-line" style="width:95px"></span><span class="skel skel-line" style="width:70px"></span><span class="skel skel-line" style="width:64px"></span><span class="skel skel-line" style="width:78px"></span></div>
+            </div>
           </div>
           <div class="paginacion" id="paginacion-sol">
             <span id="pag-info"></span>
@@ -314,7 +412,50 @@
         </div>
 
         <div id="pp-tabla-wrap" class="pp-grid">
-          <div class="cargando"><div class="spinner"></div>Cargando préstamos...</div>
+          <div class="skel-tarjeta" aria-hidden="true">
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
+              <span class="skel skel-circle" style="width:38px;height:38px"></span>
+              <span style="flex:1;min-width:0"><span class="skel skel-line" style="width:65%"></span><span class="skel skel-line" style="width:40%;height:8px"></span></span>
+            </div>
+            <div style="display:flex;gap:6px;margin-bottom:10px">
+              <span class="skel skel-line" style="width:60px;height:18px;border-radius:20px"></span>
+              <span class="skel skel-line" style="width:50px;height:18px;border-radius:20px"></span>
+            </div>
+            <span class="skel skel-line" style="width:50%;height:8px"></span>
+          </div>
+          <div class="skel-tarjeta" aria-hidden="true">
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
+              <span class="skel skel-circle" style="width:38px;height:38px"></span>
+              <span style="flex:1;min-width:0"><span class="skel skel-line" style="width:65%"></span><span class="skel skel-line" style="width:40%;height:8px"></span></span>
+            </div>
+            <div style="display:flex;gap:6px;margin-bottom:10px">
+              <span class="skel skel-line" style="width:60px;height:18px;border-radius:20px"></span>
+              <span class="skel skel-line" style="width:50px;height:18px;border-radius:20px"></span>
+            </div>
+            <span class="skel skel-line" style="width:50%;height:8px"></span>
+          </div>
+          <div class="skel-tarjeta" aria-hidden="true">
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
+              <span class="skel skel-circle" style="width:38px;height:38px"></span>
+              <span style="flex:1;min-width:0"><span class="skel skel-line" style="width:65%"></span><span class="skel skel-line" style="width:40%;height:8px"></span></span>
+            </div>
+            <div style="display:flex;gap:6px;margin-bottom:10px">
+              <span class="skel skel-line" style="width:60px;height:18px;border-radius:20px"></span>
+              <span class="skel skel-line" style="width:50px;height:18px;border-radius:20px"></span>
+            </div>
+            <span class="skel skel-line" style="width:50%;height:8px"></span>
+          </div>
+          <div class="skel-tarjeta" aria-hidden="true">
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
+              <span class="skel skel-circle" style="width:38px;height:38px"></span>
+              <span style="flex:1;min-width:0"><span class="skel skel-line" style="width:65%"></span><span class="skel skel-line" style="width:40%;height:8px"></span></span>
+            </div>
+            <div style="display:flex;gap:6px;margin-bottom:10px">
+              <span class="skel skel-line" style="width:60px;height:18px;border-radius:20px"></span>
+              <span class="skel skel-line" style="width:50px;height:18px;border-radius:20px"></span>
+            </div>
+            <span class="skel skel-line" style="width:50%;height:8px"></span>
+          </div>
         </div>
       </div>
 
@@ -342,7 +483,50 @@
         </div>
 
         <div id="ext-tabla-wrap" class="pp-grid">
-          <div class="cargando"><div class="spinner"></div>Cargando préstamos...</div>
+          <div class="skel-tarjeta" aria-hidden="true">
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
+              <span class="skel skel-circle" style="width:38px;height:38px"></span>
+              <span style="flex:1;min-width:0"><span class="skel skel-line" style="width:65%"></span><span class="skel skel-line" style="width:40%;height:8px"></span></span>
+            </div>
+            <div style="display:flex;gap:6px;margin-bottom:10px">
+              <span class="skel skel-line" style="width:60px;height:18px;border-radius:20px"></span>
+              <span class="skel skel-line" style="width:50px;height:18px;border-radius:20px"></span>
+            </div>
+            <span class="skel skel-line" style="width:50%;height:8px"></span>
+          </div>
+          <div class="skel-tarjeta" aria-hidden="true">
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
+              <span class="skel skel-circle" style="width:38px;height:38px"></span>
+              <span style="flex:1;min-width:0"><span class="skel skel-line" style="width:65%"></span><span class="skel skel-line" style="width:40%;height:8px"></span></span>
+            </div>
+            <div style="display:flex;gap:6px;margin-bottom:10px">
+              <span class="skel skel-line" style="width:60px;height:18px;border-radius:20px"></span>
+              <span class="skel skel-line" style="width:50px;height:18px;border-radius:20px"></span>
+            </div>
+            <span class="skel skel-line" style="width:50%;height:8px"></span>
+          </div>
+          <div class="skel-tarjeta" aria-hidden="true">
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
+              <span class="skel skel-circle" style="width:38px;height:38px"></span>
+              <span style="flex:1;min-width:0"><span class="skel skel-line" style="width:65%"></span><span class="skel skel-line" style="width:40%;height:8px"></span></span>
+            </div>
+            <div style="display:flex;gap:6px;margin-bottom:10px">
+              <span class="skel skel-line" style="width:60px;height:18px;border-radius:20px"></span>
+              <span class="skel skel-line" style="width:50px;height:18px;border-radius:20px"></span>
+            </div>
+            <span class="skel skel-line" style="width:50%;height:8px"></span>
+          </div>
+          <div class="skel-tarjeta" aria-hidden="true">
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
+              <span class="skel skel-circle" style="width:38px;height:38px"></span>
+              <span style="flex:1;min-width:0"><span class="skel skel-line" style="width:65%"></span><span class="skel skel-line" style="width:40%;height:8px"></span></span>
+            </div>
+            <div style="display:flex;gap:6px;margin-bottom:10px">
+              <span class="skel skel-line" style="width:60px;height:18px;border-radius:20px"></span>
+              <span class="skel skel-line" style="width:50px;height:18px;border-radius:20px"></span>
+            </div>
+            <span class="skel skel-line" style="width:50%;height:8px"></span>
+          </div>
         </div>
       </div>
 
@@ -371,7 +555,36 @@
         </div>
 
         <div id="her-cfg-wrap" class="her-grid">
-          <div class="cargando"><div class="spinner"></div>Cargando herramientas...</div>
+          <div class="skel-tarjeta" aria-hidden="true">
+            <span class="skel skel-block" style="display:block;width:100%;height:70px;margin-bottom:10px;border-radius:8px"></span>
+            <span class="skel skel-line" style="width:75%"></span>
+            <span class="skel skel-line" style="width:40%;height:8px"></span>
+          </div>
+          <div class="skel-tarjeta" aria-hidden="true">
+            <span class="skel skel-block" style="display:block;width:100%;height:70px;margin-bottom:10px;border-radius:8px"></span>
+            <span class="skel skel-line" style="width:75%"></span>
+            <span class="skel skel-line" style="width:40%;height:8px"></span>
+          </div>
+          <div class="skel-tarjeta" aria-hidden="true">
+            <span class="skel skel-block" style="display:block;width:100%;height:70px;margin-bottom:10px;border-radius:8px"></span>
+            <span class="skel skel-line" style="width:75%"></span>
+            <span class="skel skel-line" style="width:40%;height:8px"></span>
+          </div>
+          <div class="skel-tarjeta" aria-hidden="true">
+            <span class="skel skel-block" style="display:block;width:100%;height:70px;margin-bottom:10px;border-radius:8px"></span>
+            <span class="skel skel-line" style="width:75%"></span>
+            <span class="skel skel-line" style="width:40%;height:8px"></span>
+          </div>
+          <div class="skel-tarjeta" aria-hidden="true">
+            <span class="skel skel-block" style="display:block;width:100%;height:70px;margin-bottom:10px;border-radius:8px"></span>
+            <span class="skel skel-line" style="width:75%"></span>
+            <span class="skel skel-line" style="width:40%;height:8px"></span>
+          </div>
+          <div class="skel-tarjeta" aria-hidden="true">
+            <span class="skel skel-block" style="display:block;width:100%;height:70px;margin-bottom:10px;border-radius:8px"></span>
+            <span class="skel skel-line" style="width:75%"></span>
+            <span class="skel skel-line" style="width:40%;height:8px"></span>
+          </div>
         </div>
       </div>
 
@@ -392,7 +605,10 @@
           </div>
           <div class="prof-resumen" id="lab-resumen"></div>
           <div id="lab-cfg-wrap">
-            <div class="cargando"><div class="spinner"></div>Cargando laboratorios...</div>
+            <div class="skel-fila" style="border:1px solid var(--borde);border-radius:8px;margin-bottom:8px;padding:10px 12px"><span class="skel skel-circle" style="width:30px;height:30px"></span><span class="skel-fila-textos"><span class="skel skel-line" style="width:60%"></span><span class="skel skel-line" style="width:35%;height:8px"></span></span><span class="skel skel-line" style="width:60px;height:22px;border-radius:6px"></span></div>
+            <div class="skel-fila" style="border:1px solid var(--borde);border-radius:8px;margin-bottom:8px;padding:10px 12px"><span class="skel skel-circle" style="width:30px;height:30px"></span><span class="skel-fila-textos"><span class="skel skel-line" style="width:45%"></span><span class="skel skel-line" style="width:28%;height:8px"></span></span><span class="skel skel-line" style="width:60px;height:22px;border-radius:6px"></span></div>
+            <div class="skel-fila" style="border:1px solid var(--borde);border-radius:8px;margin-bottom:8px;padding:10px 12px"><span class="skel skel-circle" style="width:30px;height:30px"></span><span class="skel-fila-textos"><span class="skel skel-line" style="width:55%"></span><span class="skel skel-line" style="width:30%;height:8px"></span></span><span class="skel skel-line" style="width:60px;height:22px;border-radius:6px"></span></div>
+            <div class="skel-fila" style="border:1px solid var(--borde);border-radius:8px;margin-bottom:8px;padding:10px 12px"><span class="skel skel-circle" style="width:30px;height:30px"></span><span class="skel-fila-textos"><span class="skel skel-line" style="width:40%"></span><span class="skel skel-line" style="width:25%;height:8px"></span></span><span class="skel skel-line" style="width:60px;height:22px;border-radius:6px"></span></div>
           </div>
         </div>
       </div>
@@ -414,7 +630,10 @@
           </div>
           <div class="prof-resumen" id="ciclo-resumen"></div>
           <div id="ciclo-cfg-wrap" class="prof-lista">
-            <div class="cargando"><div class="spinner"></div>Cargando ciclos...</div>
+            <div class="skel-fila" style="border:1px solid var(--borde);border-radius:8px;margin-bottom:8px;padding:10px 12px"><span class="skel skel-circle" style="width:30px;height:30px"></span><span class="skel-fila-textos"><span class="skel skel-line" style="width:60%"></span><span class="skel skel-line" style="width:35%;height:8px"></span></span><span class="skel skel-line" style="width:60px;height:22px;border-radius:6px"></span></div>
+            <div class="skel-fila" style="border:1px solid var(--borde);border-radius:8px;margin-bottom:8px;padding:10px 12px"><span class="skel skel-circle" style="width:30px;height:30px"></span><span class="skel-fila-textos"><span class="skel skel-line" style="width:45%"></span><span class="skel skel-line" style="width:28%;height:8px"></span></span><span class="skel skel-line" style="width:60px;height:22px;border-radius:6px"></span></div>
+            <div class="skel-fila" style="border:1px solid var(--borde);border-radius:8px;margin-bottom:8px;padding:10px 12px"><span class="skel skel-circle" style="width:30px;height:30px"></span><span class="skel-fila-textos"><span class="skel skel-line" style="width:55%"></span><span class="skel skel-line" style="width:30%;height:8px"></span></span><span class="skel skel-line" style="width:60px;height:22px;border-radius:6px"></span></div>
+            <div class="skel-fila" style="border:1px solid var(--borde);border-radius:8px;margin-bottom:8px;padding:10px 12px"><span class="skel skel-circle" style="width:30px;height:30px"></span><span class="skel-fila-textos"><span class="skel skel-line" style="width:40%"></span><span class="skel skel-line" style="width:25%;height:8px"></span></span><span class="skel skel-line" style="width:60px;height:22px;border-radius:6px"></span></div>
           </div>
         </div>
       </div>
@@ -466,7 +685,13 @@
           </div>
 
           <div id="hist-tabla-wrap">
-            <div class="cargando"><div class="spinner"></div>Cargando historial...</div>
+            <div class="skel-tabla" aria-hidden="true">
+              <div class="skel-tabla-fila"><span class="skel skel-line" style="width:64px"></span><span class="skel skel-line" style="width:28px"></span><span class="skel skel-line" style="width:130px"></span><span class="skel skel-line" style="width:90px"></span><span class="skel skel-line" style="width:90px"></span><span class="skel skel-line" style="width:70px"></span></div>
+              <div class="skel-tabla-fila" style="opacity:0.85"><span class="skel skel-line" style="width:64px"></span><span class="skel skel-line" style="width:28px"></span><span class="skel skel-line" style="width:110px"></span><span class="skel skel-line" style="width:80px"></span><span class="skel skel-line" style="width:100px"></span><span class="skel skel-line" style="width:70px"></span></div>
+              <div class="skel-tabla-fila" style="opacity:0.7"><span class="skel skel-line" style="width:64px"></span><span class="skel skel-line" style="width:28px"></span><span class="skel skel-line" style="width:140px"></span><span class="skel skel-line" style="width:95px"></span><span class="skel skel-line" style="width:85px"></span><span class="skel skel-line" style="width:70px"></span></div>
+              <div class="skel-tabla-fila" style="opacity:0.55"><span class="skel skel-line" style="width:64px"></span><span class="skel skel-line" style="width:28px"></span><span class="skel skel-line" style="width:100px"></span><span class="skel skel-line" style="width:90px"></span><span class="skel skel-line" style="width:90px"></span><span class="skel skel-line" style="width:70px"></span></div>
+              <div class="skel-tabla-fila" style="opacity:0.4"><span class="skel skel-line" style="width:64px"></span><span class="skel skel-line" style="width:28px"></span><span class="skel skel-line" style="width:120px"></span><span class="skel skel-line" style="width:85px"></span><span class="skel skel-line" style="width:95px"></span><span class="skel skel-line" style="width:70px"></span></div>
+            </div>
           </div>
           <div class="paginacion" id="hist-paginacion">
             <span id="hist-pag-info"></span>
@@ -505,7 +730,10 @@
           </div>
           <div class="prof-resumen" id="prof-resumen"></div>
           <div id="prof-cfg-wrap" class="prof-lista">
-            <div class="cargando"><div class="spinner"></div>Cargando profesores...</div>
+            <div class="skel-fila" style="border:1px solid var(--borde);border-radius:8px;margin-bottom:8px;padding:10px 12px"><span class="skel skel-circle" style="width:30px;height:30px"></span><span class="skel-fila-textos"><span class="skel skel-line" style="width:60%"></span><span class="skel skel-line" style="width:35%;height:8px"></span></span><span class="skel skel-line" style="width:60px;height:22px;border-radius:6px"></span></div>
+            <div class="skel-fila" style="border:1px solid var(--borde);border-radius:8px;margin-bottom:8px;padding:10px 12px"><span class="skel skel-circle" style="width:30px;height:30px"></span><span class="skel-fila-textos"><span class="skel skel-line" style="width:45%"></span><span class="skel skel-line" style="width:28%;height:8px"></span></span><span class="skel skel-line" style="width:60px;height:22px;border-radius:6px"></span></div>
+            <div class="skel-fila" style="border:1px solid var(--borde);border-radius:8px;margin-bottom:8px;padding:10px 12px"><span class="skel skel-circle" style="width:30px;height:30px"></span><span class="skel-fila-textos"><span class="skel skel-line" style="width:55%"></span><span class="skel skel-line" style="width:30%;height:8px"></span></span><span class="skel skel-line" style="width:60px;height:22px;border-radius:6px"></span></div>
+            <div class="skel-fila" style="border:1px solid var(--borde);border-radius:8px;margin-bottom:8px;padding:10px 12px"><span class="skel skel-circle" style="width:30px;height:30px"></span><span class="skel-fila-textos"><span class="skel skel-line" style="width:40%"></span><span class="skel skel-line" style="width:25%;height:8px"></span></span><span class="skel skel-line" style="width:60px;height:22px;border-radius:6px"></span></div>
           </div>
         </div>
       </div>
@@ -527,7 +755,10 @@
           </div>
           <div class="usr-resumen" id="usr-resumen"></div>
           <div id="usr-cfg-wrap" class="usr-lista">
-            <div class="cargando"><div class="spinner"></div>Cargando usuarios...</div>
+            <div class="skel-fila" style="border:1px solid var(--borde);border-radius:8px;margin-bottom:8px;padding:10px 12px"><span class="skel skel-circle" style="width:30px;height:30px"></span><span class="skel-fila-textos"><span class="skel skel-line" style="width:60%"></span><span class="skel skel-line" style="width:35%;height:8px"></span></span><span class="skel skel-line" style="width:60px;height:22px;border-radius:6px"></span></div>
+            <div class="skel-fila" style="border:1px solid var(--borde);border-radius:8px;margin-bottom:8px;padding:10px 12px"><span class="skel skel-circle" style="width:30px;height:30px"></span><span class="skel-fila-textos"><span class="skel skel-line" style="width:45%"></span><span class="skel skel-line" style="width:28%;height:8px"></span></span><span class="skel skel-line" style="width:60px;height:22px;border-radius:6px"></span></div>
+            <div class="skel-fila" style="border:1px solid var(--borde);border-radius:8px;margin-bottom:8px;padding:10px 12px"><span class="skel skel-circle" style="width:30px;height:30px"></span><span class="skel-fila-textos"><span class="skel skel-line" style="width:55%"></span><span class="skel skel-line" style="width:30%;height:8px"></span></span><span class="skel skel-line" style="width:60px;height:22px;border-radius:6px"></span></div>
+            <div class="skel-fila" style="border:1px solid var(--borde);border-radius:8px;margin-bottom:8px;padding:10px 12px"><span class="skel skel-circle" style="width:30px;height:30px"></span><span class="skel-fila-textos"><span class="skel skel-line" style="width:40%"></span><span class="skel skel-line" style="width:25%;height:8px"></span></span><span class="skel skel-line" style="width:60px;height:22px;border-radius:6px"></span></div>
           </div>
         </div>
       </div>
@@ -564,7 +795,13 @@
             </div>
           </div>
           <div id="audit-wrap">
-            <div class="cargando"><div class="spinner"></div>Cargando auditoría...</div>
+            <div class="skel-tabla" aria-hidden="true">
+              <div class="skel-tabla-fila"><span class="skel skel-line" style="width:64px"></span><span class="skel skel-line" style="width:28px"></span><span class="skel skel-line" style="width:130px"></span><span class="skel skel-line" style="width:90px"></span><span class="skel skel-line" style="width:90px"></span><span class="skel skel-line" style="width:70px"></span></div>
+              <div class="skel-tabla-fila" style="opacity:0.85"><span class="skel skel-line" style="width:64px"></span><span class="skel skel-line" style="width:28px"></span><span class="skel skel-line" style="width:110px"></span><span class="skel skel-line" style="width:80px"></span><span class="skel skel-line" style="width:100px"></span><span class="skel skel-line" style="width:70px"></span></div>
+              <div class="skel-tabla-fila" style="opacity:0.7"><span class="skel skel-line" style="width:64px"></span><span class="skel skel-line" style="width:28px"></span><span class="skel skel-line" style="width:140px"></span><span class="skel skel-line" style="width:95px"></span><span class="skel skel-line" style="width:85px"></span><span class="skel skel-line" style="width:70px"></span></div>
+              <div class="skel-tabla-fila" style="opacity:0.55"><span class="skel skel-line" style="width:64px"></span><span class="skel skel-line" style="width:28px"></span><span class="skel skel-line" style="width:100px"></span><span class="skel skel-line" style="width:90px"></span><span class="skel skel-line" style="width:90px"></span><span class="skel skel-line" style="width:70px"></span></div>
+              <div class="skel-tabla-fila" style="opacity:0.4"><span class="skel skel-line" style="width:64px"></span><span class="skel skel-line" style="width:28px"></span><span class="skel skel-line" style="width:120px"></span><span class="skel skel-line" style="width:85px"></span><span class="skel skel-line" style="width:95px"></span><span class="skel skel-line" style="width:70px"></span></div>
+            </div>
           </div>
         </div>
       </div>

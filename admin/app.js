@@ -1366,17 +1366,23 @@ function renderReciboEntrega() {
   if (nuevos.length > 0) {
     listaHtml += `<div style="display:flex;align-items:center;gap:8px;margin:8px 4px 4px">
       <div style="flex:1;height:1px;background:var(--borde)"></div>
-      <span style="font-size:10px;font-weight:800;color:var(--verde);white-space:nowrap">🆕 AGREGANDO AHORA</span>
+      <span style="font-size:10px;font-weight:800;color:var(--verde);white-space:nowrap"><i data-lucide=sparkles style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> AGREGANDO AHORA</span>
       <div style="flex:1;height:1px;background:var(--borde)"></div>
-    </div>` + nuevos.map(([nombre, cant]) => `
+    </div>` + nuevos.map(([nombre, cant]) => {
+      const gastable = esMaterialGastable(nombre);
+      const controlCantidad = gastable
+        ? `<button type="button" class="btn btn-outline" onclick="entregaAdicionalAjustar('${escapeAttr(nombre)}',-1)" style="padding:2px 8px">−</button>
+           <span class="h-cant">x${cant}</span>
+           <button type="button" class="btn btn-outline" onclick="entregaAdicionalAjustar('${escapeAttr(nombre)}',1)" style="padding:2px 8px">+</button>`
+        : `<span class="h-cant">x${cant}</span>`;
+      return `
       <div class="fila-herramienta">
         ${herFotoHtmlPorNombre(nombre, 40)}
         <span class="h-nombre">${escapeHtml(nombre)}</span>
-        <button type="button" class="btn btn-outline" onclick="entregaAdicionalAjustar('${escapeAttr(nombre)}',-1)" style="padding:2px 8px">−</button>
-        <span class="h-cant">x${cant}</span>
-        <button type="button" class="btn btn-outline" onclick="entregaAdicionalAjustar('${escapeAttr(nombre)}',1)" style="padding:2px 8px">+</button>
+        ${controlCantidad}
         <button type="button" class="btn btn-rojo" onclick="entregaAdicionalQuitar('${escapeAttr(nombre)}')" style="padding:2px 8px" title="Quitar">×</button>
-      </div>`).join("");
+      </div>`;
+    }).join("");
   }
   lista.innerHTML = listaHtml || "<div style='padding:12px;color:var(--texto-dim)'>Sin herramientas</div>";
 }

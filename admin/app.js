@@ -1162,6 +1162,21 @@ document.getElementById("filtro-estado")?.addEventListener("change", () => {
   renderTabla();
 });
 
+// "Ocultar retornadas": se recuerda tu elección entre sesiones (igual que el
+// tema claro/oscuro), en vez de reiniciarse marcado cada vez que recargas.
+// Por defecto (primera vez, sin nada guardado) queda DESMARCADO — mostrar
+// todo es lo esperado; ocultar es una decisión tuya, no el estado inicial.
+(function () {
+  const chk = document.getElementById("chk-ocultar-retornadas");
+  if (!chk) return;
+  chk.checked = localStorage.getItem("ocultar-retornadas-admin") === "true";
+  chk.addEventListener("change", () => {
+    localStorage.setItem("ocultar-retornadas-admin", chk.checked ? "true" : "false");
+    paginaActual = 1;
+    renderTabla();
+  });
+})();
+
 document.querySelectorAll(".tab-btn").forEach(btn => {
   btn.addEventListener("click", () => {
     document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("activo"));
@@ -2240,7 +2255,9 @@ function ppRenderTabla() {
       : "—";
     const color = colorEstudiante(p.profesor || "");
     const ini   = (p.profesor || "P")[0].toUpperCase();
-    const herramientasHtml = (p.herramientas || []).map(h => `<b>${escapeHtml(h.nombre)}</b> ×${h.cantidad}${h.adicional ? ' <span style="background:var(--azul);color:#fff;font-size:9px;font-weight:800;padding:1px 5px;border-radius:20px">+ADIC</span>' : ''}`).join(", ") || "—";
+    const herramientasHtml = (p.herramientas || []).map(h =>
+      `<span class="pp-herr-chip">${escapeHtml(h.nombre)} <b>×${h.cantidad}</b>${h.adicional ? '<i class="pp-chip-adic" title="Agregada como adicional"><i data-lucide="plus" style="width:1em;height:1em;vertical-align:-2px"></i></i>' : ''}</span>`
+    ).join("") || '<span class="pp-herr-vacio">Sin herramientas</span>';
     const estadoTag = p.estado === "activo"
       ? `<span class="pp-estado-tag" style="background:var(--verde-glow);color:var(--verde)">Activo</span>`
       : `<span class="pp-estado-tag" style="background:var(--card2);color:var(--texto-dim)">Retornado</span>`;
@@ -2250,7 +2267,7 @@ function ppRenderTabla() {
           : `<button class="btn btn-azul" onclick="abrirRetornoProf('${p.id}')" title="Revisar y registrar el retorno de un préstamo anterior">Revisar y retornar</button>`)
       : `<span style="font-size:11px;color:var(--verde);font-weight:700"><i data-lucide="circle-check" style="width:1em;height:1em;vertical-align:-2px"></i> Completado</span>`;
     return `
-      <div class="pp-card${p.tieneIncidencias ? ' con-incidencia' : ''}">
+      <div class="pp-card${p.tieneIncidencias ? ' con-incidencia' : ''}" style="border-left:3px solid ${color}">
         <div class="pp-card-top">
           <div class="pp-avatar" style="background:${color}22;color:${color}">${ini}</div>
           <div>
@@ -2260,7 +2277,7 @@ function ppRenderTabla() {
           ${estadoTag}
           ${(p.estado === "activo" && !esDeHoy) ? '<span class="pp-estado-tag" style="background:rgba(180,83,9,.15);color:var(--amarillo)" title="Sin retornar desde un día anterior">Sin retornar</span>' : ''}
         </div>
-        <div class="pp-herr-list">${herramientasHtml}</div>
+        <div class="pp-herr-chips">${herramientasHtml}</div>
         <div class="pp-fecha-row"><i data-lucide="clock" style="width:1em;height:1em;vertical-align:-2px"></i> ${fecha}${p.tieneIncidencias ? ` · <span style="color:var(--rojo)"><i data-lucide="triangle-alert" style="width:1em;height:1em;vertical-align:-2px"></i> con incidencia</span>${!p.incidenciaVista ? ` <button onclick="marcarIncidenciaVistaPP('${p.id}')" style="background:none;border:none;color:var(--azul);font-size:10px;cursor:pointer;text-decoration:underline">marcar vista</button>` : ''}` : ''}</div>
         <div class="pp-acciones">${acciones}</div>
       </div>`;
@@ -3722,6 +3739,7 @@ function renderProfesoresCfg() {
     const local = p.local ? '<span style="font-size:10px;color:var(--texto-dim);margin-left:6px">(respaldo)</span>' : '';
     const [nombre, ...apRest] = p.nombre.split(" ");
     const apellido = apRest.join(" ");
+    const colorProf = colorEstudiante(p.nombre);
     const sinRetornar = (todosPrestamosProfTodos || []).filter(x => x.profesor === p.nombre && x.estado === "activo");
     const sinRetHoy = sinRetornar.filter(x => esMismodia(x.creadoEn));
     const sinRetViejos = sinRetornar.length - sinRetHoy.length;
@@ -3732,22 +3750,26 @@ function renderProfesoresCfg() {
             ? m.horarios
             : ((m.dias && m.dias.length) || m.horaInicio ? [{ dias: m.dias || [], horaInicio: m.horaInicio || "", horaFin: m.horaFin || "" }] : []);
           const franjas = horarios.length
-            ? horarios.map(h => `<div class="prof-horario-franja"><span class="prof-horario-dias">${(h.dias&&h.dias.length)?h.dias.join(" · "):"Sin días"}</span>${h.horaInicio?`<span class="prof-horario-hora">${h.horaInicio}–${h.horaFin||""}</span>`:""}</div>`).join("")
+            ? horarios.map(h => `
+                <div class="prof-horario-franja">
+                  <span class="prof-dias-chips">${(h.dias&&h.dias.length)?h.dias.map(d=>`<span class="prof-dia-chip">${d.slice(0,3)}</span>`).join(""):'<span class="prof-dia-chip prof-dia-chip-vacio">Sin días</span>'}</span>
+                  ${h.horaInicio?`<span class="prof-horario-hora">${h.horaInicio}–${h.horaFin||""}</span>`:""}
+                </div>`).join("")
             : '<div class="prof-horario-franja prof-horario-vacio">Sin horario definido</div>';
           return `
           <div class="prof-horario-card">
-            <div class="prof-horario-materia">${m.nombre}</div>
+            <div class="prof-horario-materia"><i data-lucide="book-open" style="width:1em;height:1em;vertical-align:-2px"></i> ${m.nombre}</div>
             ${franjas}
           </div>`;
         }).join("")}</div>`
       : "";
     return `
-      <div class="prof-fila">
+      <div class="prof-fila" style="border-left:3px solid ${colorProf}">
         <div class="prof-fila-top">
           <div class="est-avatar">
-            <div class="est-circulo" style="background:${colorEstudiante(p.nombre)}22;color:${colorEstudiante(p.nombre)}">${iniciales(nombre, apellido)}</div>
+            <div class="est-circulo prof-circulo-lg" style="background:${colorProf}22;color:${colorProf}">${iniciales(nombre, apellido)}</div>
             <div style="min-width:0;flex:1">
-              <div class="est-nombre">${p.nombre}${local}</div>
+              <div class="est-nombre prof-nombre-lg">${p.nombre}${local}</div>
             </div>
           </div>
           ${sinRetHoy.length > 0 ? `<span class="prof-badge-activos" style="cursor:pointer" title="Ver y cerrar préstamo" onclick="abrirRetornoProf('${sinRetHoy[0].id}')">⏳ ${sinRetHoy.length} sin retornar hoy</span>` : ""}

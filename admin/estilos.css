@@ -1014,8 +1014,15 @@ tr:hover td { background: var(--hover); }
 .pp-estado-tag { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
 .pp-estado-tag::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 .pp-estado-tag i { display: none; }
-.pp-herr-list { font-size: 12px; color: var(--texto-dim); margin-bottom: 11px; line-height: 1.6; min-height: 34px; }
-.pp-herr-list b { color: var(--texto); font-weight: 600; }
+.pp-herr-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 11px; min-height: 26px; }
+.pp-herr-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: var(--card2); border: 1px solid var(--borde); border-radius: 20px;
+  padding: 4px 10px; font-size: 11px; color: var(--texto-dim); white-space: nowrap;
+}
+.pp-herr-chip b { color: var(--texto); font-weight: 700; }
+.pp-chip-adic { display: inline-flex; color: var(--azul); }
+.pp-herr-vacio { font-size: 11.5px; color: var(--texto-dim); font-style: italic; }
 .pp-fecha-row { font-size: 11px; color: var(--texto-dim); margin-bottom: 11px; }
 .pp-acciones { display: flex; gap: 6px; }
 .pp-acciones button { flex: 1; padding: 6px; font-size: 10.5px; }
@@ -1210,11 +1217,19 @@ body.tema-claro #vista-herramientas-cfg .her-grid {
    franjas de día/hora, en vez de una lista de viñetas genérica. */
 .prof-horario-grid { margin-top: 13px; padding-top: 13px; border-top: 1px dashed var(--borde); display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px; }
 .prof-horario-card { background: var(--bg); border: 1px solid var(--borde); border-left: 2.5px solid var(--azul); border-radius: 10px; padding: 10px 13px; }
-.prof-horario-materia { font-size: 13px; font-weight: 700; color: var(--texto); margin-bottom: 7px; letter-spacing: -.1px; }
-.prof-horario-franja { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 3px 0; }
-.prof-horario-dias { font-size: 11px; font-weight: 700; color: var(--azul); text-transform: uppercase; letter-spacing: .03em; }
+.prof-horario-materia { font-size: 13px; font-weight: 700; color: var(--texto); margin-bottom: 7px; letter-spacing: -.1px; display: flex; align-items: center; gap: 6px; }
+.prof-horario-materia i, .prof-horario-materia svg { color: var(--azul); flex-shrink: 0; }
+.prof-horario-franja { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 3px 0; }
+.prof-dias-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.prof-dia-chip {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .02em;
+  color: var(--azul); background: rgba(59,130,246,.12); border-radius: 5px; padding: 2px 6px;
+}
+.prof-dia-chip-vacio { color: var(--texto-dim); background: transparent; font-style: italic; text-transform: none; font-weight: 500; }
 .prof-horario-hora { font-size: 12px; font-weight: 600; color: var(--texto-dim); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .prof-horario-vacio { font-size: 11.5px; color: var(--texto-dim); font-style: italic; }
+.prof-circulo-lg { width: 40px !important; height: 40px !important; border-radius: 11px !important; font-size: 14px !important; }
+.prof-nombre-lg { font-size: 14px; font-weight: 700; letter-spacing: -.1px; }
 
 /* ═══ Identidad "Historial" — reportes, gris pizarra. La tabla se mantiene:
    es el formato correcto para revisar muchos registros con filtros/export. ═══ */

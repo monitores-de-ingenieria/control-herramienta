@@ -2706,7 +2706,7 @@ async function cargarPrestamosExternos() {
   }
 }
 
-let _extFiltroEstado = "";
+let _extFiltroEstado = "prestado"; // por defecto solo los activos, igual que Préstamos Profesores
 
 window.extFiltrarChip = function(estado, el) {
   _extFiltroEstado = estado;

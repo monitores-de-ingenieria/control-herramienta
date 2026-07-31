@@ -894,6 +894,9 @@ async function cargarSolicitudes() {
       cargarSelectores();
       renderTabla();
       cargarDashboard();
+    }, (err) => {
+      console.error("Error en listener de solicitudes:", err);
+      mostrarToast("Error de conexión al cargar solicitudes — recarga la página", "rojo");
     });
   } catch(e) { console.error(e); }
 }
@@ -2164,6 +2167,10 @@ async function cargarPrestamosProf() {
       ppActualizarStats();
       ppRenderTabla();
       if (typeof actualizarTabs === "function") actualizarTabs(); // el contador lateral "Herramientas Prestadas HOY" depende también de esto
+    }, (err) => {
+      console.error("Error en listener de prestamos_profesores:", err);
+      document.getElementById("pp-tabla-wrap").innerHTML =
+        '<div class="cargando">Error al cargar. Verifica la conexión.</div>';
     });
   } catch(e) {
     document.getElementById("pp-tabla-wrap").innerHTML =
@@ -2676,6 +2683,10 @@ async function cargarPrestamosExternos() {
       todosPrestamosExt = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       actualizarBadgeLateral("badge-prestadas", todosPrestamosExt.filter(p => p.estado === "prestado").length);
       extRenderTabla();
+    }, (err) => {
+      console.error("Error en listener de prestamos_externos:", err);
+      document.getElementById("ext-tabla-wrap").innerHTML =
+        '<div class="cargando">Error al cargar. Verifica la conexión.</div>';
     });
   } catch(e) {
     document.getElementById("ext-tabla-wrap").innerHTML =
@@ -3148,6 +3159,10 @@ async function cargarHerramientasCfg() {
       });
 
       renderHerramientasCfg(lista);
+    }, (err) => {
+      console.error("Error en listener de herramientas:", err);
+      const w = document.getElementById("her-cfg-wrap");
+      if (w) w.innerHTML = '<div class="cargando">Error al cargar herramientas.</div>';
     });
   } catch(e) {
     const w = document.getElementById("her-cfg-wrap");
@@ -3661,6 +3676,10 @@ async function cargarProfesoresCfg() {
         .map((nombre, i) => ({ id: "local-" + i, nombre, local: true }));
       profCfgLista = [...enFirestore, ...delRespaldo].sort((a, b) => a.nombre.localeCompare(b.nombre));
       renderProfesoresCfg();
+    }, (err) => {
+      console.error("Error en listener de profesores:", err);
+      const w = document.getElementById("prof-cfg-wrap");
+      if (w) w.innerHTML = '<div class="cargando">Error al cargar profesores.</div>';
     });
   } catch(e) {
     const w = document.getElementById("prof-cfg-wrap");
@@ -3924,6 +3943,10 @@ async function cargarLaboratoriosCfg() {
         .map((nombre, i) => ({ id: "local-" + i, nombre, local: true }));
       labCfgLista = [...enFirestore, ...delRespaldo].sort((a, b) => a.nombre.localeCompare(b.nombre));
       renderLaboratoriosCfg();
+    }, (err) => {
+      console.error("Error en listener de laboratorios:", err);
+      const w = document.getElementById("lab-cfg-wrap");
+      if (w) w.innerHTML = '<div class="cargando">Error al cargar laboratorios.</div>';
     });
   } catch(e) {
     const w = document.getElementById("lab-cfg-wrap");
@@ -4058,6 +4081,10 @@ async function cargarCiclosCfg() {
         .map((nombre, i) => ({ id: "local-" + i, nombre, local: true }));
       cicloCfgLista = ordenarCiclosAdmin([...enFirestore, ...delRespaldo]);
       renderCiclosCfg();
+    }, (err) => {
+      console.error("Error en listener de ciclos:", err);
+      const w = document.getElementById("ciclo-cfg-wrap");
+      if (w) w.innerHTML = '<div class="cargando">Error al cargar ciclos.</div>';
     });
   } catch(e) {
     const w = document.getElementById("ciclo-cfg-wrap");
@@ -4219,6 +4246,10 @@ async function cargarUsuariosCfg() {
     onSnapshot(query(collection(db, "usuarios"), orderBy("creadoEn", "desc")), snap => {
       usrCfgLista = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       renderUsuariosCfg();
+    }, (err) => {
+      console.error("Error en listener de usuarios:", err);
+      const w = document.getElementById("usr-cfg-wrap");
+      if (w) w.innerHTML = '<div class="cargando">Error al cargar usuarios.</div>';
     });
   } catch(e) {
     const w = document.getElementById("usr-cfg-wrap");

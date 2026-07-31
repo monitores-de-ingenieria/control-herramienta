@@ -3769,16 +3769,19 @@ function renderProfesoresCfg() {
           <div class="est-avatar">
             <div class="est-circulo prof-circulo-lg" style="background:${colorProf}22;color:${colorProf}">${iniciales(nombre, apellido)}</div>
             <div style="min-width:0;flex:1">
-              <div class="est-nombre prof-nombre-lg">${p.nombre}${local}</div>
+              <div class="est-nombre prof-nombre-lg" title="${escapeAttr(p.nombre)}">${p.nombre}${local}</div>
             </div>
           </div>
-          ${sinRetHoy.length > 0 ? `<span class="prof-badge-activos" style="cursor:pointer" title="Ver y cerrar préstamo" onclick="abrirRetornoProf('${sinRetHoy[0].id}')">⏳ ${sinRetHoy.length} sin retornar hoy</span>` : ""}
-          ${sinRetViejos > 0 ? `<span class="prof-badge-activos" style="cursor:pointer;background:rgba(239,68,68,.15);color:var(--rojo)" title="Ver y cerrar préstamo" onclick="abrirRetornoProf('${sinRetornar.find(x=>!esMismodia(x.creadoEn)).id}')">${sinRetViejos} atrasado(s)</span>` : ""}
           <div class="acciones-celda">
             <button class="btn btn-outline" onclick="abrirModalProfesor('${p.id}','${nombreEsc}',${p.local||false})" title="Editar profesor">Editar</button>
             ${p.local ? "" : `<button class="btn btn-rojo" onclick="eliminarProfesor('${p.id}','${nombreEsc}')" title="Eliminar profesor"><i data-lucide="trash-2" style="width:1em;height:1em;vertical-align:-2px"></i></button>`}
           </div>
         </div>
+        ${(sinRetHoy.length > 0 || sinRetViejos > 0) ? `
+        <div class="prof-badges-row">
+          ${sinRetHoy.length > 0 ? `<span class="prof-badge-activos" style="cursor:pointer" title="Ver y cerrar préstamo" onclick="abrirRetornoProf('${sinRetHoy[0].id}')">⏳ ${sinRetHoy.length} sin retornar hoy</span>` : ""}
+          ${sinRetViejos > 0 ? `<span class="prof-badge-activos" style="cursor:pointer;background:rgba(239,68,68,.15);color:var(--rojo)" title="Ver y cerrar préstamo" onclick="abrirRetornoProf('${sinRetornar.find(x=>!esMismodia(x.creadoEn)).id}')">${sinRetViejos} atrasado(s)</span>` : ""}
+        </div>` : ""}
         ${listaMaterias}
       </div>`;
   }).join("");

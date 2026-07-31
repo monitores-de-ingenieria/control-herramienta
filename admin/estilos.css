@@ -1206,13 +1206,13 @@ body.tema-claro #vista-herramientas-cfg .her-grid {
 }
 /* Horario visual del profesor: cada materia como una mini-ficha con sus
    franjas de día/hora, en vez de una lista de viñetas genérica. */
-.prof-horario-grid { margin-top: 11px; padding-top: 11px; border-top: 1px dashed var(--borde); display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
-.prof-horario-card { background: var(--bg); border: 1px solid var(--borde); border-left: 2.5px solid var(--azul); border-radius: 9px; padding: 8px 10px; }
-.prof-horario-materia { font-size: 11.5px; font-weight: 600; color: var(--texto); margin-bottom: 5px; }
-.prof-horario-franja { display: flex; align-items: center; justify-content: space-between; gap: 6px; font-size: 10.5px; color: var(--texto-dim); padding: 2px 0; }
-.prof-horario-dias { font-weight: 600; color: var(--azul); }
-.prof-horario-hora { font-family: 'SFMono-Regular', Consolas, monospace; }
-.prof-horario-vacio { font-style: italic; }
+.prof-horario-grid { margin-top: 13px; padding-top: 13px; border-top: 1px dashed var(--borde); display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px; }
+.prof-horario-card { background: var(--bg); border: 1px solid var(--borde); border-left: 2.5px solid var(--azul); border-radius: 10px; padding: 10px 13px; }
+.prof-horario-materia { font-size: 13px; font-weight: 700; color: var(--texto); margin-bottom: 7px; letter-spacing: -.1px; }
+.prof-horario-franja { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 3px 0; }
+.prof-horario-dias { font-size: 11px; font-weight: 700; color: var(--azul); text-transform: uppercase; letter-spacing: .03em; }
+.prof-horario-hora { font-size: 12px; font-weight: 600; color: var(--texto-dim); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.prof-horario-vacio { font-size: 11.5px; color: var(--texto-dim); font-style: italic; }
 
 /* ═══ Identidad "Historial" — reportes, gris pizarra. La tabla se mantiene:
    es el formato correcto para revisar muchos registros con filtros/export. ═══ */

@@ -991,6 +991,13 @@ function solicitudesFiltradas() {
   return filtradas;
 }
 
+// Wrapper expuesto en window: el <script type="module"> no deja que el HTML
+// llame directamente a renderTabla() desde un onchange inline, así que este
+// checkbox necesita su propia función global.
+window.filtroOcultarRetornadasCambio = function() {
+  renderTabla();
+};
+
 function renderTabla() {
   const filtradas = solicitudesFiltradas();
   const total = filtradas.length;
@@ -1265,9 +1272,9 @@ window.abrirModal = function(id) {
   document.getElementById("modal-solicitud").classList.add("abierto");
 };
 
-function cerrarModal() {
+window.cerrarModal = function() {
   document.getElementById("modal-solicitud").classList.remove("abierto");
-}
+};
 
 window.verDetalleIncidenciaProf = async function(prestamoId) {
   const p = (todosPrestamosProfTodos || todosPrestamosProf).find(x => x.id === prestamoId);
@@ -2424,7 +2431,7 @@ window.cerrarPickerFotosPP = function() {
   document.getElementById("modal-pp-fotos").classList.remove("abierto");
 };
 
-function renderPickerFotosPP() {
+window.renderPickerFotosPP = function() {
   const wrap = document.getElementById("pp-picker-grid");
   const q = (document.getElementById("pp-picker-buscar").value || "").toLowerCase();
   const lista = _herListaActual.filter(h => h.nombre.toLowerCase().includes(q));
@@ -2448,7 +2455,7 @@ function renderPickerFotosPP() {
       </div>`;
   }).join("");
   renderPickerFotosPPRecibo();
-}
+};
 
 function renderPickerFotosPPRecibo() {
   const lista = document.getElementById("pp-picker-recibo");

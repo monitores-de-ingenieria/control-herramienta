@@ -1008,13 +1008,15 @@ tr:hover td { background: var(--hover); }
 .pp-card:hover { transform: translateY(-2px); box-shadow: var(--sombra-md); }
 .pp-card.con-incidencia { border: 1px dashed var(--rojo); }
 .pp-card-top { display: flex; align-items: center; gap: 10px; margin-bottom: 11px; }
-.pp-avatar { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12.5px; flex-shrink: 0; }
-.pp-nombre { font-size: 12.5px; font-weight: 600; color: var(--texto); line-height: 1.25; }
-.pp-lab { font-size: 10.5px; color: var(--texto-dim); }
-.pp-estado-tag { margin-left: auto; font-size: 9.5px; font-weight: 700; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
-.pp-herr-list { font-size: 11.5px; color: var(--texto-dim); margin-bottom: 11px; line-height: 1.55; min-height: 34px; }
+.pp-avatar { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; flex-shrink: 0; }
+.pp-nombre { font-size: 14px; font-weight: 700; color: var(--texto); line-height: 1.25; letter-spacing: -.1px; }
+.pp-lab { font-size: 11px; color: var(--texto-dim); margin-top: 1px; }
+.pp-estado-tag { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
+.pp-estado-tag::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.pp-estado-tag i { display: none; }
+.pp-herr-list { font-size: 12px; color: var(--texto-dim); margin-bottom: 11px; line-height: 1.6; min-height: 34px; }
 .pp-herr-list b { color: var(--texto); font-weight: 600; }
-.pp-fecha-row { font-size: 10px; color: var(--texto-dim); margin-bottom: 11px; }
+.pp-fecha-row { font-size: 11px; color: var(--texto-dim); margin-bottom: 11px; }
 .pp-acciones { display: flex; gap: 6px; }
 .pp-acciones button { flex: 1; padding: 6px; font-size: 10.5px; }
 

@@ -2236,11 +2236,11 @@ function ppRenderTabla() {
     const ini   = (p.profesor || "P")[0].toUpperCase();
     const herramientasHtml = (p.herramientas || []).map(h => `<b>${escapeHtml(h.nombre)}</b> ×${h.cantidad}${h.adicional ? ' <span style="background:var(--azul);color:#fff;font-size:9px;font-weight:800;padding:1px 5px;border-radius:20px">+ADIC</span>' : ''}`).join(", ") || "—";
     const estadoTag = p.estado === "activo"
-      ? `<span class="pp-estado-tag" style="background:var(--verde-glow);color:var(--verde)"><i data-lucide="circle" style="width:1em;height:1em;vertical-align:-2px"></i> Activo</span>`
-      : `<span class="pp-estado-tag" style="background:var(--card2);color:var(--texto-dim)"><i data-lucide="circle" style="width:1em;height:1em;vertical-align:-2px"></i> Retornado</span>`;
+      ? `<span class="pp-estado-tag" style="background:var(--verde-glow);color:var(--verde)">Activo</span>`
+      : `<span class="pp-estado-tag" style="background:var(--card2);color:var(--texto-dim)">Retornado</span>`;
     const acciones = p.estado === "activo"
       ? (esDeHoy
-          ? `<button class="btn btn-outline" onclick="abrirAdicionalPP('${p.id}')" title="Agregar una herramienta adicional a este préstamo">+ Adicional</button><button class="btn btn-azul" onclick="abrirRetornoProf('${p.id}')" title="Registrar el retorno de las herramientas"><i data-lucide=corner-up-left style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Retornar</button>`
+          ? `<button class="btn btn-outline" onclick="abrirAdicionalPP('${p.id}')" title="Agregar una herramienta adicional a este préstamo"><i data-lucide=plus style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Adicional</button><button class="btn btn-azul" onclick="abrirRetornoProf('${p.id}')" title="Registrar el retorno de las herramientas"><i data-lucide=corner-up-left style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Retornar</button>`
           : `<button class="btn btn-azul" onclick="abrirRetornoProf('${p.id}')" title="Revisar y registrar el retorno de un préstamo anterior">Revisar y retornar</button>`)
       : `<span style="font-size:11px;color:var(--verde);font-weight:700"><i data-lucide="circle-check" style="width:1em;height:1em;vertical-align:-2px"></i> Completado</span>`;
     return `
@@ -2252,7 +2252,7 @@ function ppRenderTabla() {
             <div class="pp-lab">${escapeHtml(p.laboratorio) || "—"}</div>
           </div>
           ${estadoTag}
-          ${(p.estado === "activo" && !esDeHoy) ? '<span class="pp-estado-tag" style="background:rgba(210,153,34,.15);color:var(--amarillo)" title="Sin retornar desde un día anterior">⏳ Sin retornar</span>' : ''}
+          ${(p.estado === "activo" && !esDeHoy) ? '<span class="pp-estado-tag" style="background:rgba(180,83,9,.15);color:var(--amarillo)" title="Sin retornar desde un día anterior">Sin retornar</span>' : ''}
         </div>
         <div class="pp-herr-list">${herramientasHtml}</div>
         <div class="pp-fecha-row"><i data-lucide="clock" style="width:1em;height:1em;vertical-align:-2px"></i> ${fecha}${p.tieneIncidencias ? ` · <span style="color:var(--rojo)"><i data-lucide="triangle-alert" style="width:1em;height:1em;vertical-align:-2px"></i> con incidencia</span>${!p.incidenciaVista ? ` <button onclick="marcarIncidenciaVistaPP('${p.id}')" style="background:none;border:none;color:var(--azul);font-size:10px;cursor:pointer;text-decoration:underline">marcar vista</button>` : ''}` : ''}</div>

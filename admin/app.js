@@ -352,7 +352,7 @@ async function aplicarRolUsuario(user) {
         rolActual = "administrador";
         seccionesPermitidas = null;
         mostrarSoloSecciones(null);
-        document.getElementById("topbar-admin-nombre").textContent = "Administrador";
+        document.getElementById("topbar-admin-nombre").textContent = (user.email || "Administrador").split("@")[0];
         document.getElementById("topbar-admin-rol").textContent = "Administrador";
       } else {
         mostrarToast("Sin acceso: no se encontró tu registro (uid: " + user.uid + ")", "rojo");
@@ -414,7 +414,7 @@ async function aplicarRolUsuario(user) {
       usuarioActualNombre = user.email;
       seccionesPermitidas = null;
       mostrarSoloSecciones(null);
-      document.getElementById("topbar-admin-nombre").textContent = "Administrador";
+      document.getElementById("topbar-admin-nombre").textContent = (user.email || "Administrador").split("@")[0];
       document.getElementById("topbar-admin-rol").textContent = "Administrador";
       return;
     }
@@ -2409,6 +2409,7 @@ function renderPickerFotosPP() {
   const lista = _herListaActual.filter(h => h.nombre.toLowerCase().includes(q));
   if (!lista.length) {
     wrap.innerHTML = '<div class="vacio" style="grid-column:1/-1"><div class="vacio-icono"><i data-lucide="wrench" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>Sin resultados.</p></div>';
+    renderPickerFotosPPRecibo();
     return;
   }
   wrap.innerHTML = lista.map(h => {
@@ -2419,21 +2420,34 @@ function renderPickerFotosPP() {
          <span class="her-foto-fallback" style="display:none">${icono}</span>`
       : `<span class="her-foto-fallback">${icono}</span>`;
     const cant = _ppPickerCant[h.nombre] || 0;
-    const nombreEsc = escapeAttr(h.nombre);
     return `
-      <div class="her-card${cant > 0 ? ' stock-bajo' : ''}">
-        <div class="her-foto-wrap">${foto}</div>
-        <div class="her-cuerpo">
-          <div class="her-nombre">${escapeHtml(h.nombre)}</div>
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:6px">
-            <button type="button" onclick="ppPickerAjustar('${nombreEsc}',-1)" class="btn btn-outline" style="padding:4px 10px;flex:1">−</button>
-            <span style="min-width:18px;text-align:center;font-weight:700">${cant}</span>
-            <button type="button" onclick="ppPickerAjustar('${nombreEsc}',1)" class="btn btn-outline" style="padding:4px 10px;flex:1">+</button>
-          </div>
-        </div>
+      <div class="her-card" onclick="ppPickerAjustar('${escapeAttr(h.nombre)}',1)" title="Agregar a la lista">
+        <div class="her-foto-wrap">${foto}${cant > 0 ? `<span class="her-ribbon popular">x${cant}</span>` : ""}</div>
+        <div class="her-cuerpo"><div class="her-nombre">${escapeHtml(h.nombre)}</div></div>
       </div>`;
   }).join("");
+  renderPickerFotosPPRecibo();
 }
+
+function renderPickerFotosPPRecibo() {
+  const lista = document.getElementById("pp-picker-recibo");
+  if (!lista) return;
+  const entradas = Object.entries(_ppPickerCant);
+  lista.innerHTML = entradas.length ? entradas.map(([nombre, cant]) => `
+    <div class="fila-herramienta">
+      ${typeof herFotoHtmlPorNombre === "function" ? herFotoHtmlPorNombre(nombre) : ""}
+      <span class="h-nombre">${escapeHtml(nombre)}</span>
+      <button type="button" class="btn btn-outline" onclick="ppPickerAjustar('${escapeAttr(nombre)}',-1)" style="padding:2px 8px">−</button>
+      <span class="h-cant">x${cant}</span>
+      <button type="button" class="btn btn-outline" onclick="ppPickerAjustar('${escapeAttr(nombre)}',1)" style="padding:2px 8px">+</button>
+      <button type="button" class="btn btn-rojo" onclick="ppPickerQuitar('${escapeAttr(nombre)}')" style="padding:2px 8px"><i data-lucide="x" style="width:1em;height:1em;vertical-align:-2px"></i></button>
+    </div>`).join("") : "<div style='padding:12px;color:var(--texto-dim)'>Sin herramientas agregadas todavía</div>";
+}
+
+window.ppPickerQuitar = function(nombre) {
+  delete _ppPickerCant[nombre];
+  renderPickerFotosPP();
+};
 
 window.ppPickerAjustar = function(nombre, delta) {
   const actual = _ppPickerCant[nombre] || 0;

@@ -766,19 +766,25 @@
 </div>
 
 <div class="modal-overlay" id="modal-pp-fotos">
-  <div class="modal" style="max-width:760px">
+  <div class="modal modal-picking" style="max-width:1100px">
     <div class="modal-titulo">
       <span id="pp-picker-titulo"><i data-lucide=camera style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Elegir herramientas</span>
       <button class="modal-cerrar" onclick="cerrarPickerFotosPP()"><i data-lucide=x style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i></button>
     </div>
-    <div class="modal-campo">
-      <input type="text" id="pp-picker-buscar" placeholder="Buscar herramienta..." oninput="renderPickerFotosPP()"
-        style="width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--borde);border-radius:8px;color:var(--texto);font-size:14px">
-    </div>
-    <div id="pp-picker-grid" class="her-grid" style="max-height:48vh;overflow-y:auto;padding-right:4px"></div>
-    <div class="modal-acciones">
-      <button class="btn btn-outline" onclick="cerrarPickerFotosPP()">Cancelar</button>
-      <button class="btn btn-verde" onclick="confirmarPickerFotosPP()" title="Agregar las herramientas seleccionadas al préstamo"><i data-lucide=check-circle style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Agregar seleccionadas</button>
+    <div class="picking-layout">
+      <div class="picking-buscar">
+        <input type="text" id="pp-picker-buscar" placeholder="Buscar herramienta..." oninput="renderPickerFotosPP()"
+          style="width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--borde);border-radius:8px;color:var(--texto);font-size:14px">
+        <div id="pp-picker-grid" class="her-grid picking-grid"></div>
+      </div>
+      <div class="picking-recibo">
+        <div style="font-size:11px;font-weight:700;color:var(--texto-dim);text-transform:uppercase;margin-bottom:6px">Herramientas a agregar</div>
+        <div id="pp-picker-recibo" class="picking-recibo-lista"></div>
+        <div class="modal-acciones" style="margin-top:auto;padding-top:10px">
+          <button class="btn btn-outline" onclick="cerrarPickerFotosPP()">Cancelar</button>
+          <button class="btn btn-verde" onclick="confirmarPickerFotosPP()" title="Agregar las herramientas seleccionadas al préstamo"><i data-lucide=check-circle style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Agregar seleccionadas</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>

@@ -1229,7 +1229,7 @@ body.tema-claro #vista-herramientas-cfg .her-grid {
 .prof-horario-hora { font-size: 12px; font-weight: 600; color: var(--texto-dim); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .prof-horario-vacio { font-size: 11.5px; color: var(--texto-dim); font-style: italic; }
 .prof-circulo-lg { width: 40px !important; height: 40px !important; border-radius: 11px !important; font-size: 14px !important; }
-.prof-nombre-lg { font-size: 14px; font-weight: 700; letter-spacing: -.1px; }
+.prof-nombre-lg { font-size: 14px; font-weight: 700; letter-spacing: -.1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* ═══ Identidad "Historial" — reportes, gris pizarra. La tabla se mantiene:
    es el formato correcto para revisar muchos registros con filtros/export. ═══ */

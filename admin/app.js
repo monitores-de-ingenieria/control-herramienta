@@ -2728,7 +2728,7 @@ function extRenderTabla() {
   const lista = extFiltrados();
   const wrap  = document.getElementById("ext-tabla-wrap");
   if (!lista.length) {
-    wrap.innerHTML = '<div class="vacio" style="padding:40px;text-align:center;color:var(--texto-dim)"><i data-lucide="inbox" style="width:1em;height:1em;vertical-align:-2px"></i> No hay herramientas prestadas a otros departamentos.</div>';
+    wrap.innerHTML = '<div class="vacio" style="padding:40px;text-align:center;color:var(--texto-dim)"><i data-lucide="inbox" style="width:1em;height:1em;vertical-align:-2px"></i> No hay herramientas prestadas a otros departamentos ahora mismo.<br><span style="font-size:12px">Lo ya devuelto se puede consultar en Historial.</span></div>';
     return;
   }
   wrap.innerHTML = `

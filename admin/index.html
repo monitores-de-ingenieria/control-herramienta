@@ -341,11 +341,8 @@
               </div>
             </div>
 
-            <div class="tabs-segmentado" id="ext-chips" style="margin-top:14px">
-              <button class="tab-btn tab-seg" data-ext-estado="" onclick="extFiltrarChip('',this)">Todos</button>
-              <button class="tab-btn tab-seg activo" data-ext-estado="prestado" onclick="extFiltrarChip('prestado',this)">Prestado</button>
-              <button class="tab-btn tab-seg" data-ext-estado="devuelto" onclick="extFiltrarChip('devuelto',this)">Devuelto</button>
-            </div>
+            <!-- Sin chips de filtro: esta sección siempre muestra solo lo
+                 prestado activo. Para ver lo ya devuelto, usa "Historial". -->
           </div>
 
           <div id="ext-tabla-wrap">

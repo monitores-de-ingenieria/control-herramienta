@@ -2774,15 +2774,16 @@ function extRenderTabla() {
       ? `<button class="btn btn-azul" onclick="abrirRetornoExt('${p.id}')" title="Registrar el retorno de las herramientas"><i data-lucide=corner-up-left style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Retornar</button><button class="btn btn-outline" onclick="generarConduce('${p.id}')" title="Generar el conduce de salida imprimible" style="flex:0 0 auto"><i data-lucide=file-text style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i></button>`
       : `<span style="font-size:11px;color:var(--verde);font-weight:700;flex:1"><i data-lucide=check style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Completada</span><button class="btn btn-outline" onclick="generarConduce('${p.id}')" title="Generar el conduce de salida imprimible" style="flex:0 0 auto"><i data-lucide=file-text style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i></button>`;
     return `
-      <div class="pp-card${p.tieneIncidencias ? ' con-incidencia' : ''}" style="border-left:3px solid ${color}">
-        <div class="pp-card-top">
-          <div class="pp-avatar" style="background:${color}22;color:${color}">${ini}</div>
+      <div class="ext-card${p.tieneIncidencias ? ' con-incidencia' : ''}">
+        <div class="ext-card-top">
+          <div class="ext-icono-depto"><i data-lucide="building-2"></i></div>
           <div>
             <div class="pp-nombre">${escapeHtml(p.departamento) || "—"}</div>
-            <div class="pp-lab">${escapeHtml(p.responsable) || "—"}</div>
+            <div class="pp-lab">Responsable: ${escapeHtml(p.responsable) || "—"}</div>
           </div>
           ${estadoTag}
         </div>
+        <div class="ext-perforado"></div>
         <div class="pp-herr-chips">${herramientasHtml}</div>
         <div class="pp-fecha-row"><i data-lucide="clock" style="width:1em;height:1em;vertical-align:-2px"></i> ${fecha}</div>
         <div class="pp-acciones">${acciones}</div>

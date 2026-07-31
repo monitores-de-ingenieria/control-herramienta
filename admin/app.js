@@ -108,6 +108,22 @@ function formatFecha(ts) {
     " " + d.toLocaleTimeString("es-DO", { hour:"2-digit", minute:"2-digit" });
 }
 
+// Genera el HTML de un "estado vacío" contextual: insignia con icono,
+// título corto, texto de apoyo y — cuando aplica — un botón de acción (CTA)
+// que le da al usuario algo que hacer en vez de solo informarle que no hay nada.
+// grid=true agrega el estilo para ocupar toda la fila en grids (her-grid, pp-grid).
+function vacioHTML({ icono = "inbox", titulo, texto = "", ctaTexto = "", ctaOnclick = "", grid = false }) {
+  const cta = ctaTexto && ctaOnclick
+    ? `<button type="button" class="btn btn-outline vacio-cta" onclick="${ctaOnclick}">${ctaTexto}</button>`
+    : "";
+  return `<div class="vacio"${grid ? ' style="grid-column:1/-1"' : ""}>
+    <div class="vacio-icono"><i data-lucide="${icono}"></i></div>
+    <p class="vacio-titulo">${titulo}</p>
+    ${texto ? `<p>${texto}</p>` : ""}
+    ${cta}
+  </div>`;
+}
+
 function mostrarToast(msg, tipo = "verde") {
   const t = document.getElementById("toast");
   t.innerHTML = msg;
@@ -253,7 +269,11 @@ function renderAuditoria() {
   if (buscar) lista = lista.filter(a => (a.descripcion||"").toLowerCase().includes(buscar) || (a.usuario||"").toLowerCase().includes(buscar));
 
   if (!lista.length) {
-    wrap.innerHTML = '<div class="vacio" style="padding:20px"><div class="vacio-icono"><i data-lucide="scroll-text" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>No hay movimientos registrados todavía.</p></div>';
+    wrap.innerHTML = vacioHTML({
+      icono: "scroll-text",
+      titulo: "Sin movimientos aún",
+      texto: "Los préstamos, entregas y devoluciones de esta herramienta aparecerán aquí a medida que ocurran."
+    });
     return;
   }
 
@@ -587,7 +607,7 @@ function barraH(valor, max, color) {
 function renderGraficoBarras(contenedorId, datos, color) {
   const el = document.getElementById(contenedorId);
   if (!el) return;
-  if (!datos.length) { el.innerHTML = '<div class="vacio" style="padding:20px"><p>Sin datos aún.</p></div>'; return; }
+  if (!datos.length) { el.innerHTML = vacioHTML({ icono: "bar-chart-3", titulo: "Sin datos aún", texto: "La actividad de hoy aparecerá aquí en cuanto haya movimientos." }); return; }
   const max = datos[0].valor;
   el.innerHTML = datos.slice(0, 8).map(d => `
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px;cursor:pointer" onclick="dashAbrirHerramienta('${escapeAttr(d.etiqueta)}')">
@@ -601,7 +621,7 @@ function renderGraficoDonut(contenedorId, datos, onClickPrefix) {
   const el = document.getElementById(contenedorId);
   if (!el) return;
   const total = datos.reduce((s,d) => s + d.valor, 0);
-  if (!total) { el.innerHTML = '<div class="vacio" style="padding:20px"><p>Sin datos aún.</p></div>'; return; }
+  if (!total) { el.innerHTML = vacioHTML({ icono: "chart-pie", titulo: "Sin datos aún", texto: "La actividad de hoy aparecerá aquí en cuanto haya movimientos." }); return; }
   const r = 42, cx = 50, cy = 50, circ = 2 * Math.PI * r;
   let offset = 0;
   const click = e => onClickPrefix ? `onclick="${onClickPrefix}('${escapeAttr(e)}')" style="cursor:pointer"` : "";
@@ -635,7 +655,7 @@ function renderGraficoDonut(contenedorId, datos, onClickPrefix) {
 function renderGraficoArea(contenedorId, datos) {
   const el = document.getElementById(contenedorId);
   if (!el) return;
-  if (datos.every(d => d.valor === 0)) { el.innerHTML = '<div class="vacio" style="padding:20px"><p>Sin datos aún.</p></div>'; return; }
+  if (datos.every(d => d.valor === 0)) { el.innerHTML = vacioHTML({ icono: "trending-up", titulo: "Sin datos aún", texto: "La actividad de hoy aparecerá aquí en cuanto haya movimientos." }); return; }
   const max = Math.max(...datos.map(d => d.valor), 1);
   const w = 300, h = 90, pad = 6;
   const stepX = (w - pad*2) / (datos.length - 1);
@@ -1041,7 +1061,13 @@ function renderTabla() {
   const wrap = document.getElementById("tabla-solicitudes-wrap");
 
   if (pagina.length === 0) {
-    wrap.innerHTML = '<div class="vacio"><div class="vacio-icono"><i data-lucide="inbox" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>No hay solicitudes que coincidan.</p></div>';
+    wrap.innerHTML = vacioHTML({
+      icono: "inbox",
+      titulo: "Sin solicitudes que coincidan",
+      texto: "Ajusta los filtros o espera a que lleguen nuevas solicitudes de hoy.",
+      ctaTexto: "Limpiar filtros",
+      ctaOnclick: "document.getElementById('btn-limpiar-filtros').click()"
+    });
     document.getElementById("pag-info").textContent = "";
     document.getElementById("pag-btns").innerHTML = "";
     return;
@@ -1447,7 +1473,17 @@ window.renderEntregaPickerGrid = function() {
   // seguir mostrando).
   const lista = (_herListaActual || []).filter(h => !h.usoInterno && h.nombre.toLowerCase().includes(q));
   if (!lista.length) {
-    wrap.innerHTML = '<div class="vacio" style="grid-column:1/-1"><div class="vacio-icono"><i data-lucide="toolbox" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>Sin resultados.</p></div>';
+    wrap.innerHTML = q ? vacioHTML({
+      icono: "toolbox", titulo: "Sin resultados",
+      texto: `No se encontró ninguna herramienta con "${escapeHtml(q)}".`,
+      ctaTexto: "Limpiar búsqueda",
+      ctaOnclick: "document.getElementById('entrega-picker-buscar').value='';renderEntregaPickerGrid()",
+      grid: true
+    }) : vacioHTML({
+      icono: "toolbox", titulo: "No hay herramientas disponibles",
+      texto: "No hay herramientas para agregar en este momento.",
+      grid: true
+    });
     return;
   }
   wrap.innerHTML = lista.map(h => {
@@ -1911,7 +1947,7 @@ window.renderRetornoPickerGrid = function() {
   // Misma razón que en renderEntregaPickerGrid: esto es una solicitud de
   // estudiante, así que las herramientas de uso interno no aplican aquí.
   const lista = (_herListaActual || []).filter(h => !h.usoInterno && h.nombre.toLowerCase().includes(q));
-  if (!lista.length) { wrap.innerHTML = '<div class="vacio" style="grid-column:1/-1"><div class="vacio-icono"><i data-lucide="toolbox" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>Sin resultados.</p></div>'; return; }
+  if (!lista.length) { wrap.innerHTML = q ? vacioHTML({ icono: "toolbox", titulo: "Sin resultados", texto: `No se encontró ninguna herramienta con "${escapeHtml(q)}".`, ctaTexto: "Limpiar búsqueda", ctaOnclick: "document.getElementById('retorno-picker-buscar').value='';renderRetornoPickerGrid()", grid: true }) : vacioHTML({ icono: "toolbox", titulo: "No hay herramientas", texto: "No hay herramientas para mostrar en este momento.", grid: true }); return; }
   wrap.innerHTML = lista.map(h => {
     const fotoUrl = h.fotoUrl || (h.codigo ? '../img/herramientas/' + h.codigo + '.jpg' : '');
     const icono = h.icono || '<i data-lucide="wrench" style="width:1em;height:1em;vertical-align:-2px"></i>';
@@ -2158,6 +2194,12 @@ const CATEGORIAS_HERRAMIENTA = {
 // A partir de esta cantidad disponible (inclusive) se marca "stock bajo".
 const UMBRAL_STOCK_BAJO = 2;
 let herCategoriaActiva = "";
+window.limpiarFiltrosHerramientas = function() {
+  const buscar = document.getElementById("her-buscar");
+  if (buscar) buscar.value = "";
+  herCategoriaActiva = "";
+  renderHerramientasCfg(_herListaActual);
+};
 
 const _herFotoMap = {};
 
@@ -2278,7 +2320,13 @@ function ppRenderTabla() {
   const lista = ppFiltrados();
   const wrap  = document.getElementById("pp-tabla-wrap");
   if (!lista.length) {
-    wrap.innerHTML = '<div class="vacio"><div class="vacio-icono"><i data-lucide="inbox" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>No hay préstamos registrados hoy ni activos pendientes de retorno.</p></div>';
+    wrap.innerHTML = vacioHTML({
+      icono: "inbox",
+      titulo: "Sin préstamos por ahora",
+      texto: "No hay préstamos activos ni registrados hoy para profesores.",
+      ctaTexto: "Nuevo préstamo",
+      ctaOnclick: "abrirModalNuevoPrestamoProf()"
+    });
     return;
   }
   wrap.innerHTML = lista.map(p => {
@@ -2372,7 +2420,7 @@ window.renderPPPickerGridInline = function() {
   const wrap = document.getElementById("pp-picker-grid-inline");
   const q = (document.getElementById("pp-picker-buscar-inline").value || "").toLowerCase();
   const lista = (_herListaActual || []).filter(h => h.nombre.toLowerCase().includes(q));
-  if (!lista.length) { wrap.innerHTML = '<div class="vacio" style="grid-column:1/-1"><div class="vacio-icono"><i data-lucide="toolbox" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>Sin resultados.</p></div>'; return; }
+  if (!lista.length) { wrap.innerHTML = q ? vacioHTML({ icono: "toolbox", titulo: "Sin resultados", texto: `No se encontró ninguna herramienta con "${escapeHtml(q)}".`, ctaTexto: "Limpiar búsqueda", ctaOnclick: "document.getElementById('pp-picker-buscar-inline').value='';renderPPPickerGridInline()", grid: true }) : vacioHTML({ icono: "toolbox", titulo: "No hay herramientas", texto: "No hay herramientas para mostrar en este momento.", grid: true }); return; }
   wrap.innerHTML = lista.map(h => {
     const fotoUrl = h.fotoUrl || (h.codigo ? '../img/herramientas/' + h.codigo + '.jpg' : '');
     const icono = h.icono || '<i data-lucide="wrench" style="width:1em;height:1em;vertical-align:-2px"></i>';
@@ -2494,7 +2542,7 @@ window.renderPickerFotosPP = function() {
   const q = (document.getElementById("pp-picker-buscar").value || "").toLowerCase();
   const lista = _herListaActual.filter(h => h.nombre.toLowerCase().includes(q));
   if (!lista.length) {
-    wrap.innerHTML = '<div class="vacio" style="grid-column:1/-1"><div class="vacio-icono"><i data-lucide="wrench" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>Sin resultados.</p></div>';
+    wrap.innerHTML = q ? vacioHTML({ icono: "wrench", titulo: "Sin resultados", texto: `No se encontró ninguna herramienta con "${escapeHtml(q)}".`, ctaTexto: "Limpiar búsqueda", ctaOnclick: "document.getElementById('pp-picker-buscar').value='';renderPickerFotosPP()", grid: true }) : vacioHTML({ icono: "wrench", titulo: "No hay herramientas", texto: "No hay herramientas para mostrar en este momento.", grid: true });
     renderPickerFotosPPRecibo();
     return;
   }
@@ -2643,7 +2691,7 @@ window.renderPPRetornoPickerGrid = function() {
   const wrap = document.getElementById("pp-retorno-picker-grid");
   const q = (document.getElementById("pp-retorno-picker-buscar").value || "").toLowerCase();
   const lista = (_herListaActual || []).filter(h => h.nombre.toLowerCase().includes(q));
-  if (!lista.length) { wrap.innerHTML = '<div class="vacio" style="grid-column:1/-1"><div class="vacio-icono"><i data-lucide="toolbox" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>Sin resultados.</p></div>'; return; }
+  if (!lista.length) { wrap.innerHTML = q ? vacioHTML({ icono: "toolbox", titulo: "Sin resultados", texto: `No se encontró ninguna herramienta con "${escapeHtml(q)}".`, ctaTexto: "Limpiar búsqueda", ctaOnclick: "document.getElementById('pp-retorno-picker-buscar').value='';renderPPRetornoPickerGrid()", grid: true }) : vacioHTML({ icono: "toolbox", titulo: "No hay herramientas", texto: "No hay herramientas para mostrar en este momento.", grid: true }); return; }
   wrap.innerHTML = lista.map(h => {
     const fotoUrl = h.fotoUrl || (h.codigo ? '../img/herramientas/' + h.codigo + '.jpg' : '');
     const icono = h.icono || '<i data-lucide="wrench" style="width:1em;height:1em;vertical-align:-2px"></i>';
@@ -2786,7 +2834,13 @@ function extRenderTabla() {
   const lista = extFiltrados();
   const wrap  = document.getElementById("ext-tabla-wrap");
   if (!lista.length) {
-    wrap.innerHTML = '<div class="vacio"><div class="vacio-icono"><i data-lucide="inbox" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>No hay herramientas prestadas a otros departamentos ahora mismo.<br><span style="font-size:12px">Lo ya devuelto se puede consultar en Historial.</span></p></div>';
+    wrap.innerHTML = vacioHTML({
+      icono: "inbox",
+      titulo: "Nada prestado por ahora",
+      texto: "No hay herramientas prestadas a otros departamentos en este momento. Lo ya devuelto se puede consultar en Historial.",
+      ctaTexto: "Nuevo préstamo",
+      ctaOnclick: "abrirModalNuevoPrestamoExt()"
+    });
     return;
   }
   wrap.innerHTML = lista.map(p => {
@@ -2857,8 +2911,7 @@ window.renderExtPickerGrid = function() {
     </div>`;
 
   if (!lista.length) {
-    const mensaje = q ? `No se encontró "${escapeHtml(q)}".` : "Sin resultados.";
-    wrap.innerHTML = `<div class="vacio" style="grid-column:1/-1"><div class="vacio-icono"><i data-lucide="toolbox" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>${mensaje}</p></div>` + tarjetaNueva;
+    wrap.innerHTML = (q ? vacioHTML({ icono: "toolbox", titulo: "Sin resultados", texto: `No se encontró ninguna herramienta con "${escapeHtml(q)}".`, ctaTexto: "Limpiar búsqueda", ctaOnclick: "document.getElementById('ext-picker-buscar').value='';renderExtPickerGrid()", grid: true }) : vacioHTML({ icono: "toolbox", titulo: "No hay herramientas", texto: "No hay herramientas en el catálogo todavía.", grid: true })) + tarjetaNueva;
     return;
   }
   wrap.innerHTML = lista.map(h => {
@@ -3033,7 +3086,7 @@ window.renderExtRetornoPickerGrid = function() {
   const wrap = document.getElementById("ext-retorno-picker-grid");
   const q = (document.getElementById("ext-retorno-picker-buscar").value || "").toLowerCase();
   const lista = (_herListaActual || []).filter(h => h.nombre.toLowerCase().includes(q));
-  if (!lista.length) { wrap.innerHTML = '<div class="vacio" style="grid-column:1/-1"><div class="vacio-icono"><i data-lucide="toolbox" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>Sin resultados.</p></div>'; return; }
+  if (!lista.length) { wrap.innerHTML = q ? vacioHTML({ icono: "toolbox", titulo: "Sin resultados", texto: `No se encontró ninguna herramienta con "${escapeHtml(q)}".`, ctaTexto: "Limpiar búsqueda", ctaOnclick: "document.getElementById('ext-retorno-picker-buscar').value='';renderExtRetornoPickerGrid()", grid: true }) : vacioHTML({ icono: "toolbox", titulo: "No hay herramientas", texto: "No hay herramientas para mostrar en este momento.", grid: true }); return; }
   wrap.innerHTML = lista.map(h => {
     const fotoUrl = h.fotoUrl || (h.codigo ? '../img/herramientas/' + h.codigo + '.jpg' : '');
     const icono = h.icono || '<i data-lucide="wrench" style="width:1em;height:1em;vertical-align:-2px"></i>';
@@ -3320,7 +3373,19 @@ function renderHerramientasCfg(lista) {
   }
 
   if (!filtrada.length) {
-    wrap.innerHTML = '<div class="vacio"><div class="vacio-icono"><i data-lucide="wrench" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>No hay herramientas que coincidan.</p></div>';
+    wrap.innerHTML = lista.length === 0 ? vacioHTML({
+      icono: "wrench",
+      titulo: "Aún no hay herramientas",
+      texto: "Agrega tu primera herramienta al inventario para empezar.",
+      ctaTexto: "Agregar herramienta",
+      ctaOnclick: "abrirModalHerramienta()"
+    }) : vacioHTML({
+      icono: "wrench",
+      titulo: "Sin resultados",
+      texto: "Ninguna herramienta coincide con la búsqueda o la categoría seleccionada.",
+      ctaTexto: "Limpiar filtros",
+      ctaOnclick: "limpiarFiltrosHerramientas()"
+    });
     return;
   }
 
@@ -3759,7 +3824,19 @@ function renderProfesoresCfg() {
   if (resumen) resumen.innerHTML = `<i data-lucide="user-round" style="width:1em;height:1em;vertical-align:-2px"></i> <b>${profCfgLista.length}</b> profesor${profCfgLista.length === 1 ? "" : "es"} registrado${profCfgLista.length === 1 ? "" : "s"}`;
 
   if (!lista.length) {
-    wrap.innerHTML = '<div class="vacio"><div class="vacio-icono"><i data-lucide="user-round" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>No hay profesores registrados.</p></div>';
+    wrap.innerHTML = profCfgLista.length === 0 ? vacioHTML({
+      icono: "user-round",
+      titulo: "Aún no hay profesores",
+      texto: "Agrega profesores para poder asociarlos a préstamos y solicitudes.",
+      ctaTexto: "Agregar profesor",
+      ctaOnclick: "abrirModalProfesor()"
+    }) : vacioHTML({
+      icono: "user-round",
+      titulo: "Sin resultados",
+      texto: `No se encontró ningún profesor con "${escapeHtml(buscar)}".`,
+      ctaTexto: "Limpiar búsqueda",
+      ctaOnclick: "document.getElementById('prof-buscar').value='';renderProfesoresCfg()"
+    });
     return;
   }
   wrap.innerHTML = lista.map(p => {
@@ -4034,7 +4111,19 @@ function renderLaboratoriosCfg() {
   if (resumen) resumen.innerHTML = `<i data-lucide="building-2" style="width:1em;height:1em;vertical-align:-2px"></i> <b>${labCfgLista.length}</b> laboratorio${labCfgLista.length === 1 ? "" : "s"}/taller${labCfgLista.length === 1 ? "" : "es"} registrado${labCfgLista.length === 1 ? "" : "s"}`;
 
   if (!lista.length) {
-    wrap.innerHTML = '<div class="vacio"><div class="vacio-icono"><i data-lucide="building-2" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>No hay laboratorios registrados.</p></div>';
+    wrap.innerHTML = labCfgLista.length === 0 ? vacioHTML({
+      icono: "building-2",
+      titulo: "Aún no hay laboratorios",
+      texto: "Agrega los laboratorios o talleres donde se usan las herramientas.",
+      ctaTexto: "Agregar laboratorio",
+      ctaOnclick: "abrirModalLaboratorio()"
+    }) : vacioHTML({
+      icono: "building-2",
+      titulo: "Sin resultados",
+      texto: `No se encontró ningún laboratorio con "${escapeHtml(buscar)}".`,
+      ctaTexto: "Limpiar búsqueda",
+      ctaOnclick: "document.getElementById('lab-buscar').value='';renderLaboratoriosCfg()"
+    });
     return;
   }
   // Directorio de espacios numerado (como un plano de planta), en vez de la
@@ -4172,7 +4261,19 @@ function renderCiclosCfg() {
   if (resumen) resumen.innerHTML = `<i data-lucide="calendar-days" style="width:1em;height:1em;vertical-align:-2px"></i> <b>${cicloCfgLista.length}</b> ciclo${cicloCfgLista.length === 1 ? "" : "s"} registrado${cicloCfgLista.length === 1 ? "" : "s"}`;
 
   if (!lista.length) {
-    wrap.innerHTML = '<div class="vacio"><div class="vacio-icono"><i data-lucide="calendar-days" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>No hay ciclos registrados.</p></div>';
+    wrap.innerHTML = cicloCfgLista.length === 0 ? vacioHTML({
+      icono: "calendar-days",
+      titulo: "Aún no hay ciclos",
+      texto: "Agrega los ciclos académicos para organizar las prácticas por período.",
+      ctaTexto: "Agregar ciclo",
+      ctaOnclick: "abrirModalCiclo()"
+    }) : vacioHTML({
+      icono: "calendar-days",
+      titulo: "Sin resultados",
+      texto: `No se encontró ningún ciclo con "${escapeHtml(buscar)}".`,
+      ctaTexto: "Limpiar búsqueda",
+      ctaOnclick: "document.getElementById('ciclo-buscar').value='';renderCiclosCfg()"
+    });
     return;
   }
 
@@ -4343,7 +4444,19 @@ function renderUsuariosCfg() {
   }
 
   if (!lista.length) {
-    wrap.innerHTML = '<div class="vacio"><div class="vacio-icono"><i data-lucide="lock" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>No hay usuarios registrados todavía.</p></div>';
+    wrap.innerHTML = usrCfgLista.length === 0 ? vacioHTML({
+      icono: "lock",
+      titulo: "Aún no hay usuarios",
+      texto: "Agrega cuentas de administrador o encargado para dar acceso al panel.",
+      ctaTexto: "Agregar usuario",
+      ctaOnclick: "abrirModalUsuario()"
+    }) : vacioHTML({
+      icono: "lock",
+      titulo: "Sin resultados",
+      texto: `No se encontró ningún usuario con "${escapeHtml(buscar)}".`,
+      ctaTexto: "Limpiar búsqueda",
+      ctaOnclick: "document.getElementById('usr-buscar').value='';renderUsuariosCfg()"
+    });
     return;
   }
   const etiquetasSecciones = {
@@ -4724,7 +4837,13 @@ function histRenderTabla() {
   const wrap   = document.getElementById("hist-tabla-wrap");
 
   if (pagina.length === 0) {
-    wrap.innerHTML = '<div class="vacio"><div class="vacio-icono"><i data-lucide="inbox" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>No hay registros que coincidan.</p></div>';
+    wrap.innerHTML = vacioHTML({
+      icono: "inbox",
+      titulo: "Sin registros",
+      texto: "Ningún registro coincide con los filtros aplicados.",
+      ctaTexto: "Limpiar filtros",
+      ctaOnclick: "document.getElementById('hist-btn-limpiar').click()"
+    });
     document.getElementById("hist-pag-info").textContent = "";
     document.getElementById("hist-pag-btns").innerHTML = "";
     return;

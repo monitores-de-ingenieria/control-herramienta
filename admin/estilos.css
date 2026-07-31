@@ -924,9 +924,32 @@ tr:hover td { background: var(--hover); }
 .cargando { text-align: center; padding: 40px; color: var(--texto-dim); font-size: 12.5px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
 .spinner { width: 22px; height: 22px; border: 2px solid var(--borde); border-top-color: var(--verde); border-radius: 50%; animation: spin .7s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
-.vacio { text-align: center; padding: 48px 20px; color: var(--texto-dim); }
-.vacio-icono { font-size: 28px; margin-bottom: 10px; opacity: .6; }
-.vacio p { font-size: 12.5px; }
+.vacio {
+  text-align: center;
+  padding: 44px 20px;
+  color: var(--texto-dim);
+  animation: vacioAparece .35s ease both;
+}
+.vacio-icono {
+  width: 52px; height: 52px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  background: var(--card2);
+  border: 1px solid var(--borde);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--texto-dim);
+}
+.vacio-icono i { width: 22px; height: 22px; }
+.vacio-titulo { font-size: 14px; font-weight: 600; color: var(--texto); margin: 0 0 4px; }
+.vacio p { font-size: 12.5px; line-height: 1.55; max-width: 320px; margin: 0 auto; }
+.vacio-cta { margin-top: 16px; }
+@keyframes vacioAparece {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vacio { animation: none; }
+}
 
 /* ═══════════════════════════════════════════
    TOAST

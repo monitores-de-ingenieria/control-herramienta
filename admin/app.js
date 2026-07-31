@@ -1020,7 +1020,7 @@ function renderTabla() {
     solicitudes.forEach(s => {
       contador++;
       filas += `
-          <tr style="cursor:pointer" onclick="abrirModal('${s.id}')">
+          <tr style="cursor:pointer${s.estado === "retornada" ? ";opacity:.5" : ""}" onclick="abrirModal('${s.id}')" title="${s.estado === "retornada" ? "Ya retornada" : ""}">
             <td style="color:var(--texto-dim)">${contador}</td>
             <td style="font-size:12px;color:var(--texto-dim)">${formatFecha(s.creadoEn)}</td>
             <td>

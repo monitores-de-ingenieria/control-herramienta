@@ -332,22 +332,17 @@
           </button>
         </div>
 
-        <div class="seccion-tabla">
-          <div class="toolbar-tabla">
-            <div class="filtros">
-              <div class="buscar-wrap" style="flex:1;min-width:200px">
-                <input type="text" id="ext-buscar" placeholder="Buscar departamento..." style="width:100%">
-                <span class="buscar-icono"><i data-lucide=search></i></span>
-              </div>
-            </div>
-
-            <!-- Sin chips de filtro: esta sección siempre muestra solo lo
-                 prestado activo. Para ver lo ya devuelto, usa "Historial". -->
+        <div class="her-toolbar" style="margin-bottom:16px">
+          <div class="buscar-wrap" style="flex:1;min-width:200px">
+            <input type="text" id="ext-buscar" placeholder="Buscar departamento..." style="width:100%">
+            <span class="buscar-icono"><i data-lucide=search></i></span>
           </div>
+          <!-- Sin chips de filtro: esta sección siempre muestra solo lo
+               prestado activo. Para ver lo ya devuelto, usa "Historial". -->
+        </div>
 
-          <div id="ext-tabla-wrap">
-            <div class="cargando"><div class="spinner"></div>Cargando préstamos...</div>
-          </div>
+        <div id="ext-tabla-wrap" class="pp-grid">
+          <div class="cargando"><div class="spinner"></div>Cargando préstamos...</div>
         </div>
       </div>
 

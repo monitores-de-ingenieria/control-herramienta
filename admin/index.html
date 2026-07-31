@@ -259,6 +259,10 @@
               <select id="filtro-profesor" style="min-width:150px;flex-shrink:0">
                 <option value="">Profesor: Todos</option>
               </select>
+              <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--texto-dim);cursor:pointer;white-space:nowrap;flex-shrink:0" title="Cuando está activo, las solicitudes ya retornadas no aparecen en la tabla (salvo que filtres el estado por 'Retornada')">
+                <input type="checkbox" id="chk-ocultar-retornadas" checked onchange="renderTabla()">
+                Ocultar retornadas
+              </label>
             </div>
 
             <div id="filtros-activos-bar" style="display:none;align-items:center;gap:6px;flex-wrap:wrap;margin-top:10px">

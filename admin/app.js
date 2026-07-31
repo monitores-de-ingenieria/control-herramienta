@@ -954,8 +954,13 @@ function solicitudesFiltradas() {
   const buscar = document.getElementById("filtro-buscar").value.toLowerCase();
   const estado = document.getElementById("filtro-estado").value;
   const profesor = document.getElementById("filtro-profesor").value;
+  // Por defecto las retornadas no se muestran para no mezclarse visualmente
+  // con las que sí requieren atención — pero si el usuario filtra el estado
+  // específicamente por "retornada", ese filtro manda y sí se muestran.
+  const ocultarRetornadas = document.getElementById("chk-ocultar-retornadas")?.checked && estado !== "retornada";
   const filtradas = todasSolicitudes.filter(s => {
     if (estado !== "incidencia" && !esMismodia(s.creadoEn)) return false;
+    if (ocultarRetornadas && s.estado === "retornada") return false;
     const textoMatch = !buscar || `${s.nombre} ${s.apellido} ${s.matricula}`.toLowerCase().includes(buscar);
     const estadoMatch = !estado
       ? true
@@ -1020,7 +1025,7 @@ function renderTabla() {
     solicitudes.forEach(s => {
       contador++;
       filas += `
-          <tr style="cursor:pointer${s.estado === "retornada" ? ";opacity:.5" : ""}" onclick="abrirModal('${s.id}')" title="${s.estado === "retornada" ? "Ya retornada" : ""}">
+          <tr style="cursor:pointer${s.estado === "retornada" ? ";opacity:.7" : ""}" onclick="abrirModal('${s.id}')" title="${s.estado === "retornada" ? "Ya retornada" : ""}">
             <td style="color:var(--texto-dim)">${contador}</td>
             <td style="font-size:12px;color:var(--texto-dim)">${formatFecha(s.creadoEn)}</td>
             <td>

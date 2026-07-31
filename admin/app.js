@@ -188,6 +188,7 @@ onAuthStateChanged(auth, async user => {
     cargaEl.style.display = "none";
     appEl.classList.add("visible");
   } else {
+    _detenerTodosLosListeners();
     cargaEl.style.display = "none";
     loginEl.classList.add("visible");
     appEl.classList.remove("visible");
@@ -221,7 +222,7 @@ const AUDIT_ACCION_COLOR = { crear:"var(--verde)", editar:"var(--azul)", elimina
 async function cargarAuditoria() {
   const wrap = document.getElementById("audit-wrap");
   try {
-    onSnapshot(
+    _onSnap(
       query(collection(db, "auditoria"), orderBy("creadoEn", "desc")),
       snap => {
         _auditoriaLista = snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -720,16 +721,50 @@ window.dashIrDia = function(fechaIso) {
   }, 80);
 };
 
+// Registro central de listeners onSnapshot activos. Antes ninguno se
+// guardaba, así que al cerrar sesión (o volver a iniciar) quedaban
+// escuchando colecciones de Firestore para siempre (fuga de memoria/lecturas
+// innecesarias). _onSnap() es un reemplazo directo de onSnapshot() — misma
+// firma, mismos argumentos — que además guarda la función de desuscripción.
+let _listenersActivos = [];
+function _onSnap(...args) {
+  const unsub = onSnapshot(...args);
+  _listenersActivos.push(unsub);
+  return unsub;
+}
+function _detenerTodosLosListeners() {
+  _listenersActivos.forEach(fn => { try { fn(); } catch (e) {} });
+  _listenersActivos = [];
+  _dashboardEscuchando = false;
+}
+
 let _dashboardEscuchando = false;
+let _dashSolicitudesCache = [];
+let _dashPrestProfCache = [];
+let _dashDebounceTimer = null;
+
+function _dashboardRecalcularDebounced() {
+  clearTimeout(_dashDebounceTimer);
+  _dashDebounceTimer = setTimeout(() => {
+    _actualizarDashboard(_dashSolicitudesCache, _dashPrestProfCache);
+  }, 200);
+}
+
 function cargarDashboard() {
-  if (_dashboardEscuchando) return; // ya hay un listener activo, no crear otro
+  if (_dashboardEscuchando) return; // ya hay listeners activos, no crear otros
   _dashboardEscuchando = true;
-  // Escuchar en tiempo real las dos colecciones
-  onSnapshot(collection(db, "solicitudes"), snapSol => {
-    const todas = snapSol.docs.map(d => ({ id: d.id, ...d.data() }));
-    getDocs(collection(db, "prestamos_profesores")).then(snapProf => {
-      _actualizarDashboard(todas, snapProf.docs.map(d => ({ id: d.id, ...d.data() })));
-    });
+  // Antes: cada cambio en "solicitudes" disparaba un getDocs() completo de
+  // "prestamos_profesores" (lectura repetida innecesaria). Ahora cada
+  // colección tiene su propio listener en tiempo real, y el recálculo se
+  // agrupa con un pequeño debounce para no recalcular todo el dashboard
+  // varias veces si llegan cambios seguidos.
+  _onSnap(collection(db, "solicitudes"), snapSol => {
+    _dashSolicitudesCache = snapSol.docs.map(d => ({ id: d.id, ...d.data() }));
+    _dashboardRecalcularDebounced();
+  });
+  _onSnap(collection(db, "prestamos_profesores"), snapProf => {
+    _dashPrestProfCache = snapProf.docs.map(d => ({ id: d.id, ...d.data() }));
+    _dashboardRecalcularDebounced();
   });
 }
 
@@ -888,7 +923,7 @@ const porPagina = 10;
 
 async function cargarSolicitudes() {
   try {
-    onSnapshot(query(collection(db, "solicitudes"), orderBy("creadoEn", "desc")), (snap) => {
+    _onSnap(query(collection(db, "solicitudes"), orderBy("creadoEn", "desc")), (snap) => {
       todasSolicitudes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       actualizarContadores();
       cargarSelectores();
@@ -2183,7 +2218,7 @@ let _ppFiltroEstado = "activo"; // por defecto se muestran los prestamos activos
 
 async function cargarPrestamosProf() {
   try {
-    onSnapshot(query(collection(db, "prestamos_profesores"), orderBy("creadoEn", "desc")), snap => {
+    _onSnap(query(collection(db, "prestamos_profesores"), orderBy("creadoEn", "desc")), snap => {
       const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
       const todos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       todosPrestamosProfTodos = todos;
@@ -2714,7 +2749,7 @@ document.getElementById("modal-retorno-pp").addEventListener("click", e => {
 
 async function cargarPrestamosExternos() {
   try {
-    onSnapshot(query(collection(db, "prestamos_externos"), orderBy("creadoEn", "desc")), snap => {
+    _onSnap(query(collection(db, "prestamos_externos"), orderBy("creadoEn", "desc")), snap => {
       todosPrestamosExt = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       actualizarBadgeLateral("badge-prestadas", todosPrestamosExt.filter(p => p.estado === "prestado").length);
       extRenderTabla();
@@ -3165,7 +3200,7 @@ let _herListaActual = [];
 
 async function cargarHerramientasCfg() {
   try {
-    onSnapshot(query(collection(db, "herramientas"), orderBy("nombre", "asc")), snap => {
+    _onSnap(query(collection(db, "herramientas"), orderBy("nombre", "asc")), snap => {
       const todosValidos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       const nombresFirestore = new Set(todosValidos.map(h => h.nombre.toLowerCase()));
       const eliminadas = new Set(todosValidos.filter(h => h.eliminada).map(h => h.nombre.toLowerCase()));
@@ -3693,7 +3728,7 @@ let profCfgLista  = [];
 const PROFESORES_RESPALDO_ADMIN = ["Daniel Camejo","José Peña","Julio Durán","Víctor Félix"];
 async function cargarProfesoresCfg() {
   try {
-    onSnapshot(query(collection(db, "profesores"), orderBy("nombre", "asc")), snap => {
+    _onSnap(query(collection(db, "profesores"), orderBy("nombre", "asc")), snap => {
       const todosValidos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       const nombresFirestore = new Set(todosValidos.map(p => p.nombre.toLowerCase()));
       const eliminados = new Set(todosValidos.filter(p => p.eliminado).map(p => p.nombre.toLowerCase()));
@@ -3968,7 +4003,7 @@ let labCfgLista  = [];
 
 async function cargarLaboratoriosCfg() {
   try {
-    onSnapshot(query(collection(db, "laboratorios"), orderBy("nombre", "asc")), snap => {
+    _onSnap(query(collection(db, "laboratorios"), orderBy("nombre", "asc")), snap => {
       const todosValidos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       const nombresFirestore = new Set(todosValidos.map(l => l.nombre.toLowerCase()));
       const eliminados = new Set(todosValidos.filter(l => l.eliminado).map(l => l.nombre.toLowerCase()));
@@ -4106,7 +4141,7 @@ function ordenarCiclosAdmin(lista) {
 
 async function cargarCiclosCfg() {
   try {
-    onSnapshot(query(collection(db, "ciclos")), snap => {
+    _onSnap(query(collection(db, "ciclos")), snap => {
       const todosValidos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       const nombresFirestore = new Set(todosValidos.map(c => String(c.nombre || "").toLowerCase()));
       const eliminados = new Set(todosValidos.filter(c => c.eliminado).map(c => String(c.nombre || "").toLowerCase()));
@@ -4278,7 +4313,7 @@ let usrCfgEditarId = null;
 
 async function cargarUsuariosCfg() {
   try {
-    onSnapshot(query(collection(db, "usuarios"), orderBy("creadoEn", "desc")), snap => {
+    _onSnap(query(collection(db, "usuarios"), orderBy("creadoEn", "desc")), snap => {
       usrCfgLista = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       renderUsuariosCfg();
     }, (err) => {

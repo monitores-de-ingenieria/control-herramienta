@@ -2751,52 +2751,44 @@ function extRenderTabla() {
   const lista = extFiltrados();
   const wrap  = document.getElementById("ext-tabla-wrap");
   if (!lista.length) {
-    wrap.innerHTML = '<div class="vacio" style="padding:40px;text-align:center;color:var(--texto-dim)"><i data-lucide="inbox" style="width:1em;height:1em;vertical-align:-2px"></i> No hay herramientas prestadas a otros departamentos ahora mismo.<br><span style="font-size:12px">Lo ya devuelto se puede consultar en Historial.</span></div>';
+    wrap.innerHTML = '<div class="vacio"><div class="vacio-icono"><i data-lucide="inbox" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>No hay herramientas prestadas a otros departamentos ahora mismo.<br><span style="font-size:12px">Lo ya devuelto se puede consultar en Historial.</span></p></div>';
     return;
   }
-  wrap.innerHTML = `
-    <table>
-      <thead>
-        <tr>
-          <th>Departamento</th>
-          <th>Responsable</th>
-          <th>Herramientas</th>
-          <th>Fecha</th>
-          <th>Estado</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${lista.map(p => {
-          const fecha = p.creadoEn?.toDate ? p.creadoEn.toDate().toLocaleString("es-DO") : "—";
-          const color = colorEstudiante(p.departamento || "");
-          const ini   = (p.departamento || "D")[0].toUpperCase();
-          const herramientasTexto = (p.herramientas || []).map(h => `${escapeHtml(h.nombre)} ×${h.cantidad}`).join(", ") || "—";
-          const badgeEstado = p.estado === "prestado"
-            ? '<span class="badge badge-entregada">Prestado</span>'
-            : p.tieneIncidencias
-              ? '<span class="badge badge-cancelada">Con incidencias</span>'
-              : '<span class="badge badge-retornada">Devuelto</span>';
-          const acciones = p.estado === "prestado"
-            ? `<button class="btn btn-azul" onclick="abrirRetornoExt('${p.id}')" title="Registrar el retorno de las herramientas"><i data-lucide=corner-up-left style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Retornar</button> <button class="btn btn-outline" onclick="generarConduce('${p.id}')" title="Generar el conduce de salida imprimible" style="padding:7px 9px"><i data-lucide=file-text style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i></button>`
-            : `<span style="font-size:11px;color:var(--verde);font-weight:700"><i data-lucide=check style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Completada</span> <button class="btn btn-outline" onclick="generarConduce('${p.id}')" title="Generar el conduce de salida imprimible" style="padding:7px 9px"><i data-lucide=file-text style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i></button>`;
-          return `
-            <tr>
-              <td>
-                <div class="est-avatar">
-                  <div class="est-circulo" style="background:${color};color:#fff">${ini}</div>
-                  <div class="est-nombre">${p.departamento || "—"}</div>
-                </div>
-              </td>
-              <td style="font-size:13px">${p.responsable || "—"}</td>
-              <td style="font-size:12px;color:var(--texto-dim);max-width:200px">${herramientasTexto}</td>
-              <td style="font-size:12px;color:var(--texto-dim)">${fecha}</td>
-              <td>${badgeEstado}</td>
-              <td><div style="display:flex;gap:6px;flex-wrap:nowrap;align-items:center">${acciones}</div></td>
-            </tr>`;
-        }).join("")}
-      </tbody>
-    </table>`;
+  wrap.innerHTML = lista.map(p => {
+    const fechaObj = p.creadoEn?.toDate ? p.creadoEn.toDate() : (p.creadoEn ? new Date(p.creadoEn) : null);
+    const fecha = fechaObj
+      ? (esMismodia(p.creadoEn) ? fechaObj.toLocaleTimeString("es-DO", {hour:"2-digit",minute:"2-digit"})
+                                 : fechaObj.toLocaleDateString("es-DO", {day:"2-digit",month:"short"}) + ' · ' + fechaObj.toLocaleTimeString("es-DO", {hour:"2-digit",minute:"2-digit"}))
+      : "—";
+    const color = colorEstudiante(p.departamento || "");
+    const ini   = (p.departamento || "D")[0].toUpperCase();
+    const herramientasHtml = (p.herramientas || []).map(h =>
+      `<span class="pp-herr-chip">${escapeHtml(h.nombre)} <b>×${h.cantidad}</b></span>`
+    ).join("") || '<span class="pp-herr-vacio">Sin herramientas</span>';
+    const estadoTag = p.estado === "prestado"
+      ? `<span class="pp-estado-tag" style="background:var(--verde-glow);color:var(--verde)">Prestado</span>`
+      : p.tieneIncidencias
+        ? `<span class="pp-estado-tag" style="background:rgba(239,68,68,.15);color:var(--rojo)">Con incidencias</span>`
+        : `<span class="pp-estado-tag" style="background:var(--card2);color:var(--texto-dim)">Devuelto</span>`;
+    const acciones = p.estado === "prestado"
+      ? `<button class="btn btn-azul" onclick="abrirRetornoExt('${p.id}')" title="Registrar el retorno de las herramientas"><i data-lucide=corner-up-left style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Retornar</button><button class="btn btn-outline" onclick="generarConduce('${p.id}')" title="Generar el conduce de salida imprimible" style="flex:0 0 auto"><i data-lucide=file-text style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i></button>`
+      : `<span style="font-size:11px;color:var(--verde);font-weight:700;flex:1"><i data-lucide=check style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Completada</span><button class="btn btn-outline" onclick="generarConduce('${p.id}')" title="Generar el conduce de salida imprimible" style="flex:0 0 auto"><i data-lucide=file-text style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i></button>`;
+    return `
+      <div class="ext-card${p.tieneIncidencias ? ' con-incidencia' : ''}">
+        <div class="ext-card-top">
+          <div class="ext-icono-depto"><i data-lucide="building-2"></i></div>
+          <div>
+            <div class="pp-nombre">${escapeHtml(p.departamento) || "—"}</div>
+            <div class="pp-lab">Responsable: ${escapeHtml(p.responsable) || "—"}</div>
+          </div>
+          ${estadoTag}
+        </div>
+        <div class="ext-perforado"></div>
+        <div class="pp-herr-chips">${herramientasHtml}</div>
+        <div class="pp-fecha-row"><i data-lucide="clock" style="width:1em;height:1em;vertical-align:-2px"></i> ${fecha}</div>
+        <div class="pp-acciones">${acciones}</div>
+      </div>`;
+  }).join("");
 }
 
 document.getElementById("ext-buscar")?.addEventListener("input", extRenderTabla);
@@ -3772,13 +3764,16 @@ function renderProfesoresCfg() {
               <div class="est-nombre prof-nombre-lg" title="${escapeAttr(p.nombre)}">${p.nombre}${local}</div>
             </div>
           </div>
-          ${sinRetHoy.length > 0 ? `<span class="prof-badge-activos" style="cursor:pointer" title="Ver y cerrar préstamo" onclick="abrirRetornoProf('${sinRetHoy[0].id}')">⏳ ${sinRetHoy.length} sin retornar hoy</span>` : ""}
-          ${sinRetViejos > 0 ? `<span class="prof-badge-activos" style="cursor:pointer;background:rgba(239,68,68,.15);color:var(--rojo)" title="Ver y cerrar préstamo" onclick="abrirRetornoProf('${sinRetornar.find(x=>!esMismodia(x.creadoEn)).id}')">${sinRetViejos} atrasado(s)</span>` : ""}
           <div class="acciones-celda">
             <button class="btn btn-outline" onclick="abrirModalProfesor('${p.id}','${nombreEsc}',${p.local||false})" title="Editar profesor">Editar</button>
             ${p.local ? "" : `<button class="btn btn-rojo" onclick="eliminarProfesor('${p.id}','${nombreEsc}')" title="Eliminar profesor"><i data-lucide="trash-2" style="width:1em;height:1em;vertical-align:-2px"></i></button>`}
           </div>
         </div>
+        ${(sinRetHoy.length > 0 || sinRetViejos > 0) ? `
+        <div class="prof-badges-row">
+          ${sinRetHoy.length > 0 ? `<span class="prof-badge-activos" style="cursor:pointer" title="Ver y cerrar préstamo" onclick="abrirRetornoProf('${sinRetHoy[0].id}')">⏳ ${sinRetHoy.length} sin retornar hoy</span>` : ""}
+          ${sinRetViejos > 0 ? `<span class="prof-badge-activos" style="cursor:pointer;background:rgba(239,68,68,.15);color:var(--rojo)" title="Ver y cerrar préstamo" onclick="abrirRetornoProf('${sinRetornar.find(x=>!esMismodia(x.creadoEn)).id}')">${sinRetViejos} atrasado(s)</span>` : ""}
+        </div>` : ""}
         ${listaMaterias}
       </div>`;
   }).join("");

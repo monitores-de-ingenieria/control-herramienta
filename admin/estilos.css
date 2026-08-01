@@ -1104,8 +1104,8 @@ tr:hover td { background: var(--hover); }
 .prof-fila { background:var(--card); border:1px solid var(--borde); border-radius:12px; padding:13px 15px; transition:border-color .15s; }
 .ciclo-anio-grupo { margin-bottom: 18px; }
 .ciclo-anio-grupo:last-child { margin-bottom: 0; }
-.ciclo-anio-header { display:flex; align-items:center; gap:8px; font-size:12.5px; font-weight:700; color:var(--texto); margin-bottom:9px; padding-bottom:7px; border-bottom:1px solid var(--borde); }
-.ciclo-anio-cuenta { font-size:10px; font-weight:600; color:var(--texto-dim); background:var(--card2); padding:2px 9px; border-radius:20px; }
+.ciclo-anio-header { display:flex; align-items:center; gap:8px; font-size:13.5px; font-weight:700; color:var(--texto); margin-bottom:10px; padding-bottom:7px; border-bottom:1px solid var(--borde); }
+.ciclo-anio-cuenta { font-size:10px; font-weight:600; color:#f97316; background:rgba(249,115,22,0.12); padding:2px 9px; border-radius:20px; }
 .ciclo-anio-fila { display:flex; flex-wrap:wrap; gap:8px; }
 .prof-fila:hover { border-color:var(--verde); }
 .prof-fila-top { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
@@ -1409,7 +1409,7 @@ body.tema-claro #vista-herramientas-cfg .her-grid {
   border-color: #f97316 !important;
   box-shadow: 0 0 0 3px rgba(249,115,22,0.12) !important;
 }
-.ciclo-anio-cuenta { background: rgba(249,115,22,0.12); color: #f97316; font-size: 10px; font-weight: 600; padding: 2px 9px; border-radius: 20px; }
+/* .ciclo-anio-cuenta fusionada arriba (línea ~1108) — no borrar esta nota sin revisar */
 .ciclo-timeline { padding: 18px; position: relative; }
 .ciclo-timeline-fila { display: flex; gap: 14px; position: relative; padding-bottom: 22px; }
 .ciclo-timeline-fila:last-child { padding-bottom: 0; }
@@ -1424,7 +1424,7 @@ body.tema-claro #vista-herramientas-cfg .her-grid {
   display: flex; align-items: center; justify-content: center;
 }
 .ciclo-timeline-contenido { flex: 1; min-width: 0; }
-.ciclo-anio-header { display: flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 700; margin-bottom: 10px; }
+/* .ciclo-anio-header fusionada arriba (línea ~1107) — no borrar esta nota sin revisar */
 .ciclo-timeline-items { display: flex; flex-wrap: wrap; gap: 8px; }
 .ciclo-chip {
   display: flex; align-items: center; gap: 8px; background: var(--card);

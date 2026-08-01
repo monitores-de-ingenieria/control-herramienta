@@ -1096,9 +1096,9 @@ tr:hover td { background: var(--hover); }
 /* ═════════════════════════════════════════
    PROFESORES / LISTAS DE CONFIGURACIÓN
 ══════════════════════════════════════════ */
-.prof-resumen { display:flex; align-items:center; gap:8px; margin-bottom:16px; font-size:12px; color:var(--texto-dim); }
+.prof-resumen { display:flex; align-items:center; gap:8px; margin-bottom:16px; font-size:12px; color:var(--texto-dim); padding: 0 18px; }
 .prof-resumen b { color:var(--texto); font-size:15px; }
-.prof-lista { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:10px; align-items:start; }
+.prof-lista { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:10px; align-items:start; padding: 0 18px 18px; }
 .prof-fila { background:var(--card); border:1px solid var(--borde); border-radius:12px; padding:13px 15px; transition:border-color .15s; }
 .ciclo-anio-grupo { margin-bottom: 18px; }
 .ciclo-anio-grupo:last-child { margin-bottom: 0; }

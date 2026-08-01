@@ -108,22 +108,6 @@ function formatFecha(ts) {
     " " + d.toLocaleTimeString("es-DO", { hour:"2-digit", minute:"2-digit" });
 }
 
-// Genera el HTML de un "estado vacío" contextual: insignia con icono,
-// título corto, texto de apoyo y — cuando aplica — un botón de acción (CTA)
-// que le da al usuario algo que hacer en vez de solo informarle que no hay nada.
-// grid=true agrega el estilo para ocupar toda la fila en grids (her-grid, pp-grid).
-function vacioHTML({ icono = "inbox", titulo, texto = "", ctaTexto = "", ctaOnclick = "", grid = false }) {
-  const cta = ctaTexto && ctaOnclick
-    ? `<button type="button" class="btn btn-outline vacio-cta" onclick="${ctaOnclick}">${ctaTexto}</button>`
-    : "";
-  return `<div class="vacio"${grid ? ' style="grid-column:1/-1"' : ""}>
-    <div class="vacio-icono"><i data-lucide="${icono}"></i></div>
-    <p class="vacio-titulo">${titulo}</p>
-    ${texto ? `<p>${texto}</p>` : ""}
-    ${cta}
-  </div>`;
-}
-
 function mostrarToast(msg, tipo = "verde") {
   const t = document.getElementById("toast");
   t.innerHTML = msg;
@@ -204,7 +188,6 @@ onAuthStateChanged(auth, async user => {
     cargaEl.style.display = "none";
     appEl.classList.add("visible");
   } else {
-    _detenerTodosLosListeners();
     cargaEl.style.display = "none";
     loginEl.classList.add("visible");
     appEl.classList.remove("visible");
@@ -238,7 +221,7 @@ const AUDIT_ACCION_COLOR = { crear:"var(--verde)", editar:"var(--azul)", elimina
 async function cargarAuditoria() {
   const wrap = document.getElementById("audit-wrap");
   try {
-    _onSnap(
+    onSnapshot(
       query(collection(db, "auditoria"), orderBy("creadoEn", "desc")),
       snap => {
         _auditoriaLista = snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -269,11 +252,7 @@ function renderAuditoria() {
   if (buscar) lista = lista.filter(a => (a.descripcion||"").toLowerCase().includes(buscar) || (a.usuario||"").toLowerCase().includes(buscar));
 
   if (!lista.length) {
-    wrap.innerHTML = vacioHTML({
-      icono: "scroll-text",
-      titulo: "Sin movimientos aún",
-      texto: "Los préstamos, entregas y devoluciones de esta herramienta aparecerán aquí a medida que ocurran."
-    });
+    wrap.innerHTML = '<div class="vacio" style="padding:20px"><div class="vacio-icono"><i data-lucide="scroll-text" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>No hay movimientos registrados todavía.</p></div>';
     return;
   }
 
@@ -607,7 +586,7 @@ function barraH(valor, max, color) {
 function renderGraficoBarras(contenedorId, datos, color) {
   const el = document.getElementById(contenedorId);
   if (!el) return;
-  if (!datos.length) { el.innerHTML = vacioHTML({ icono: "bar-chart-3", titulo: "Sin datos aún", texto: "La actividad de hoy aparecerá aquí en cuanto haya movimientos." }); return; }
+  if (!datos.length) { el.innerHTML = '<div class="vacio" style="padding:20px"><p>Sin datos aún.</p></div>'; return; }
   const max = datos[0].valor;
   el.innerHTML = datos.slice(0, 8).map(d => `
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px;cursor:pointer" onclick="dashAbrirHerramienta('${escapeAttr(d.etiqueta)}')">
@@ -621,7 +600,7 @@ function renderGraficoDonut(contenedorId, datos, onClickPrefix) {
   const el = document.getElementById(contenedorId);
   if (!el) return;
   const total = datos.reduce((s,d) => s + d.valor, 0);
-  if (!total) { el.innerHTML = vacioHTML({ icono: "chart-pie", titulo: "Sin datos aún", texto: "La actividad de hoy aparecerá aquí en cuanto haya movimientos." }); return; }
+  if (!total) { el.innerHTML = '<div class="vacio" style="padding:20px"><p>Sin datos aún.</p></div>'; return; }
   const r = 42, cx = 50, cy = 50, circ = 2 * Math.PI * r;
   let offset = 0;
   const click = e => onClickPrefix ? `onclick="${onClickPrefix}('${escapeAttr(e)}')" style="cursor:pointer"` : "";
@@ -655,7 +634,7 @@ function renderGraficoDonut(contenedorId, datos, onClickPrefix) {
 function renderGraficoArea(contenedorId, datos) {
   const el = document.getElementById(contenedorId);
   if (!el) return;
-  if (datos.every(d => d.valor === 0)) { el.innerHTML = vacioHTML({ icono: "trending-up", titulo: "Sin datos aún", texto: "La actividad de hoy aparecerá aquí en cuanto haya movimientos." }); return; }
+  if (datos.every(d => d.valor === 0)) { el.innerHTML = '<div class="vacio" style="padding:20px"><p>Sin datos aún.</p></div>'; return; }
   const max = Math.max(...datos.map(d => d.valor), 1);
   const w = 300, h = 90, pad = 6;
   const stepX = (w - pad*2) / (datos.length - 1);
@@ -741,50 +720,16 @@ window.dashIrDia = function(fechaIso) {
   }, 80);
 };
 
-// Registro central de listeners onSnapshot activos. Antes ninguno se
-// guardaba, así que al cerrar sesión (o volver a iniciar) quedaban
-// escuchando colecciones de Firestore para siempre (fuga de memoria/lecturas
-// innecesarias). _onSnap() es un reemplazo directo de onSnapshot() — misma
-// firma, mismos argumentos — que además guarda la función de desuscripción.
-let _listenersActivos = [];
-function _onSnap(...args) {
-  const unsub = onSnapshot(...args);
-  _listenersActivos.push(unsub);
-  return unsub;
-}
-function _detenerTodosLosListeners() {
-  _listenersActivos.forEach(fn => { try { fn(); } catch (e) {} });
-  _listenersActivos = [];
-  _dashboardEscuchando = false;
-}
-
 let _dashboardEscuchando = false;
-let _dashSolicitudesCache = [];
-let _dashPrestProfCache = [];
-let _dashDebounceTimer = null;
-
-function _dashboardRecalcularDebounced() {
-  clearTimeout(_dashDebounceTimer);
-  _dashDebounceTimer = setTimeout(() => {
-    _actualizarDashboard(_dashSolicitudesCache, _dashPrestProfCache);
-  }, 200);
-}
-
 function cargarDashboard() {
-  if (_dashboardEscuchando) return; // ya hay listeners activos, no crear otros
+  if (_dashboardEscuchando) return; // ya hay un listener activo, no crear otro
   _dashboardEscuchando = true;
-  // Antes: cada cambio en "solicitudes" disparaba un getDocs() completo de
-  // "prestamos_profesores" (lectura repetida innecesaria). Ahora cada
-  // colección tiene su propio listener en tiempo real, y el recálculo se
-  // agrupa con un pequeño debounce para no recalcular todo el dashboard
-  // varias veces si llegan cambios seguidos.
-  _onSnap(collection(db, "solicitudes"), snapSol => {
-    _dashSolicitudesCache = snapSol.docs.map(d => ({ id: d.id, ...d.data() }));
-    _dashboardRecalcularDebounced();
-  });
-  _onSnap(collection(db, "prestamos_profesores"), snapProf => {
-    _dashPrestProfCache = snapProf.docs.map(d => ({ id: d.id, ...d.data() }));
-    _dashboardRecalcularDebounced();
+  // Escuchar en tiempo real las dos colecciones
+  onSnapshot(collection(db, "solicitudes"), snapSol => {
+    const todas = snapSol.docs.map(d => ({ id: d.id, ...d.data() }));
+    getDocs(collection(db, "prestamos_profesores")).then(snapProf => {
+      _actualizarDashboard(todas, snapProf.docs.map(d => ({ id: d.id, ...d.data() })));
+    });
   });
 }
 
@@ -943,7 +888,7 @@ const porPagina = 10;
 
 async function cargarSolicitudes() {
   try {
-    _onSnap(query(collection(db, "solicitudes"), orderBy("creadoEn", "desc")), (snap) => {
+    onSnapshot(query(collection(db, "solicitudes"), orderBy("creadoEn", "desc")), (snap) => {
       todasSolicitudes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       actualizarContadores();
       cargarSelectores();
@@ -1061,13 +1006,7 @@ function renderTabla() {
   const wrap = document.getElementById("tabla-solicitudes-wrap");
 
   if (pagina.length === 0) {
-    wrap.innerHTML = vacioHTML({
-      icono: "inbox",
-      titulo: "Sin solicitudes que coincidan",
-      texto: "Ajusta los filtros o espera a que lleguen nuevas solicitudes de hoy.",
-      ctaTexto: "Limpiar filtros",
-      ctaOnclick: "document.getElementById('btn-limpiar-filtros').click()"
-    });
+    wrap.innerHTML = '<div class="vacio"><div class="vacio-icono"><i data-lucide="inbox" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>No hay solicitudes que coincidan.</p></div>';
     document.getElementById("pag-info").textContent = "";
     document.getElementById("pag-btns").innerHTML = "";
     return;
@@ -1116,6 +1055,7 @@ function renderTabla() {
             <td style="white-space:nowrap"><span class="badge badge-dot badge-${s.estado}">${s.estado}</span>${s.tieneIncidencias ? ' <span class="badge badge-cancelada" title="Tiene incidencias"><i data-lucide=alert-triangle style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i></span>' : ''}${s.estado === "pendiente" && (Date.now() - fechaDe(s.creadoEn).getTime()) > 15*60*1000 ? ' <span class="badge badge-cancelada" title="Pendiente hace más de 15 minutos">⏰</span>' : ''}</td>
             <td>
               <div style="display:flex;gap:6px;align-items:center">
+                <button class="btn btn-outline" onclick="event.stopPropagation();abrirModal('${s.id}')"><i data-lucide="eye" style="width:1em;height:1em;vertical-align:-2px"></i> Ver</button>
                 ${s.estado === "pendiente" ? `<button class="btn btn-verde" onclick="event.stopPropagation();entregar('${s.id}')" title="Registrar la entrega de esta solicitud"><i data-lucide=check style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Entregar</button>` : ""}
                 ${s.estado === "entregada" ? `<button class="btn btn-azul" onclick="event.stopPropagation();retornar('${s.id}')"><i data-lucide="corner-up-left" style="width:1em;height:1em;vertical-align:-2px"></i> Retornar</button>` : ""}
                 ${s.estado === "retornada" ? `<span class="badge badge-dot badge-entregada" style="cursor:default">Retornada</span>` : ""}
@@ -1221,21 +1161,6 @@ document.getElementById("filtro-estado")?.addEventListener("change", () => {
   paginaActual = 1;
   renderTabla();
 });
-
-// "Ocultar retornadas": se recuerda tu elección entre sesiones (igual que el
-// tema claro/oscuro), en vez de reiniciarse marcado cada vez que recargas.
-// Por defecto (primera vez, sin nada guardado) queda DESMARCADO — mostrar
-// todo es lo esperado; ocultar es una decisión tuya, no el estado inicial.
-(function () {
-  const chk = document.getElementById("chk-ocultar-retornadas");
-  if (!chk) return;
-  chk.checked = localStorage.getItem("ocultar-retornadas-admin") === "true";
-  chk.addEventListener("change", () => {
-    localStorage.setItem("ocultar-retornadas-admin", chk.checked ? "true" : "false");
-    paginaActual = 1;
-    renderTabla();
-  });
-})();
 
 document.querySelectorAll(".tab-btn").forEach(btn => {
   btn.addEventListener("click", () => {
@@ -1441,23 +1366,17 @@ function renderReciboEntrega() {
   if (nuevos.length > 0) {
     listaHtml += `<div style="display:flex;align-items:center;gap:8px;margin:8px 4px 4px">
       <div style="flex:1;height:1px;background:var(--borde)"></div>
-      <span style="font-size:10px;font-weight:800;color:var(--verde);white-space:nowrap"><i data-lucide=sparkles style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> AGREGANDO AHORA</span>
+      <span style="font-size:10px;font-weight:800;color:var(--verde);white-space:nowrap">🆕 AGREGANDO AHORA</span>
       <div style="flex:1;height:1px;background:var(--borde)"></div>
-    </div>` + nuevos.map(([nombre, cant]) => {
-      const gastable = esMaterialGastable(nombre);
-      const controlCantidad = gastable
-        ? `<button type="button" class="btn btn-outline" onclick="entregaAdicionalAjustar('${escapeAttr(nombre)}',-1)" style="padding:2px 8px">−</button>
-           <span class="h-cant">x${cant}</span>
-           <button type="button" class="btn btn-outline" onclick="entregaAdicionalAjustar('${escapeAttr(nombre)}',1)" style="padding:2px 8px">+</button>`
-        : `<span class="h-cant">x${cant}</span>`;
-      return `
+    </div>` + nuevos.map(([nombre, cant]) => `
       <div class="fila-herramienta">
         ${herFotoHtmlPorNombre(nombre, 40)}
         <span class="h-nombre">${escapeHtml(nombre)}</span>
-        ${controlCantidad}
+        <button type="button" class="btn btn-outline" onclick="entregaAdicionalAjustar('${escapeAttr(nombre)}',-1)" style="padding:2px 8px">−</button>
+        <span class="h-cant">x${cant}</span>
+        <button type="button" class="btn btn-outline" onclick="entregaAdicionalAjustar('${escapeAttr(nombre)}',1)" style="padding:2px 8px">+</button>
         <button type="button" class="btn btn-rojo" onclick="entregaAdicionalQuitar('${escapeAttr(nombre)}')" style="padding:2px 8px" title="Quitar">×</button>
-      </div>`;
-    }).join("");
+      </div>`).join("");
   }
   lista.innerHTML = listaHtml || "<div style='padding:12px;color:var(--texto-dim)'>Sin herramientas</div>";
 }
@@ -1472,17 +1391,7 @@ window.renderEntregaPickerGrid = function() {
   // seguir mostrando).
   const lista = (_herListaActual || []).filter(h => !h.usoInterno && h.nombre.toLowerCase().includes(q));
   if (!lista.length) {
-    wrap.innerHTML = q ? vacioHTML({
-      icono: "toolbox", titulo: "Sin resultados",
-      texto: `No se encontró ninguna herramienta con "${escapeHtml(q)}".`,
-      ctaTexto: "Limpiar búsqueda",
-      ctaOnclick: "document.getElementById('entrega-picker-buscar').value='';renderEntregaPickerGrid()",
-      grid: true
-    }) : vacioHTML({
-      icono: "toolbox", titulo: "No hay herramientas disponibles",
-      texto: "No hay herramientas para agregar en este momento.",
-      grid: true
-    });
+    wrap.innerHTML = '<div class="vacio" style="grid-column:1/-1"><div class="vacio-icono"><i data-lucide="toolbox" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>Sin resultados.</p></div>';
     return;
   }
   wrap.innerHTML = lista.map(h => {
@@ -1784,16 +1693,20 @@ window.confirmarPickerFotosSolicitud = async function() {
   }
 };
 
-function confirmarPersonalizado(mensaje) {
+function confirmarPersonalizado(mensaje, opciones = {}) {
+  const { textoSi = "Sí, continuar", textoNo = "Cancelar" } = opciones;
   return new Promise((resolve) => {
     document.getElementById("confirm-custom-msg").textContent = mensaje;
     const modal = document.getElementById("modal-confirm-custom");
     modal.classList.add("abierto");
     const btnSi = document.getElementById("confirm-custom-si");
     const btnNo = document.getElementById("confirm-custom-no");
+    btnSi.textContent = textoSi;
+    btnNo.textContent = textoNo;
     const limpiar = (resultado) => {
       modal.classList.remove("abierto");
       btnSi.onclick = null; btnNo.onclick = null;
+      btnSi.textContent = "Sí, continuar"; btnNo.textContent = "Cancelar"; // restaurar default para el próximo uso
       resolve(resultado);
     };
     btnSi.onclick = () => limpiar(true);
@@ -1816,7 +1729,13 @@ window.guardarCambiosPendiente = async function() {
   if (!s) return;
 
   if (Object.keys(_entregaAdicionales).length === 0) {
-    await confirmarPersonalizado("No has agregado ninguna herramienta adicional para guardar.");
+    const salir = await confirmarPersonalizado("No has agregado ninguna herramienta adicional para guardar.", { textoNo: "Volver al formulario", textoSi: "Salir" });
+    if (salir) {
+      document.getElementById("modal-entrega").classList.remove("abierto");
+      solicitudActivaId = null;
+    }
+    // si eligió "Volver al formulario" no se hace nada más: el aviso se
+    // cierra y el modal de entrega se queda abierto para seguir editando.
     return;
   }
 
@@ -1946,7 +1865,7 @@ window.renderRetornoPickerGrid = function() {
   // Misma razón que en renderEntregaPickerGrid: esto es una solicitud de
   // estudiante, así que las herramientas de uso interno no aplican aquí.
   const lista = (_herListaActual || []).filter(h => !h.usoInterno && h.nombre.toLowerCase().includes(q));
-  if (!lista.length) { wrap.innerHTML = q ? vacioHTML({ icono: "toolbox", titulo: "Sin resultados", texto: `No se encontró ninguna herramienta con "${escapeHtml(q)}".`, ctaTexto: "Limpiar búsqueda", ctaOnclick: "document.getElementById('retorno-picker-buscar').value='';renderRetornoPickerGrid()", grid: true }) : vacioHTML({ icono: "toolbox", titulo: "No hay herramientas", texto: "No hay herramientas para mostrar en este momento.", grid: true }); return; }
+  if (!lista.length) { wrap.innerHTML = '<div class="vacio" style="grid-column:1/-1"><div class="vacio-icono"><i data-lucide="toolbox" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>Sin resultados.</p></div>'; return; }
   wrap.innerHTML = lista.map(h => {
     const fotoUrl = h.fotoUrl || (h.codigo ? '../img/herramientas/' + h.codigo + '.jpg' : '');
     const icono = h.icono || '<i data-lucide="wrench" style="width:1em;height:1em;vertical-align:-2px"></i>';
@@ -2193,12 +2112,6 @@ const CATEGORIAS_HERRAMIENTA = {
 // A partir de esta cantidad disponible (inclusive) se marca "stock bajo".
 const UMBRAL_STOCK_BAJO = 2;
 let herCategoriaActiva = "";
-window.limpiarFiltrosHerramientas = function() {
-  const buscar = document.getElementById("her-buscar");
-  if (buscar) buscar.value = "";
-  herCategoriaActiva = "";
-  renderHerramientasCfg(_herListaActual);
-};
 
 const _herFotoMap = {};
 
@@ -2259,7 +2172,7 @@ let _ppFiltroEstado = "activo"; // por defecto se muestran los prestamos activos
 
 async function cargarPrestamosProf() {
   try {
-    _onSnap(query(collection(db, "prestamos_profesores"), orderBy("creadoEn", "desc")), snap => {
+    onSnapshot(query(collection(db, "prestamos_profesores"), orderBy("creadoEn", "desc")), snap => {
       const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
       const todos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       todosPrestamosProfTodos = todos;
@@ -2319,13 +2232,7 @@ function ppRenderTabla() {
   const lista = ppFiltrados();
   const wrap  = document.getElementById("pp-tabla-wrap");
   if (!lista.length) {
-    wrap.innerHTML = vacioHTML({
-      icono: "inbox",
-      titulo: "Sin préstamos por ahora",
-      texto: "No hay préstamos activos ni registrados hoy para profesores.",
-      ctaTexto: "Nuevo préstamo",
-      ctaOnclick: "abrirModalNuevoPrestamoProf()"
-    });
+    wrap.innerHTML = '<div class="vacio"><div class="vacio-icono"><i data-lucide="inbox" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>No hay préstamos registrados hoy ni activos pendientes de retorno.</p></div>';
     return;
   }
   wrap.innerHTML = lista.map(p => {
@@ -2337,19 +2244,17 @@ function ppRenderTabla() {
       : "—";
     const color = colorEstudiante(p.profesor || "");
     const ini   = (p.profesor || "P")[0].toUpperCase();
-    const herramientasHtml = (p.herramientas || []).map(h =>
-      `<span class="pp-herr-chip">${escapeHtml(h.nombre)} <b>×${h.cantidad}</b>${h.adicional ? '<i class="pp-chip-adic" title="Agregada como adicional"><i data-lucide="plus" style="width:1em;height:1em;vertical-align:-2px"></i></i>' : ''}</span>`
-    ).join("") || '<span class="pp-herr-vacio">Sin herramientas</span>';
+    const herramientasHtml = (p.herramientas || []).map(h => `<b>${escapeHtml(h.nombre)}</b> ×${h.cantidad}${h.adicional ? ' <span style="background:var(--azul);color:#fff;font-size:9px;font-weight:800;padding:1px 5px;border-radius:20px">+ADIC</span>' : ''}`).join(", ") || "—";
     const estadoTag = p.estado === "activo"
-      ? `<span class="pp-estado-tag" style="background:var(--verde-glow);color:var(--verde)">Activo</span>`
-      : `<span class="pp-estado-tag" style="background:var(--card2);color:var(--texto-dim)">Retornado</span>`;
+      ? `<span class="pp-estado-tag" style="background:var(--verde-glow);color:var(--verde)"><i data-lucide="circle" style="width:1em;height:1em;vertical-align:-2px"></i> Activo</span>`
+      : `<span class="pp-estado-tag" style="background:var(--card2);color:var(--texto-dim)"><i data-lucide="circle" style="width:1em;height:1em;vertical-align:-2px"></i> Retornado</span>`;
     const acciones = p.estado === "activo"
       ? (esDeHoy
-          ? `<button class="btn btn-outline" onclick="abrirAdicionalPP('${p.id}')" title="Agregar una herramienta adicional a este préstamo"><i data-lucide=plus style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Adicional</button><button class="btn btn-azul" onclick="abrirRetornoProf('${p.id}')" title="Registrar el retorno de las herramientas"><i data-lucide=corner-up-left style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Retornar</button>`
+          ? `<button class="btn btn-outline" onclick="abrirAdicionalPP('${p.id}')" title="Agregar una herramienta adicional a este préstamo">+ Adicional</button><button class="btn btn-azul" onclick="abrirRetornoProf('${p.id}')" title="Registrar el retorno de las herramientas"><i data-lucide=corner-up-left style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Retornar</button>`
           : `<button class="btn btn-azul" onclick="abrirRetornoProf('${p.id}')" title="Revisar y registrar el retorno de un préstamo anterior">Revisar y retornar</button>`)
       : `<span style="font-size:11px;color:var(--verde);font-weight:700"><i data-lucide="circle-check" style="width:1em;height:1em;vertical-align:-2px"></i> Completado</span>`;
     return `
-      <div class="pp-card${p.tieneIncidencias ? ' con-incidencia' : ''}" style="border-left:3px solid ${color}">
+      <div class="pp-card${p.tieneIncidencias ? ' con-incidencia' : ''}">
         <div class="pp-card-top">
           <div class="pp-avatar" style="background:${color}22;color:${color}">${ini}</div>
           <div>
@@ -2357,9 +2262,9 @@ function ppRenderTabla() {
             <div class="pp-lab">${escapeHtml(p.laboratorio) || "—"}</div>
           </div>
           ${estadoTag}
-          ${(p.estado === "activo" && !esDeHoy) ? '<span class="pp-estado-tag" style="background:rgba(180,83,9,.15);color:var(--amarillo)" title="Sin retornar desde un día anterior">Sin retornar</span>' : ''}
+          ${(p.estado === "activo" && !esDeHoy) ? '<span class="pp-estado-tag" style="background:rgba(210,153,34,.15);color:var(--amarillo)" title="Sin retornar desde un día anterior">⏳ Sin retornar</span>' : ''}
         </div>
-        <div class="pp-herr-chips">${herramientasHtml}</div>
+        <div class="pp-herr-list">${herramientasHtml}</div>
         <div class="pp-fecha-row"><i data-lucide="clock" style="width:1em;height:1em;vertical-align:-2px"></i> ${fecha}${p.tieneIncidencias ? ` · <span style="color:var(--rojo)"><i data-lucide="triangle-alert" style="width:1em;height:1em;vertical-align:-2px"></i> con incidencia</span>${!p.incidenciaVista ? ` <button onclick="marcarIncidenciaVistaPP('${p.id}')" style="background:none;border:none;color:var(--azul);font-size:10px;cursor:pointer;text-decoration:underline">marcar vista</button>` : ''}` : ''}</div>
         <div class="pp-acciones">${acciones}</div>
       </div>`;
@@ -2419,7 +2324,7 @@ window.renderPPPickerGridInline = function() {
   const wrap = document.getElementById("pp-picker-grid-inline");
   const q = (document.getElementById("pp-picker-buscar-inline").value || "").toLowerCase();
   const lista = (_herListaActual || []).filter(h => h.nombre.toLowerCase().includes(q));
-  if (!lista.length) { wrap.innerHTML = q ? vacioHTML({ icono: "toolbox", titulo: "Sin resultados", texto: `No se encontró ninguna herramienta con "${escapeHtml(q)}".`, ctaTexto: "Limpiar búsqueda", ctaOnclick: "document.getElementById('pp-picker-buscar-inline').value='';renderPPPickerGridInline()", grid: true }) : vacioHTML({ icono: "toolbox", titulo: "No hay herramientas", texto: "No hay herramientas para mostrar en este momento.", grid: true }); return; }
+  if (!lista.length) { wrap.innerHTML = '<div class="vacio" style="grid-column:1/-1"><div class="vacio-icono"><i data-lucide="toolbox" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>Sin resultados.</p></div>'; return; }
   wrap.innerHTML = lista.map(h => {
     const fotoUrl = h.fotoUrl || (h.codigo ? '../img/herramientas/' + h.codigo + '.jpg' : '');
     const icono = h.icono || '<i data-lucide="wrench" style="width:1em;height:1em;vertical-align:-2px"></i>';
@@ -2541,7 +2446,7 @@ window.renderPickerFotosPP = function() {
   const q = (document.getElementById("pp-picker-buscar").value || "").toLowerCase();
   const lista = _herListaActual.filter(h => h.nombre.toLowerCase().includes(q));
   if (!lista.length) {
-    wrap.innerHTML = q ? vacioHTML({ icono: "wrench", titulo: "Sin resultados", texto: `No se encontró ninguna herramienta con "${escapeHtml(q)}".`, ctaTexto: "Limpiar búsqueda", ctaOnclick: "document.getElementById('pp-picker-buscar').value='';renderPickerFotosPP()", grid: true }) : vacioHTML({ icono: "wrench", titulo: "No hay herramientas", texto: "No hay herramientas para mostrar en este momento.", grid: true });
+    wrap.innerHTML = '<div class="vacio" style="grid-column:1/-1"><div class="vacio-icono"><i data-lucide="wrench" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>Sin resultados.</p></div>';
     renderPickerFotosPPRecibo();
     return;
   }
@@ -2690,7 +2595,7 @@ window.renderPPRetornoPickerGrid = function() {
   const wrap = document.getElementById("pp-retorno-picker-grid");
   const q = (document.getElementById("pp-retorno-picker-buscar").value || "").toLowerCase();
   const lista = (_herListaActual || []).filter(h => h.nombre.toLowerCase().includes(q));
-  if (!lista.length) { wrap.innerHTML = q ? vacioHTML({ icono: "toolbox", titulo: "Sin resultados", texto: `No se encontró ninguna herramienta con "${escapeHtml(q)}".`, ctaTexto: "Limpiar búsqueda", ctaOnclick: "document.getElementById('pp-retorno-picker-buscar').value='';renderPPRetornoPickerGrid()", grid: true }) : vacioHTML({ icono: "toolbox", titulo: "No hay herramientas", texto: "No hay herramientas para mostrar en este momento.", grid: true }); return; }
+  if (!lista.length) { wrap.innerHTML = '<div class="vacio" style="grid-column:1/-1"><div class="vacio-icono"><i data-lucide="toolbox" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>Sin resultados.</p></div>'; return; }
   wrap.innerHTML = lista.map(h => {
     const fotoUrl = h.fotoUrl || (h.codigo ? '../img/herramientas/' + h.codigo + '.jpg' : '');
     const icono = h.icono || '<i data-lucide="wrench" style="width:1em;height:1em;vertical-align:-2px"></i>';
@@ -2796,7 +2701,7 @@ document.getElementById("modal-retorno-pp").addEventListener("click", e => {
 
 async function cargarPrestamosExternos() {
   try {
-    _onSnap(query(collection(db, "prestamos_externos"), orderBy("creadoEn", "desc")), snap => {
+    onSnapshot(query(collection(db, "prestamos_externos"), orderBy("creadoEn", "desc")), snap => {
       todosPrestamosExt = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       actualizarBadgeLateral("badge-prestadas", todosPrestamosExt.filter(p => p.estado === "prestado").length);
       extRenderTabla();
@@ -2833,50 +2738,52 @@ function extRenderTabla() {
   const lista = extFiltrados();
   const wrap  = document.getElementById("ext-tabla-wrap");
   if (!lista.length) {
-    wrap.innerHTML = vacioHTML({
-      icono: "inbox",
-      titulo: "Nada prestado por ahora",
-      texto: "No hay herramientas prestadas a otros departamentos en este momento. Lo ya devuelto se puede consultar en Historial.",
-      ctaTexto: "Nuevo préstamo",
-      ctaOnclick: "abrirModalNuevoPrestamoExt()"
-    });
+    wrap.innerHTML = '<div class="vacio" style="padding:40px;text-align:center;color:var(--texto-dim)"><i data-lucide="inbox" style="width:1em;height:1em;vertical-align:-2px"></i> No hay herramientas prestadas a otros departamentos ahora mismo.<br><span style="font-size:12px">Lo ya devuelto se puede consultar en Historial.</span></div>';
     return;
   }
-  wrap.innerHTML = lista.map(p => {
-    const fechaObj = p.creadoEn?.toDate ? p.creadoEn.toDate() : (p.creadoEn ? new Date(p.creadoEn) : null);
-    const fecha = fechaObj
-      ? (esMismodia(p.creadoEn) ? fechaObj.toLocaleTimeString("es-DO", {hour:"2-digit",minute:"2-digit"})
-                                 : fechaObj.toLocaleDateString("es-DO", {day:"2-digit",month:"short"}) + ' · ' + fechaObj.toLocaleTimeString("es-DO", {hour:"2-digit",minute:"2-digit"}))
-      : "—";
-    const color = colorEstudiante(p.departamento || "");
-    const ini   = (p.departamento || "D")[0].toUpperCase();
-    const herramientasHtml = (p.herramientas || []).map(h =>
-      `<span class="pp-herr-chip">${escapeHtml(h.nombre)} <b>×${h.cantidad}</b></span>`
-    ).join("") || '<span class="pp-herr-vacio">Sin herramientas</span>';
-    const estadoTag = p.estado === "prestado"
-      ? `<span class="pp-estado-tag" style="background:var(--verde-glow);color:var(--verde)">Prestado</span>`
-      : p.tieneIncidencias
-        ? `<span class="pp-estado-tag" style="background:rgba(239,68,68,.15);color:var(--rojo)">Con incidencias</span>`
-        : `<span class="pp-estado-tag" style="background:var(--card2);color:var(--texto-dim)">Devuelto</span>`;
-    const acciones = p.estado === "prestado"
-      ? `<button class="btn btn-azul" onclick="abrirRetornoExt('${p.id}')" title="Registrar el retorno de las herramientas"><i data-lucide=corner-up-left style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Retornar</button><button class="btn btn-outline" onclick="generarConduce('${p.id}')" title="Generar el conduce de salida imprimible" style="flex:0 0 auto"><i data-lucide=file-text style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Conduce</button>`
-      : `<span style="font-size:11px;color:var(--verde);font-weight:700;flex:1"><i data-lucide=check style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Completada</span><button class="btn btn-outline" onclick="generarConduce('${p.id}')" title="Generar el conduce de salida imprimible" style="flex:0 0 auto"><i data-lucide=file-text style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Conduce</button>`;
-    return `
-      <div class="ext-card${p.tieneIncidencias ? ' con-incidencia' : ''}">
-        <div class="ext-card-top">
-          <div class="ext-icono-depto">${ini}</div>
-          <div>
-            <div class="pp-nombre">${escapeHtml(p.departamento) || "—"}</div>
-            <div class="pp-lab">Responsable: ${escapeHtml(p.responsable) || "—"}</div>
-          </div>
-          ${estadoTag}
-        </div>
-        <div class="ext-perforado"></div>
-        <div class="pp-herr-chips">${herramientasHtml}</div>
-        <div class="pp-fecha-row"><i data-lucide="clock" style="width:1em;height:1em;vertical-align:-2px"></i> ${fecha}</div>
-        <div class="pp-acciones">${acciones}</div>
-      </div>`;
-  }).join("");
+  wrap.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Departamento</th>
+          <th>Responsable</th>
+          <th>Herramientas</th>
+          <th>Fecha</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${lista.map(p => {
+          const fecha = p.creadoEn?.toDate ? p.creadoEn.toDate().toLocaleString("es-DO") : "—";
+          const color = colorEstudiante(p.departamento || "");
+          const ini   = (p.departamento || "D")[0].toUpperCase();
+          const herramientasTexto = (p.herramientas || []).map(h => `${escapeHtml(h.nombre)} ×${h.cantidad}`).join(", ") || "—";
+          const badgeEstado = p.estado === "prestado"
+            ? '<span class="badge badge-entregada">Prestado</span>'
+            : p.tieneIncidencias
+              ? '<span class="badge badge-cancelada">Con incidencias</span>'
+              : '<span class="badge badge-retornada">Devuelto</span>';
+          const acciones = p.estado === "prestado"
+            ? `<button class="btn btn-azul" onclick="abrirRetornoExt('${p.id}')" title="Registrar el retorno de las herramientas"><i data-lucide=corner-up-left style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Retornar</button> <button class="btn btn-outline" onclick="generarConduce('${p.id}')" title="Generar el conduce de salida imprimible"><i data-lucide=file-text style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Conduce</button>`
+            : `<span style="font-size:11px;color:var(--verde);font-weight:700"><i data-lucide=check style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Completada</span> <button class="btn btn-outline" onclick="generarConduce('${p.id}')" title="Generar el conduce de salida imprimible"><i data-lucide=file-text style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Conduce</button>`;
+          return `
+            <tr>
+              <td>
+                <div class="est-avatar">
+                  <div class="est-circulo" style="background:${color};color:#fff">${ini}</div>
+                  <div class="est-nombre">${p.departamento || "—"}</div>
+                </div>
+              </td>
+              <td style="font-size:13px">${p.responsable || "—"}</td>
+              <td style="font-size:12px;color:var(--texto-dim);max-width:200px">${herramientasTexto}</td>
+              <td style="font-size:12px;color:var(--texto-dim)">${fecha}</td>
+              <td>${badgeEstado}</td>
+              <td><div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">${acciones}</div></td>
+            </tr>`;
+        }).join("")}
+      </tbody>
+    </table>`;
 }
 
 document.getElementById("ext-buscar")?.addEventListener("input", extRenderTabla);
@@ -2910,7 +2817,8 @@ window.renderExtPickerGrid = function() {
     </div>`;
 
   if (!lista.length) {
-    wrap.innerHTML = (q ? vacioHTML({ icono: "toolbox", titulo: "Sin resultados", texto: `No se encontró ninguna herramienta con "${escapeHtml(q)}".`, ctaTexto: "Limpiar búsqueda", ctaOnclick: "document.getElementById('ext-picker-buscar').value='';renderExtPickerGrid()", grid: true }) : vacioHTML({ icono: "toolbox", titulo: "No hay herramientas", texto: "No hay herramientas en el catálogo todavía.", grid: true })) + tarjetaNueva;
+    const mensaje = q ? `No se encontró "${escapeHtml(q)}".` : "Sin resultados.";
+    wrap.innerHTML = `<div class="vacio" style="grid-column:1/-1"><div class="vacio-icono"><i data-lucide="toolbox" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>${mensaje}</p></div>` + tarjetaNueva;
     return;
   }
   wrap.innerHTML = lista.map(h => {
@@ -3085,7 +2993,7 @@ window.renderExtRetornoPickerGrid = function() {
   const wrap = document.getElementById("ext-retorno-picker-grid");
   const q = (document.getElementById("ext-retorno-picker-buscar").value || "").toLowerCase();
   const lista = (_herListaActual || []).filter(h => h.nombre.toLowerCase().includes(q));
-  if (!lista.length) { wrap.innerHTML = q ? vacioHTML({ icono: "toolbox", titulo: "Sin resultados", texto: `No se encontró ninguna herramienta con "${escapeHtml(q)}".`, ctaTexto: "Limpiar búsqueda", ctaOnclick: "document.getElementById('ext-retorno-picker-buscar').value='';renderExtRetornoPickerGrid()", grid: true }) : vacioHTML({ icono: "toolbox", titulo: "No hay herramientas", texto: "No hay herramientas para mostrar en este momento.", grid: true }); return; }
+  if (!lista.length) { wrap.innerHTML = '<div class="vacio" style="grid-column:1/-1"><div class="vacio-icono"><i data-lucide="toolbox" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>Sin resultados.</p></div>'; return; }
   wrap.innerHTML = lista.map(h => {
     const fotoUrl = h.fotoUrl || (h.codigo ? '../img/herramientas/' + h.codigo + '.jpg' : '');
     const icono = h.icono || '<i data-lucide="wrench" style="width:1em;height:1em;vertical-align:-2px"></i>';
@@ -3252,7 +3160,7 @@ let _herListaActual = [];
 
 async function cargarHerramientasCfg() {
   try {
-    _onSnap(query(collection(db, "herramientas"), orderBy("nombre", "asc")), snap => {
+    onSnapshot(query(collection(db, "herramientas"), orderBy("nombre", "asc")), snap => {
       const todosValidos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       const nombresFirestore = new Set(todosValidos.map(h => h.nombre.toLowerCase()));
       const eliminadas = new Set(todosValidos.filter(h => h.eliminada).map(h => h.nombre.toLowerCase()));
@@ -3372,19 +3280,7 @@ function renderHerramientasCfg(lista) {
   }
 
   if (!filtrada.length) {
-    wrap.innerHTML = lista.length === 0 ? vacioHTML({
-      icono: "wrench",
-      titulo: "Aún no hay herramientas",
-      texto: "Agrega tu primera herramienta al inventario para empezar.",
-      ctaTexto: "Agregar herramienta",
-      ctaOnclick: "abrirModalHerramienta()"
-    }) : vacioHTML({
-      icono: "wrench",
-      titulo: "Sin resultados",
-      texto: "Ninguna herramienta coincide con la búsqueda o la categoría seleccionada.",
-      ctaTexto: "Limpiar filtros",
-      ctaOnclick: "limpiarFiltrosHerramientas()"
-    });
+    wrap.innerHTML = '<div class="vacio"><div class="vacio-icono"><i data-lucide="wrench" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>No hay herramientas que coincidan.</p></div>';
     return;
   }
 
@@ -3792,7 +3688,7 @@ let profCfgLista  = [];
 const PROFESORES_RESPALDO_ADMIN = ["Daniel Camejo","José Peña","Julio Durán","Víctor Félix"];
 async function cargarProfesoresCfg() {
   try {
-    _onSnap(query(collection(db, "profesores"), orderBy("nombre", "asc")), snap => {
+    onSnapshot(query(collection(db, "profesores"), orderBy("nombre", "asc")), snap => {
       const todosValidos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       const nombresFirestore = new Set(todosValidos.map(p => p.nombre.toLowerCase()));
       const eliminados = new Set(todosValidos.filter(p => p.eliminado).map(p => p.nombre.toLowerCase()));
@@ -3823,26 +3719,13 @@ function renderProfesoresCfg() {
   if (resumen) resumen.innerHTML = `<i data-lucide="user-round" style="width:1em;height:1em;vertical-align:-2px"></i> <b>${profCfgLista.length}</b> profesor${profCfgLista.length === 1 ? "" : "es"} registrado${profCfgLista.length === 1 ? "" : "s"}`;
 
   if (!lista.length) {
-    wrap.innerHTML = profCfgLista.length === 0 ? vacioHTML({
-      icono: "user-round",
-      titulo: "Aún no hay profesores",
-      texto: "Agrega profesores para poder asociarlos a préstamos y solicitudes.",
-      ctaTexto: "Agregar profesor",
-      ctaOnclick: "abrirModalProfesor()"
-    }) : vacioHTML({
-      icono: "user-round",
-      titulo: "Sin resultados",
-      texto: `No se encontró ningún profesor con "${escapeHtml(buscar)}".`,
-      ctaTexto: "Limpiar búsqueda",
-      ctaOnclick: "document.getElementById('prof-buscar').value='';renderProfesoresCfg()"
-    });
+    wrap.innerHTML = '<div class="vacio"><div class="vacio-icono"><i data-lucide="user-round" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>No hay profesores registrados.</p></div>';
     return;
   }
   wrap.innerHTML = lista.map(p => {
     const local = p.local ? '<span style="font-size:10px;color:var(--texto-dim);margin-left:6px">(respaldo)</span>' : '';
     const [nombre, ...apRest] = p.nombre.split(" ");
     const apellido = apRest.join(" ");
-    const colorProf = colorEstudiante(p.nombre);
     const sinRetornar = (todosPrestamosProfTodos || []).filter(x => x.profesor === p.nombre && x.estado === "activo");
     const sinRetHoy = sinRetornar.filter(x => esMismodia(x.creadoEn));
     const sinRetViejos = sinRetornar.length - sinRetHoy.length;
@@ -3853,38 +3736,31 @@ function renderProfesoresCfg() {
             ? m.horarios
             : ((m.dias && m.dias.length) || m.horaInicio ? [{ dias: m.dias || [], horaInicio: m.horaInicio || "", horaFin: m.horaFin || "" }] : []);
           const franjas = horarios.length
-            ? horarios.map(h => `
-                <div class="prof-horario-franja">
-                  <span class="prof-dias-chips">${(h.dias&&h.dias.length)?h.dias.map(d=>`<span class="prof-dia-chip">${d.slice(0,3)}</span>`).join(""):'<span class="prof-dia-chip prof-dia-chip-vacio">Sin días</span>'}</span>
-                  ${h.horaInicio?`<span class="prof-horario-hora">${h.horaInicio}–${h.horaFin||""}</span>`:""}
-                </div>`).join("")
+            ? horarios.map(h => `<div class="prof-horario-franja"><span class="prof-horario-dias">${(h.dias&&h.dias.length)?h.dias.join(" · "):"Sin días"}</span>${h.horaInicio?`<span class="prof-horario-hora">${h.horaInicio}–${h.horaFin||""}</span>`:""}</div>`).join("")
             : '<div class="prof-horario-franja prof-horario-vacio">Sin horario definido</div>';
           return `
           <div class="prof-horario-card">
-            <div class="prof-horario-materia"><i data-lucide="book-open" style="width:1em;height:1em;vertical-align:-2px"></i> ${m.nombre}</div>
+            <div class="prof-horario-materia">${m.nombre}</div>
             ${franjas}
           </div>`;
         }).join("")}</div>`
       : "";
     return `
-      <div class="prof-fila" style="border-left:3px solid ${colorProf}">
+      <div class="prof-fila">
         <div class="prof-fila-top">
           <div class="est-avatar">
-            <div class="est-circulo prof-circulo-lg" style="background:${colorProf}22;color:${colorProf}">${iniciales(nombre, apellido)}</div>
+            <div class="est-circulo" style="background:${colorEstudiante(p.nombre)}22;color:${colorEstudiante(p.nombre)}">${iniciales(nombre, apellido)}</div>
             <div style="min-width:0;flex:1">
-              <div class="est-nombre prof-nombre-lg" title="${escapeAttr(p.nombre)}">${p.nombre}${local}</div>
+              <div class="est-nombre">${p.nombre}${local}</div>
             </div>
           </div>
+          ${sinRetHoy.length > 0 ? `<span class="prof-badge-activos" style="cursor:pointer" title="Ver y cerrar préstamo" onclick="abrirRetornoProf('${sinRetHoy[0].id}')">⏳ ${sinRetHoy.length} sin retornar hoy</span>` : ""}
+          ${sinRetViejos > 0 ? `<span class="prof-badge-activos" style="cursor:pointer;background:rgba(239,68,68,.15);color:var(--rojo)" title="Ver y cerrar préstamo" onclick="abrirRetornoProf('${sinRetornar.find(x=>!esMismodia(x.creadoEn)).id}')">${sinRetViejos} atrasado(s)</span>` : ""}
           <div class="acciones-celda">
             <button class="btn btn-outline" onclick="abrirModalProfesor('${p.id}','${nombreEsc}',${p.local||false})" title="Editar profesor">Editar</button>
             ${p.local ? "" : `<button class="btn btn-rojo" onclick="eliminarProfesor('${p.id}','${nombreEsc}')" title="Eliminar profesor"><i data-lucide="trash-2" style="width:1em;height:1em;vertical-align:-2px"></i></button>`}
           </div>
         </div>
-        ${(sinRetHoy.length > 0 || sinRetViejos > 0) ? `
-        <div class="prof-badges-row">
-          ${sinRetHoy.length > 0 ? `<span class="prof-badge-activos" style="cursor:pointer" title="Ver y cerrar préstamo" onclick="abrirRetornoProf('${sinRetHoy[0].id}')">⏳ ${sinRetHoy.length} sin retornar hoy</span>` : ""}
-          ${sinRetViejos > 0 ? `<span class="prof-badge-activos" style="cursor:pointer;background:rgba(239,68,68,.15);color:var(--rojo)" title="Ver y cerrar préstamo" onclick="abrirRetornoProf('${sinRetornar.find(x=>!esMismodia(x.creadoEn)).id}')">${sinRetViejos} atrasado(s)</span>` : ""}
-        </div>` : ""}
         ${listaMaterias}
       </div>`;
   }).join("");
@@ -4079,7 +3955,7 @@ let labCfgLista  = [];
 
 async function cargarLaboratoriosCfg() {
   try {
-    _onSnap(query(collection(db, "laboratorios"), orderBy("nombre", "asc")), snap => {
+    onSnapshot(query(collection(db, "laboratorios"), orderBy("nombre", "asc")), snap => {
       const todosValidos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       const nombresFirestore = new Set(todosValidos.map(l => l.nombre.toLowerCase()));
       const eliminados = new Set(todosValidos.filter(l => l.eliminado).map(l => l.nombre.toLowerCase()));
@@ -4110,19 +3986,7 @@ function renderLaboratoriosCfg() {
   if (resumen) resumen.innerHTML = `<i data-lucide="building-2" style="width:1em;height:1em;vertical-align:-2px"></i> <b>${labCfgLista.length}</b> laboratorio${labCfgLista.length === 1 ? "" : "s"}/taller${labCfgLista.length === 1 ? "" : "es"} registrado${labCfgLista.length === 1 ? "" : "s"}`;
 
   if (!lista.length) {
-    wrap.innerHTML = labCfgLista.length === 0 ? vacioHTML({
-      icono: "building-2",
-      titulo: "Aún no hay laboratorios",
-      texto: "Agrega los laboratorios o talleres donde se usan las herramientas.",
-      ctaTexto: "Agregar laboratorio",
-      ctaOnclick: "abrirModalLaboratorio()"
-    }) : vacioHTML({
-      icono: "building-2",
-      titulo: "Sin resultados",
-      texto: `No se encontró ningún laboratorio con "${escapeHtml(buscar)}".`,
-      ctaTexto: "Limpiar búsqueda",
-      ctaOnclick: "document.getElementById('lab-buscar').value='';renderLaboratoriosCfg()"
-    });
+    wrap.innerHTML = '<div class="vacio"><div class="vacio-icono"><i data-lucide="building-2" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>No hay laboratorios registrados.</p></div>';
     return;
   }
   // Directorio de espacios numerado (como un plano de planta), en vez de la
@@ -4229,7 +4093,7 @@ function ordenarCiclosAdmin(lista) {
 
 async function cargarCiclosCfg() {
   try {
-    _onSnap(query(collection(db, "ciclos")), snap => {
+    onSnapshot(query(collection(db, "ciclos")), snap => {
       const todosValidos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       const nombresFirestore = new Set(todosValidos.map(c => String(c.nombre || "").toLowerCase()));
       const eliminados = new Set(todosValidos.filter(c => c.eliminado).map(c => String(c.nombre || "").toLowerCase()));
@@ -4260,19 +4124,7 @@ function renderCiclosCfg() {
   if (resumen) resumen.innerHTML = `<i data-lucide="calendar-days" style="width:1em;height:1em;vertical-align:-2px"></i> <b>${cicloCfgLista.length}</b> ciclo${cicloCfgLista.length === 1 ? "" : "s"} registrado${cicloCfgLista.length === 1 ? "" : "s"}`;
 
   if (!lista.length) {
-    wrap.innerHTML = cicloCfgLista.length === 0 ? vacioHTML({
-      icono: "calendar-days",
-      titulo: "Aún no hay ciclos",
-      texto: "Agrega los ciclos académicos para organizar las prácticas por período.",
-      ctaTexto: "Agregar ciclo",
-      ctaOnclick: "abrirModalCiclo()"
-    }) : vacioHTML({
-      icono: "calendar-days",
-      titulo: "Sin resultados",
-      texto: `No se encontró ningún ciclo con "${escapeHtml(buscar)}".`,
-      ctaTexto: "Limpiar búsqueda",
-      ctaOnclick: "document.getElementById('ciclo-buscar').value='';renderCiclosCfg()"
-    });
+    wrap.innerHTML = '<div class="vacio"><div class="vacio-icono"><i data-lucide="calendar-days" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>No hay ciclos registrados.</p></div>';
     return;
   }
 
@@ -4413,7 +4265,7 @@ let usrCfgEditarId = null;
 
 async function cargarUsuariosCfg() {
   try {
-    _onSnap(query(collection(db, "usuarios"), orderBy("creadoEn", "desc")), snap => {
+    onSnapshot(query(collection(db, "usuarios"), orderBy("creadoEn", "desc")), snap => {
       usrCfgLista = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       renderUsuariosCfg();
     }, (err) => {
@@ -4443,19 +4295,7 @@ function renderUsuariosCfg() {
   }
 
   if (!lista.length) {
-    wrap.innerHTML = usrCfgLista.length === 0 ? vacioHTML({
-      icono: "lock",
-      titulo: "Aún no hay usuarios",
-      texto: "Agrega cuentas de administrador o encargado para dar acceso al panel.",
-      ctaTexto: "Agregar usuario",
-      ctaOnclick: "abrirModalUsuario()"
-    }) : vacioHTML({
-      icono: "lock",
-      titulo: "Sin resultados",
-      texto: `No se encontró ningún usuario con "${escapeHtml(buscar)}".`,
-      ctaTexto: "Limpiar búsqueda",
-      ctaOnclick: "document.getElementById('usr-buscar').value='';renderUsuariosCfg()"
-    });
+    wrap.innerHTML = '<div class="vacio"><div class="vacio-icono"><i data-lucide="lock" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>No hay usuarios registrados todavía.</p></div>';
     return;
   }
   const etiquetasSecciones = {
@@ -4836,13 +4676,7 @@ function histRenderTabla() {
   const wrap   = document.getElementById("hist-tabla-wrap");
 
   if (pagina.length === 0) {
-    wrap.innerHTML = vacioHTML({
-      icono: "inbox",
-      titulo: "Sin registros",
-      texto: "Ningún registro coincide con los filtros aplicados.",
-      ctaTexto: "Limpiar filtros",
-      ctaOnclick: "document.getElementById('hist-btn-limpiar').click()"
-    });
+    wrap.innerHTML = '<div class="vacio"><div class="vacio-icono"><i data-lucide="inbox" style="width:1em;height:1em;vertical-align:-2px"></i></div><p>No hay registros que coincidan.</p></div>';
     document.getElementById("hist-pag-info").textContent = "";
     document.getElementById("hist-pag-btns").innerHTML = "";
     return;

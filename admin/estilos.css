@@ -539,6 +539,7 @@ body:not(.tema-claro) .switch-tema-icono-luna { opacity: 1; }
 .dash-panel:hover { border-color: var(--borde); box-shadow: var(--sombra-md); }
 
 .audit-linea { position: relative; }
+#audit-wrap { padding: 16px 18px 0; }
 .audit-item { position: relative; padding: 0 0 20px 36px; }
 .audit-item::before {
   content: '';
@@ -1012,6 +1013,7 @@ tr:hover td { background: var(--hover); }
 .her-stat-pill .her-stat-label { font-size: 9.5px; color: var(--texto-dim); text-transform: uppercase; letter-spacing: .04em; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .her-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+.her-toolbar.toolbar-tabla { margin-bottom: 0; }
 .her-categoria-chips { display: flex; gap: 6px; overflow-x: auto; flex: 1; padding-bottom: 3px; }
 .her-chip { flex-shrink: 0; display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; border: 1px solid var(--borde); background: var(--card); color: var(--texto-dim); white-space: nowrap; transition: transform .12s, border-color .15s; }
 .her-chip:hover { transform: translateY(-1px); }
@@ -1041,7 +1043,7 @@ tr:hover td { background: var(--hover); }
 /* ═════════════════════════════════════════
    PRÉSTAMOS PROFESORES
 ══════════════════════════════════════════ */
-.pp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px,1fr)); gap: 12px; }
+.pp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px,1fr)); gap: 12px; padding: 18px; }
 .pp-grid .cargando, .pp-grid .vacio { grid-column: 1 / -1; }
 .pp-card { background: var(--card); border: 1px solid var(--borde); border-radius: 14px; padding: 15px; transition: transform .15s, box-shadow .15s, border-color .15s; }
 .pp-card:hover { transform: translateY(-2px); box-shadow: var(--sombra-md); }
@@ -1147,9 +1149,9 @@ tr:hover td { background: var(--hover); }
 /* ═════════════════════════════════════════
    USUARIOS (config)
 ══════════════════════════════════════════ */
-.usr-resumen { display:flex; align-items:center; gap:16px; margin-bottom:16px; font-size:12px; color:var(--texto-dim); flex-wrap:wrap; }
+.usr-resumen { display:flex; align-items:center; gap:16px; margin-bottom:16px; font-size:12px; color:var(--texto-dim); flex-wrap:wrap; padding: 0 18px; }
 .usr-resumen b { color:var(--texto); font-size:15px; }
-.usr-lista { display:flex; flex-direction:column; gap:8px; }
+.usr-lista { display:flex; flex-direction:column; gap:8px; padding: 0 18px 18px; }
 .usr-fila { display:flex; align-items:center; gap:14px; background:var(--card); border:1px solid var(--borde); border-left:2.5px solid var(--texto-dim); border-radius:12px; padding:12px 15px; transition:border-color .15s; }
 .usr-fila:hover { border-color:var(--verde); }
 .usr-fila.es-admin { border-left-color:var(--amarillo); }

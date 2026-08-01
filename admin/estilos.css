@@ -17,6 +17,7 @@
   --verde:     #22c55e;
   --verde-dim: #16a34a;
   --verde-glow:rgba(34,197,94,0.12);
+  --badge-glow-verde: rgba(34,197,94,0.22);
   --amarillo:  #eab308;
   --rojo:      #f87171;
   --azul:      #60a5fa;
@@ -37,7 +38,7 @@
   --sombra-sm:  0 1px 2px rgba(0,0,0,0.24), 0 1px 1px rgba(0,0,0,0.16);
   --sombra-md:  0 4px 14px rgba(0,0,0,0.32), 0 1px 3px rgba(0,0,0,0.2);
   --sombra-lg:  0 24px 60px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3);
-  --sombra-verde: 0 6px 18px rgba(34,197,94,0.22);
+  --sombra-verde: 0 4px 12px rgba(34,197,94,0.15);
   --radio-md:  10px;
   --radio-lg:  16px;
   --fuente-titulo: 'Inter', 'Plus Jakarta Sans', 'Segoe UI', Arial, sans-serif;
@@ -55,6 +56,7 @@ body.tema-claro {
   --verde:     #16a34a;
   --verde-dim: #15803d;
   --verde-glow:rgba(22,163,74,0.08);
+  --badge-glow-verde: rgba(22,163,74,0.16);
   --amarillo:  #b45309;
   --rojo:      #dc2626;
   --azul:      #2563eb;
@@ -73,7 +75,7 @@ body.tema-claro {
   --sombra-sm:  0 1px 2px rgba(15,23,42,0.05);
   --sombra-md:  0 8px 20px rgba(15,23,42,0.08), 0 2px 6px rgba(15,23,42,0.04);
   --sombra-lg:  0 24px 56px rgba(15,23,42,0.16);
-  --sombra-verde: 0 8px 20px rgba(22,163,74,0.16);
+  --sombra-verde: 0 5px 14px rgba(22,163,74,0.11);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -770,10 +772,10 @@ tr:hover td { background: var(--hover); }
   background: currentColor;
   flex-shrink: 0;
 }
-.badge-pendiente { background: rgba(234,179,8,0.1); color: var(--amarillo); }
-.badge-entregada { background: var(--verde-glow); color: var(--verde); }
-.badge-retornada { background: rgba(96,165,250,0.1); color: var(--azul); }
-.badge-cancelada { background: rgba(248,113,113,0.1); color: var(--rojo); }
+.badge-pendiente { background: rgba(234,179,8,0.16); color: var(--amarillo); }
+.badge-entregada { background: var(--badge-glow-verde); color: var(--verde); }
+.badge-retornada { background: rgba(96,165,250,0.16); color: var(--azul); }
+.badge-cancelada { background: rgba(248,113,113,0.16); color: var(--rojo); }
 
 /* ═══════════════════════════════════════════
    BOTONES — modernos, con transición suave
@@ -789,11 +791,11 @@ tr:hover td { background: var(--hover); }
 .btn-verde:hover { box-shadow: 0 10px 22px rgba(34,197,94,0.3); color: #fff; filter: brightness(1.03); }
 .btn-outline { background: var(--card); border: 1px solid var(--borde); color: var(--texto-dim); }
 .btn-outline:hover { border-color: var(--verde); color: var(--verde); background: var(--verde-glow); }
-.btn-rojo { background: rgba(248,113,113,0.08); color: var(--rojo); border: 1px solid rgba(248,113,113,0.18); }
+.btn-rojo { background: rgba(248,113,113,0.16); color: var(--rojo); border: 1px solid rgba(248,113,113,0.3); }
 .btn-rojo:hover { background: var(--rojo); color: #fff; border-color: var(--rojo); }
-.btn-azul { background: rgba(96,165,250,0.08); color: var(--azul); border: 1px solid rgba(96,165,250,0.18); }
+.btn-azul { background: rgba(96,165,250,0.16); color: var(--azul); border: 1px solid rgba(96,165,250,0.3); }
 .btn-azul:hover { background: var(--azul); color: #fff; border-color: var(--azul); }
-.btn-amarillo { background: rgba(234,179,8,0.1); color: var(--amarillo); border: 1px solid rgba(234,179,8,0.2); }
+.btn-amarillo { background: rgba(234,179,8,0.18); color: var(--amarillo); border: 1px solid rgba(234,179,8,0.32); }
 .btn-amarillo:hover { background: var(--amarillo); color: #1a1200; border-color: var(--amarillo); }
 .btn:disabled { opacity: .35; cursor: not-allowed; transform: none; }
 

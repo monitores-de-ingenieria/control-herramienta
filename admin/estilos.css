@@ -1157,11 +1157,13 @@ tr:hover td { background: var(--hover); }
 #hist-tabla-wrap {
   overflow-x: auto;
 }
-#tabla-solicitudes-wrap table,
 #tabla-incidencias-prof-wrap table,
 #ext-tabla-wrap table,
 #hist-tabla-wrap table {
   min-width: 720px;
+}
+#tabla-solicitudes-wrap table {
+  min-width: 0;
 }
 
 /* ═══ Identidad propia de "Herramientas" — taller, no SaaS genérico ═══

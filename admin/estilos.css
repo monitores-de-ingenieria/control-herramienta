@@ -818,7 +818,7 @@ tr:hover td { background: var(--hover); }
 ═══════════════════════════════════════════ */
 .est-avatar { display: flex; align-items: center; gap: 9px; }
 .est-circulo { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
-.est-nombre { font-weight: 500; font-size: 12.5px; color: var(--texto); }
+.est-nombre { font-weight: 500; font-size: 12.5px; color: var(--texto); text-transform: capitalize; }
 .est-matricula { font-size: 10px; color: var(--texto-dim); }
 
 /* ═══════════════════════════════════════════

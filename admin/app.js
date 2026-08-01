@@ -1817,7 +1817,7 @@ function confirmarPersonalizado(mensaje, opciones = {}) {
 
 window.cerrarModalEntrega = async function() {
   const hayAdicionalesSinGuardar = Object.keys(_entregaAdicionales).length > 0;
-  if (hayAdicionalesSinGuardar && !(await confirmarPersonalizado("Tienes herramientas adicionales sin guardar. ¿Cerrar de todas formas y perder esos cambios?"))) {
+  if (hayAdicionalesSinGuardar && !(await confirmarPersonalizado("Tienes herramientas adicionales sin guardar. ¿Cerrar de todas formas y perder esos cambios?", { textoNo: "Volver al formulario", textoSi: "Salir sin guardar" }))) {
     return;
   }
   document.getElementById("modal-entrega").classList.remove("abierto");
@@ -2053,7 +2053,7 @@ window.cerrarModalRetorno = function() {
 window.cerrarModalRetornoConAviso = async function() {
   const adicionales = document.querySelectorAll("#lista-retorno .fila-herramienta[data-adicional='1']");
   if (adicionales.length > 0) {
-    if (!(await confirmarPersonalizado(`Tienes ${adicionales.length} herramienta(s) adicional(es) seleccionada(s). ¿Cerrar sin guardarlas?`))) return;
+    if (!(await confirmarPersonalizado(`Tienes ${adicionales.length} herramienta(s) adicional(es) seleccionada(s). ¿Cerrar sin guardarlas?`, { textoNo: "Volver al formulario", textoSi: "Salir sin guardar" }))) return;
   }
   cerrarModalRetorno();
 };

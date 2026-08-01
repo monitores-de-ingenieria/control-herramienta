@@ -744,7 +744,17 @@ body:not(.tema-claro) .switch-tema-icono-luna { opacity: 1; }
 }
 .filtros input:focus, .filtros select:focus { outline: none; border-color: var(--verde); box-shadow: 0 0 0 3px var(--verde-glow); }
 .buscar-wrap { position: relative; }
-.buscar-wrap input { padding-left: 32px; }
+.buscar-wrap input {
+  padding: 8px 12px 8px 32px;
+  background: var(--bg);
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  color: var(--texto);
+  font-size: 12.5px;
+  font-family: inherit;
+  transition: border-color .15s, box-shadow .15s;
+}
+.buscar-wrap input:focus { outline: none; border-color: var(--verde); box-shadow: 0 0 0 3px var(--verde-glow); }
 .buscar-wrap .buscar-icono { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--texto-dim); pointer-events: none; opacity: .7; }
 .buscar-wrap .buscar-icono i, .buscar-wrap .buscar-icono svg { width: 14px; height: 14px; display: block; }
 

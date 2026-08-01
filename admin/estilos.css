@@ -797,6 +797,19 @@ tr:hover td { background: var(--hover); }
 .btn-amarillo:hover { background: var(--amarillo); color: #1a1200; border-color: var(--amarillo); }
 .btn:disabled { opacity: .35; cursor: not-allowed; transform: none; }
 
+/* En la columna de Acciones, cuando ya no hay ninguna acción pendiente
+   (solicitud retornada o cancelada), se muestra un badge de estado en
+   vez de un botón. Se iguala su tamaño/forma a los botones (mismo
+   padding y radius) para que la columna quede pareja visualmente. */
+#tabla-solicitudes-wrap td:last-child .badge,
+#tabla-incidencias-prof-wrap td:last-child .badge,
+#ext-tabla-wrap td:last-child .badge,
+#hist-tabla-wrap td:last-child .badge {
+  padding: 7px 13px;
+  border-radius: 8px;
+  font-size: 11.5px;
+}
+
 /* ═══════════════════════════════════════════
    AVATAR ESTUDIANTE
 ═══════════════════════════════════════════ */

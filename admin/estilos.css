@@ -1165,6 +1165,20 @@ tr:hover td { background: var(--hover); }
 #tabla-solicitudes-wrap table {
   min-width: 0;
 }
+/* Estas tablas tienen 9 columnas: el padding estándar (18px por lado)
+   más los encabezados en nowrap las hace más anchas que el contenedor
+   aunque no haya min-width. Se comprime el padding horizontal solo aquí. */
+#tabla-solicitudes-wrap th,
+#tabla-incidencias-prof-wrap th,
+#ext-tabla-wrap th,
+#hist-tabla-wrap th,
+#tabla-solicitudes-wrap td,
+#tabla-incidencias-prof-wrap td,
+#ext-tabla-wrap td,
+#hist-tabla-wrap td {
+  padding-left: 10px;
+  padding-right: 10px;
+}
 
 /* ═══ Identidad propia de "Herramientas" — taller, no SaaS genérico ═══
    Acento ámbar (no verde), ícono circular (no cuadrado como los demás

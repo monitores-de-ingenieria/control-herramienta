@@ -1581,3 +1581,50 @@ body.tema-claro #vista-herramientas-cfg .her-grid {
   .conduce-firmas { margin-top: 70px; }
   .conduce-tabla thead th { background: #1a1a1a !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
+
+/* ═══════════════════════════════════════════
+   SKELETON LOADERS
+   Placeholders animados para tarjetas, tablas, listas y
+   gráficos mientras cargan los datos de Firestore. Usa las
+   mismas variables (--card2, --borde) que el resto del panel,
+   asi que hereda el tema claro/oscuro solo.
+═══════════════════════════════════════════ */
+@keyframes skel-shimmer { 0% { background-position: -300px 0; } 100% { background-position: calc(300px + 100%) 0; } }
+
+.skel, .skel-num, .skel-line, .skel-circle, .skel-block, .skel-bar {
+  display: block;
+  background: linear-gradient(90deg, var(--card2) 25%, var(--borde) 37%, var(--card2) 63%);
+  background-size: 300px 100%;
+  animation: skel-shimmer 1.4s ease-in-out infinite;
+  border-radius: 6px;
+  color: transparent !important;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .skel, .skel-num, .skel-line, .skel-circle, .skel-block, .skel-bar { animation: none; opacity: .6; }
+}
+
+.skel-num { display: inline-block; width: 44px; height: 20px; vertical-align: middle; border-radius: 5px; }
+.skel-line { height: 11px; margin: 5px 0; border-radius: 4px; }
+.skel-circle { border-radius: 50%; flex-shrink: 0; }
+
+/* Filas tipo "lista" (icono + 2 lineas de texto) — dashboard, listas de config */
+.skel-lista .skel-fila { display: flex; align-items: center; gap: 10px; padding: 9px 4px; }
+.skel-lista .skel-fila + .skel-fila { border-top: 1px solid var(--borde); }
+.skel-fila-textos { flex: 1; min-width: 0; }
+
+/* Filas tipo "tabla" */
+.skel-tabla-fila { display: flex; align-items: center; gap: 16px; padding: 12px 16px; }
+.skel-tabla-fila + .skel-tabla-fila { border-top: 1px solid var(--borde); }
+.skel-tabla-fila .skel-line:last-child { margin-left: auto; }
+
+/* Tarjetas tipo grid (pp-grid, her-grid) */
+.skel-tarjeta { background: var(--card2); border: 1px solid var(--borde); border-radius: 10px; padding: 12px; }
+
+/* Graficos tipo donut/gauge */
+.skel-donut-wrap { display: flex; align-items: center; gap: 18px; }
+.skel-donut-textos { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+
+/* Graficos de barras / area */
+.skel-barras-wrap { display: flex; align-items: flex-end; gap: 8px; height: 120px; }
+.skel-barras-wrap .skel-bar { flex: 1; border-radius: 6px 6px 0 0; }

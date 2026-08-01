@@ -675,6 +675,16 @@ body:not(.tema-claro) .switch-tema-icono-luna { opacity: 1; }
   border-bottom: 1px solid var(--borde);
   background: var(--card2);
 }
+/* Variante para cuando el toolbar NO esta dentro de .seccion-tabla (ej.
+   vistas basadas en tarjetas como Prestamos Profesores / Herramientas
+   Prestadas): necesita su propio marco de tarjeta, no una caja envolvente. */
+.toolbar-tabla-standalone {
+  border-radius: 14px;
+  border: 1px solid var(--borde);
+  border-bottom: 1px solid var(--borde);
+  box-shadow: var(--sombra-sm, 0 1px 2px rgba(0,0,0,0.06));
+  margin-bottom: 18px;
+}
 
 .tabs-segmentado {
   display: inline-flex;

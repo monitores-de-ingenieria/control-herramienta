@@ -73,12 +73,23 @@ h1, h2, h3 { font-family: var(--fuente-titulo); }
 /* ───────────── Barra de progreso decorativa (5 pasos) ───────────── */
 #progreso-pasos {
   position: fixed;
-  top: 0; left: 0; right: 0;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
   display: flex;
   gap: 4px;
   padding: 10px 14px;
   z-index: 40;
   pointer-events: none;
+  box-sizing: border-box;
+}
+@media (min-width: 700px) {
+  #progreso-pasos { max-width: 760px; }
+}
+@media (min-width: 1000px) {
+  #progreso-pasos { max-width: 980px; }
 }
 #progreso-pasos span {
   flex: 1;

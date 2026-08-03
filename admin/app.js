@@ -2372,10 +2372,12 @@ function ppRenderTabla() {
       <div class="pp-card${p.tieneIncidencias ? ' con-incidencia' : ''}" style="border-left:3px solid ${color}">
         <div class="pp-card-top">
           <div class="pp-avatar" style="background:${color}22;color:${color}">${ini}</div>
-          <div>
-            <div class="pp-nombre">${escapeHtml(p.profesor) || "—"}</div>
-            <div class="pp-lab">${escapeHtml(p.laboratorio) || "—"}</div>
+          <div style="min-width:0;flex:1">
+            <div class="pp-nombre" title="${escapeAttr(p.profesor||"")}">${escapeHtml(p.profesor) || "—"}</div>
+            <div class="pp-lab" title="${escapeAttr(p.laboratorio||"")}">${escapeHtml(p.laboratorio) || "—"}</div>
           </div>
+        </div>
+        <div class="prof-badges-row">
           ${estadoTag}
           ${(p.estado === "activo" && !esDeHoy) ? '<span class="pp-estado-tag" style="background:rgba(180,83,9,.15);color:var(--amarillo)" title="Sin retornar desde un día anterior">Sin retornar</span>' : ''}
         </div>
@@ -2885,9 +2887,9 @@ function extRenderTabla() {
       <div class="ext-card${p.tieneIncidencias ? ' con-incidencia' : ''}">
         <div class="ext-card-top">
           <div class="ext-icono-depto">${ini}</div>
-          <div>
-            <div class="pp-nombre">${escapeHtml(p.departamento) || "—"}</div>
-            <div class="pp-lab">Responsable: ${escapeHtml(p.responsable) || "—"}</div>
+          <div style="min-width:0;flex:1">
+            <div class="pp-nombre" title="${escapeAttr(p.departamento||"")}">${escapeHtml(p.departamento) || "—"}</div>
+            <div class="pp-lab" title="${escapeAttr(p.responsable||"")}">Responsable: ${escapeHtml(p.responsable) || "—"}</div>
           </div>
           ${estadoTag}
         </div>

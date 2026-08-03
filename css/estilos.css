@@ -295,6 +295,24 @@ h1, h2, h3 { font-family: var(--fuente-titulo); }
   padding: 40px 24px;
 }
 
+/* En celular ese verde ocupaba demasiada pantalla antes de llegar al
+   botón — se reduce el relleno, el título y los íconos, sin tocar
+   nada de la versión de escritorio/tablet. */
+@media (max-width: 480px) {
+  .taller-header {
+    padding: 28px 20px 20px;
+    min-height: 0;
+  }
+  .taller-titulo {
+    font-size: 19px;
+    margin: 0 0 12px;
+    max-width: 260px;
+  }
+  .taller-iconos {
+    font-size: 28px;
+  }
+}
+
 .separador {
   width: 100%;
   max-width: 320px;

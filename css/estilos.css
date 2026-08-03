@@ -458,6 +458,7 @@ h1, h2, h3 { font-family: var(--fuente-titulo); }
   font-size: 15px; opacity: 0.5; pointer-events: none;
   transition: opacity .15s;
 }
+.icono-input svg { width: 16px; height: 16px; stroke-width: 2px; color: var(--verde); display: block; }
 .campo .input-icono-wrap input,
 .select-wrap.con-icono select { padding-left: 40px; }
 .select-wrap.con-icono .icono-input { z-index: 1; }

@@ -100,7 +100,7 @@
           <div class="campo" style="margin-bottom:0">
             <label for="tipo-solicitud">Usted está:</label>
             <div class="select-wrap con-icono">
-              <span class="icono-input">👤</span>
+              <span class="icono-input"><i data-lucide="user"></i></span>
               <select id="tipo-solicitud">
                 <option value="solicitando">Solicitando herramientas</option>
                 <option value="adicional">Agregar herramientas adicionales</option>
@@ -121,20 +121,20 @@
 
           <div class="campo">
             <label for="nombre">Nombre(s):</label>
-            <div class="input-icono-wrap"><span class="icono-input">👤</span>
+            <div class="input-icono-wrap"><span class="icono-input"><i data-lucide="user"></i></span>
               <input type="text" id="nombre" required></div>
           </div>
 
           <div class="campo">
             <label for="apellido">Apellido(s):</label>
-            <div class="input-icono-wrap"><span class="icono-input">👤</span>
+            <div class="input-icono-wrap"><span class="icono-input"><i data-lucide="user"></i></span>
               <input type="text" id="apellido" required></div>
           </div>
 
           <div class="campo">
             <label for="matricula">Matrícula:</label>
             <div class="matricula-wrap">
-              <div class="input-icono-wrap"><span class="icono-input">🆔</span>
+              <div class="input-icono-wrap"><span class="icono-input"><i data-lucide="id-card"></i></span>
                 <input type="text" id="matricula" placeholder="0-00-0000" required></div>
               <button type="button" id="btn-camara" class="btn-camara" title="Tomar foto de carnet">📷</button>
             </div>
@@ -149,7 +149,7 @@
           <div class="campo">
             <label for="ciclo">Ciclo:</label>
             <div class="select-wrap con-icono">
-              <span class="icono-input">📅</span>
+              <span class="icono-input"><i data-lucide="calendar"></i></span>
               <select id="ciclo" required>
                 <option value="" data-fijo>Elige un ciclo</option>
                 <!-- Los ciclos ahora los agrega solo el staff desde el admin -->
@@ -159,14 +159,14 @@
 
           <div class="campo">
             <label for="telefono">Número de teléfono:</label>
-            <div class="input-icono-wrap"><span class="icono-input">📞</span>
+            <div class="input-icono-wrap"><span class="icono-input"><i data-lucide="phone"></i></span>
               <input type="tel" id="telefono" placeholder="809-000-0000" required></div>
           </div>
 
           <div class="campo">
             <label for="profesor">Profesor:</label>
             <div class="select-wrap con-icono">
-              <span class="icono-input">👨‍🏫</span>
+              <span class="icono-input"><i data-lucide="graduation-cap"></i></span>
               <select id="profesor" required>
                 <option value="">Elige un profesor</option>
               </select>
@@ -176,7 +176,7 @@
           <div class="campo campo-full">
             <label for="laboratorio">Laboratorio / Taller:</label>
             <div class="select-wrap con-icono">
-              <span class="icono-input">🏢</span>
+              <span class="icono-input"><i data-lucide="building-2"></i></span>
               <select id="laboratorio" required>
                 <option value="">Elige un laboratorio/taller</option>
               </select>
@@ -310,5 +310,7 @@
   <script type="module" src="js/inventario.js"></script>
   <script type="module" src="js/app.js"></script>
 
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script>lucide.createIcons();</script>
 </body>
 </html>

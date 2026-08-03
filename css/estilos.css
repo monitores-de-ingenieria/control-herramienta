@@ -241,9 +241,9 @@ h1, h2, h3 { font-family: var(--fuente-titulo); }
 
 .taller-header {
   background: var(--gradiente-hero);
-  padding: 60px 24px 40px;
+  padding: 46px 24px 28px;
   text-align: center;
-  min-height: 200px;
+  min-height: 130px;
   display: flex;
   flex-direction: column;
   align-items: center;

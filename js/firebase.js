@@ -19,19 +19,19 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAqNViWNYRTI2uQaMlj6QMg7TGiiUZZVZQ",
-  authDomain: "taller-maquinas-herramientas.firebaseapp.com",
-  projectId: "taller-maquinas-herramientas",
-  storageBucket: "taller-maquinas-herramientas.firebasestorage.app",
-  messagingSenderId: "79762926711",
-  appId: "1:79762926711:web:83a33df56183f56d6a2a72",
-  measurementId: "G-JJ7E3E2E79"
+  apiKey: "AIzaSyDkxEHj-F2ST2_qWiFKe-ZYsEPRkIHs7zM",
+  authDomain: "taller-maquina-herramienta.firebaseapp.com",
+  projectId: "taller-maquina-herramienta",
+  storageBucket: "taller-maquina-herramienta.firebasestorage.app",
+  messagingSenderId: "764170192710",
+  appId: "1:764170192710:web:459413da1ed0c41f4c0747",
+  measurementId: "G-46C4BJ3PLY"
 };
 
 const app = initializeApp(firebaseConfig);
 
 const appCheck = initializeAppCheck(app, {
-  provider: new ReCaptchaEnterpriseProvider("6LfqPUgtAAAAAGotRzMTvetHw4a1pKbj-D5lftbZ"),
+  provider: new ReCaptchaEnterpriseProvider("6Le7KHQtAAAAAPVxDTA-r3SAIRFSPaBs4vQ0xPem"),
   isTokenAutoRefreshEnabled: true
 });
 

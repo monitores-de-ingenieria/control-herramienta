@@ -3695,6 +3695,7 @@ window.migrarFotosDesdeGithub = async function() {
 };
 
 
+window.guardarHerramienta = async function() {
   const nombre    = document.getElementById("her-input-nombre").value.trim();
   const categoria = document.getElementById("her-input-categoria").value;
   const cantidad  = parseInt(document.getElementById("her-input-cantidad").value) || 0;

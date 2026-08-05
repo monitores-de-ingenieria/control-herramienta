@@ -1044,7 +1044,7 @@ tr:hover td { background: var(--hover); }
 .her-card { background: var(--card); border: 1px solid var(--borde); border-radius: 14px; overflow: hidden; position: relative; transition: transform .15s, border-color .15s, box-shadow .15s; }
 .her-card:hover { transform: translateY(-2px); border-color: var(--verde); box-shadow: var(--sombra-md); }
 .her-card.stock-bajo { border: 1px dashed var(--amarillo); }
-.her-foto-wrap { position: relative; height: 130px; background: var(--card2); display: flex; align-items: center; justify-content: center; }
+.her-foto-wrap { position: relative; height: 130px; background: var(--card2); display: flex; align-items: center; justify-content: center; padding: 22px 12px 8px; box-sizing: border-box; }
 .her-foto-wrap img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .her-foto-fallback { font-size: 32px; opacity: .7; }
 .her-cat-tag { position: absolute; top: 7px; left: 7px; font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }

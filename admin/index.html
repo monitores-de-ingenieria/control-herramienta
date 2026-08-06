@@ -905,9 +905,12 @@
 
 <div class="modal-overlay" id="modal-nuevo-pp">
   <div class="modal modal-picking" style="max-width:1100px">
-    <div class="modal-titulo">
-      <i data-lucide=plus style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Nuevo préstamo a profesor
-      <button class="modal-cerrar" onclick="cerrarModalNuevoProf()"><i data-lucide=x style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i></button>
+    <div class="modal-titulo modal-titulo-picking">
+      <span class="modal-titulo-picking-izq">Toca una herramienta para agregarla</span>
+      <div class="modal-titulo-picking-der">
+        <span><i data-lucide=plus style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Nuevo préstamo a profesor</span>
+        <button class="modal-cerrar" onclick="cerrarModalNuevoProf()"><i data-lucide=x style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i></button>
+      </div>
     </div>
     <div class="modal-campo">
       <label>Profesor</label>
@@ -923,7 +926,6 @@
     </div>
     <div class="picking-layout">
       <div class="picking-buscar">
-        <div style="font-size:11px;font-weight:700;color:var(--texto-dim);text-transform:uppercase;margin-bottom:6px">Toca una herramienta para agregarla</div>
         <input type="text" id="pp-picker-buscar-inline" placeholder="Buscar herramienta para agregar..." oninput="renderPPPickerGridInline()"
           style="width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--borde);border-radius:8px;color:var(--texto);font-size:14px">
         <div id="pp-picker-grid-inline" class="her-grid picking-grid"></div>
@@ -953,13 +955,15 @@
 
 <div class="modal-overlay" id="modal-pp-fotos">
   <div class="modal modal-picking" style="max-width:1100px">
-    <div class="modal-titulo">
-      <span id="pp-picker-titulo"><i data-lucide=camera style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Elegir herramientas</span>
-      <button class="modal-cerrar" onclick="cerrarPickerFotosPP()"><i data-lucide=x style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i></button>
+    <div class="modal-titulo modal-titulo-picking">
+      <span class="modal-titulo-picking-izq">Toca una herramienta para agregarla</span>
+      <div class="modal-titulo-picking-der">
+        <span id="pp-picker-titulo"><i data-lucide=camera style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Elegir herramientas</span>
+        <button class="modal-cerrar" onclick="cerrarPickerFotosPP()"><i data-lucide=x style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i></button>
+      </div>
     </div>
     <div class="picking-layout">
       <div class="picking-buscar">
-        <div style="font-size:11px;font-weight:700;color:var(--texto-dim);text-transform:uppercase;margin-bottom:6px">Toca una herramienta para agregarla</div>
         <input type="text" id="pp-picker-buscar" placeholder="Buscar herramienta..." oninput="renderPickerFotosPP()"
           style="width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--borde);border-radius:8px;color:var(--texto);font-size:14px">
         <div id="pp-picker-grid" class="her-grid picking-grid"></div>
@@ -1009,13 +1013,15 @@
 
 <div class="modal-overlay" id="modal-retorno-pp">
   <div class="modal modal-picking" style="max-width:1100px">
-    <div class="modal-titulo">
-      <i data-lucide=corner-up-left style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Retorno — <span id="pp-retorno-nombre"></span>
-      <button class="modal-cerrar" onclick="cerrarModalRetornoProf()"><i data-lucide=x style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i></button>
+    <div class="modal-titulo modal-titulo-picking">
+      <span class="modal-titulo-picking-izq">Toca una herramienta para agregarla</span>
+      <div class="modal-titulo-picking-der">
+        <span><i data-lucide=corner-up-left style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Retorno — <span id="pp-retorno-nombre"></span></span>
+        <button class="modal-cerrar" onclick="cerrarModalRetornoProf()"><i data-lucide=x style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i></button>
+      </div>
     </div>
     <div class="picking-layout">
       <div class="picking-buscar">
-        <div style="font-size:11px;font-weight:700;color:var(--texto-dim);text-transform:uppercase;margin-bottom:6px">Toca una herramienta para agregarla</div>
         <input type="text" id="pp-retorno-picker-buscar" placeholder="Buscar herramienta para agregar..." oninput="renderPPRetornoPickerGrid()"
           style="width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--borde);border-radius:8px;color:var(--texto);font-size:14px">
         <div id="pp-retorno-picker-grid" class="her-grid picking-grid"></div>
@@ -1052,9 +1058,12 @@
 
 <div class="modal-overlay" id="modal-nuevo-ext">
   <div class="modal modal-picking" style="max-width:1100px">
-    <div class="modal-titulo">
-      <i data-lucide=plus style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Registrar salida a otro departamento
-      <button class="modal-cerrar" onclick="cerrarModalNuevoExt()"><i data-lucide=x style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i></button>
+    <div class="modal-titulo modal-titulo-picking">
+      <span class="modal-titulo-picking-izq">Toca una herramienta para agregarla</span>
+      <div class="modal-titulo-picking-der">
+        <span><i data-lucide=plus style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Registrar salida a otro departamento</span>
+        <button class="modal-cerrar" onclick="cerrarModalNuevoExt()"><i data-lucide=x style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i></button>
+      </div>
     </div>
     <div class="modal-campo">
       <label>Departamento</label>
@@ -1068,7 +1077,6 @@
     </div>
     <div class="picking-layout">
       <div class="picking-buscar">
-        <div style="font-size:11px;font-weight:700;color:var(--texto-dim);text-transform:uppercase;margin-bottom:6px">Toca una herramienta para agregarla</div>
         <input type="text" id="ext-picker-buscar" placeholder="Buscar herramienta para agregar..." oninput="renderExtPickerGrid()"
           style="width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--borde);border-radius:8px;color:var(--texto);font-size:14px">
         <div id="ext-picker-grid" class="her-grid picking-grid"></div>
@@ -1087,13 +1095,15 @@
 
 <div class="modal-overlay" id="modal-retorno-ext">
   <div class="modal modal-picking" style="max-width:1100px">
-    <div class="modal-titulo">
-      <i data-lucide=corner-up-left style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Retorno — <span id="ext-retorno-nombre"></span>
-      <button class="modal-cerrar" onclick="cerrarModalRetornoExt()"><i data-lucide=x style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i></button>
+    <div class="modal-titulo modal-titulo-picking">
+      <span class="modal-titulo-picking-izq">Toca una herramienta para agregarla</span>
+      <div class="modal-titulo-picking-der">
+        <span><i data-lucide=corner-up-left style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Retorno — <span id="ext-retorno-nombre"></span></span>
+        <button class="modal-cerrar" onclick="cerrarModalRetornoExt()"><i data-lucide=x style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i></button>
+      </div>
     </div>
     <div class="picking-layout">
       <div class="picking-buscar">
-        <div style="font-size:11px;font-weight:700;color:var(--texto-dim);text-transform:uppercase;margin-bottom:6px">Toca una herramienta para agregarla</div>
         <input type="text" id="ext-retorno-picker-buscar" placeholder="Buscar herramienta para agregar..." oninput="renderExtRetornoPickerGrid()"
           style="width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--borde);border-radius:8px;color:var(--texto);font-size:14px">
         <div id="ext-retorno-picker-grid" class="her-grid picking-grid"></div>
@@ -1126,13 +1136,15 @@
 
 <div class="modal-overlay" id="modal-entrega">
   <div class="modal modal-picking" style="max-width:1100px">
-    <div class="modal-titulo">
-      <i data-lucide=check style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Entregar Herramientas
-      <button class="modal-cerrar" onclick="cerrarModalEntrega()"><i data-lucide=x style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i></button>
+    <div class="modal-titulo modal-titulo-picking">
+      <span class="modal-titulo-picking-izq">Toca una herramienta para agregarla</span>
+      <div class="modal-titulo-picking-der">
+        <span><i data-lucide=check style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Entregar Herramientas</span>
+        <button class="modal-cerrar" onclick="cerrarModalEntrega()"><i data-lucide=x style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i></button>
+      </div>
     </div>
     <div class="picking-layout">
       <div class="picking-buscar">
-        <div style="font-size:11px;font-weight:700;color:var(--texto-dim);text-transform:uppercase;margin-bottom:6px">Toca una herramienta para agregarla</div>
         <input type="text" id="entrega-picker-buscar" placeholder="Buscar herramienta para agregar..." oninput="renderEntregaPickerGrid()"
           style="width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--borde);border-radius:8px;color:var(--texto);font-size:14px">
         <div id="entrega-picker-grid" class="her-grid picking-grid"></div>
@@ -1157,13 +1169,15 @@
 
 <div class="modal-overlay" id="modal-retorno">
   <div class="modal modal-picking" style="max-width:1100px">
-    <div class="modal-titulo">
-      <i data-lucide=corner-up-left style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Registrar Retorno
-      <button class="modal-cerrar" onclick="cerrarModalRetorno()"><i data-lucide=x style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i></button>
+    <div class="modal-titulo modal-titulo-picking">
+      <span class="modal-titulo-picking-izq">Toca una herramienta para agregarla</span>
+      <div class="modal-titulo-picking-der">
+        <span><i data-lucide=corner-up-left style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Registrar Retorno</span>
+        <button class="modal-cerrar" onclick="cerrarModalRetorno()"><i data-lucide=x style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i></button>
+      </div>
     </div>
     <div class="picking-layout">
       <div class="picking-buscar">
-        <div style="font-size:11px;font-weight:700;color:var(--texto-dim);text-transform:uppercase;margin-bottom:6px">Toca una herramienta para agregarla</div>
         <input type="text" id="retorno-picker-buscar" placeholder="Buscar herramienta para agregar..." oninput="renderRetornoPickerGrid()"
           style="width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--borde);border-radius:8px;color:var(--texto);font-size:14px">
         <div id="retorno-picker-grid" class="her-grid picking-grid"></div>

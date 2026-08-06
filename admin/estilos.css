@@ -728,8 +728,8 @@ body:not(.tema-claro) .switch-tema-icono-luna { opacity: 1; }
    TABLA — estilo Linear/GitHub, no Excel
 ═══════════════════════════════════════════ */
 .seccion-tabla { background: var(--card); border: 1px solid var(--borde); border-radius: 14px; overflow: hidden; margin-bottom: 18px; box-shadow: var(--sombra-sm, 0 1px 2px rgba(0,0,0,0.06)); }
-.tabla-header { padding: 14px 18px; border-bottom: 1px solid var(--borde); display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; background: transparent; }
-.tabla-header h3 { font-size: 13px; font-weight: 600; }
+.tabla-header { padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; background: linear-gradient(90deg, #0d3b23 0%, #16a34a 45%, #22c55e 100%); color: #fff; }
+.tabla-header h3 { font-size: 13px; font-weight: 600; color: #fff; }
 
 .filtros { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .filtros input, .filtros select {

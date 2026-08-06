@@ -883,6 +883,8 @@ tr:hover td { background: var(--hover); }
 }
 .modal-cerrar { background: var(--card); border: 1px solid var(--borde); color: var(--texto-dim); font-size: 16px; cursor: pointer; border-radius: 8px; width: 30px; height: 30px; display:flex; align-items:center; justify-content:center; transition: border-color .15s, color .15s; }
 .modal-cerrar:hover { border-color: var(--rojo); color: var(--rojo); }
+.modal-titulo-espaciador { width: 30px; height: 30px; visibility: hidden; flex-shrink: 0; }
+.modal-titulo-texto { flex: 1; text-align: center; }
 
 /* Título de los modales de picking (Retorno, Entrega, etc.): en vez de
    texto centrado sobre toda la barra, se divide en las mismas dos
@@ -891,7 +893,7 @@ tr:hover td { background: var(--hover); }
    (Registrar Retorno, Entregar Herramientas, etc.) quede alineado con
    la lista — sigue siendo UNA sola barra verde continua, sin división visual.*/
 .modal-titulo-picking { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; align-items: center; }
-.modal-titulo-picking-izq { font-size: 13px; font-weight: 700; opacity: .92; }
+.modal-titulo-picking-izq { font-size: 13px; font-weight: 700; opacity: .92; text-align: center; }
 .modal-titulo-picking-der { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-width: 0; }
 .modal-titulo-picking-der > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 @media (max-width: 720px) {

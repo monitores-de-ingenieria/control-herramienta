@@ -191,15 +191,20 @@ h1, h2, h3,
 ═══════════════════════════════════════════ */
 .topbar {
   grid-column: 1/-1;
-  background: var(--card);
-  border-bottom: 1px solid var(--borde);
-  box-shadow: none;
+  background: var(--gradiente-verde);
+  border-bottom: none;
+  box-shadow: var(--sombra-verde);
   display: flex;
   align-items: center;
   padding: 0 18px;
   gap: 12px;
   position: relative;
   z-index: 5;
+  --texto: #ffffff;
+  --texto-dim: rgba(255,255,255,0.8);
+  --hover: rgba(255,255,255,0.14);
+  --borde: rgba(255,255,255,0.28);
+  --card2: rgba(255,255,255,0.16);
 }
 
 .topbar-titulo { font-weight: 600; font-size: 13.5px; color: var(--texto); letter-spacing: -.2px; }
@@ -214,6 +219,8 @@ h1, h2, h3,
   font-weight: 700; font-size: 12px; color: var(--av-txt);
   flex-shrink: 0;
 }
+.topbar .avatar { background: #ffffff; color: var(--verde-dim); }
+.topbar .switch-tema-perilla { background: #ffffff; }
 
 .btn-toggle-sidebar {
   background: transparent; border: 1px solid transparent;
@@ -259,14 +266,19 @@ body:not(.tema-claro) .switch-tema-icono-luna { opacity: 1; }
    SIDEBAR — más limpio, sin bloques sólidos pesados
 ═══════════════════════════════════════════ */
 .sidebar {
-  background: var(--sidebar);
-  border-right: 1px solid var(--borde);
+  background: var(--gradiente-verde);
+  border-right: none;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 10px 8px;
   transition: all .2s ease;
   display: flex;
   flex-direction: column;
+  --texto: #ffffff;
+  --texto-dim: rgba(255,255,255,0.75);
+  --hover: rgba(255,255,255,0.14);
+  --borde: rgba(255,255,255,0.22);
+  --card2: rgba(255,255,255,0.16);
 }
 .sb-spacer { flex: 1; min-height: 20px; }
 
@@ -288,8 +300,14 @@ body:not(.tema-claro) .switch-tema-icono-luna { opacity: 1; }
   font-size: 15px;
   flex-shrink: 0;
   transition: transform .2s;
-  box-shadow: var(--sombra-verde);
+  box-shadow: var(--sombra-sm);
 }
+/* Ítem activo: en fondo verde, un resaltado blanco translúcido en vez del
+   verde-sobre-verde de siempre (que se perdería de contraste aquí). */
+.sidebar .nav-item.activo { color: #ffffff; background: rgba(255,255,255,0.18); }
+.sidebar .nav-item.activo .nav-icono { color: #ffffff; }
+.sidebar .nav-item.activo::before { background: #ffffff; }
+.sidebar .nav-item.activo .nav-badge { background: #ffffff; color: var(--verde-dim); border-color: transparent; }
 .sb-brand:hover .sb-brand-icon { transform: scale(1.05); }
 .sb-brand-title { font-size: 13px; font-weight: 700; color: var(--texto); letter-spacing: -.2px; }
 .sb-brand-sub { font-size: 10px; color: var(--texto-dim); font-weight: 600; letter-spacing: .03em; }
@@ -406,8 +424,8 @@ body:not(.tema-claro) .switch-tema-icono-luna { opacity: 1; }
 }
 .shell.sidebar-colapsado .nav-item:hover .nav-icono { background: var(--hover); }
 .shell.sidebar-colapsado .nav-item.activo .nav-icono {
-  background: var(--verde-glow);
-  color: var(--verde);
+  background: rgba(255,255,255,0.22);
+  color: #ffffff;
 }
 .shell.sidebar-colapsado .nav-item.activo { background: none; }
 .shell.sidebar-colapsado .nav-item::before { display: none; }
@@ -420,7 +438,7 @@ body:not(.tema-claro) .switch-tema-icono-luna { opacity: 1; }
   font-size: 11px;
   color: var(--texto-dim);
 }
-.sb-turno-titulo { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--verde); margin-bottom: 3px; }
+.sb-turno-titulo { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: rgba(255,255,255,0.85); margin-bottom: 3px; }
 .sb-turno-hora { font-weight: 600; font-size: 12px; color: var(--texto); }
 .sb-turno-encargado { margin-top: 2px; }
 .shell.sidebar-colapsado .sb-turno { display: none; }
@@ -447,7 +465,7 @@ body:not(.tema-claro) .switch-tema-icono-luna { opacity: 1; }
 .sb-gabinete { width: 26px; height: auto; align-self: center; flex-shrink: 0; display: block; filter: none; opacity: .85; position: relative; z-index: 1; }
 .sb-stat-prestadas-top { display: flex; flex-direction: column; justify-content: center; flex: 1; min-width: 0; position: relative; z-index: 1; line-height: 1.2; }
 .sb-stat-prestadas-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--texto-dim); }
-.sb-stat-prestadas-label .hoy { color: var(--verde); }
+.sb-stat-prestadas-label .hoy { color: #ffffff; }
 .sb-stat-prestadas-numero { font-size: 26px; font-weight: 700; line-height: 1; letter-spacing: -0.5px; position: relative; z-index: 1; text-shadow: none; margin-top: 2px; white-space: nowrap; color: var(--texto); }
 .shell.sidebar-colapsado .sb-stat-prestadas { display: none; }
 
@@ -883,38 +901,6 @@ tr:hover td { background: var(--hover); }
 }
 .modal-cerrar { background: var(--card); border: 1px solid var(--borde); color: var(--texto-dim); font-size: 16px; cursor: pointer; border-radius: 8px; width: 30px; height: 30px; display:flex; align-items:center; justify-content:center; transition: border-color .15s, color .15s; }
 .modal-cerrar:hover { border-color: var(--rojo); color: var(--rojo); }
-.modal-titulo-espaciador { display: none; }
-
-/* Título de los modales de picking (Retorno, Entrega, etc.): dos columnas
-   con las MISMAS proporciones que .picking-layout de abajo (1.4fr / 1fr,
-   gap 20px), para que cada texto quede centrado exactamente en su propio
-   espacio: "Toca una herramienta para agregarla" centrado sobre las fotos,
-   y el título (Registrar Retorno, etc.) centrado sobre la lista. El botón
-   X se saca del flujo (position:absolute) para que no descentre el texto
-   de la derecha ni le reste espacio. */
-.modal-titulo-picking {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  gap: 20px;
-  align-items: center;
-}
-.modal-titulo-picking-izq { font-size: 16px; font-weight: 600; letter-spacing: -.1px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.modal-titulo-picking-der { position: relative; display: flex; align-items: center; min-width: 0; }
-.modal-titulo-picking-der .modal-titulo-texto,
-.modal-titulo-picking-der > span {
-  width: 100%;
-  text-align: center;
-  padding: 0 40px;
-  box-sizing: border-box;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.modal-titulo-picking-der .modal-cerrar { position: absolute; right: 0; top: 50%; transform: translateY(-50%); }
-@media (max-width: 720px) {
-  .modal-titulo-picking { grid-template-columns: 1fr; gap: 4px; }
-  .modal-titulo-picking-izq { display: none; }
-}
 
 .modal-picking { display: flex; flex-direction: column; max-height: 92vh; }
 .picking-layout { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; flex: 1; min-height: 0; }
@@ -1076,7 +1062,7 @@ tr:hover td { background: var(--hover); }
 .her-card { background: var(--card); border: 1px solid var(--borde); border-radius: 14px; overflow: hidden; position: relative; transition: transform .15s, border-color .15s, box-shadow .15s; }
 .her-card:hover { transform: translateY(-2px); border-color: var(--verde); box-shadow: var(--sombra-md); }
 .her-card.stock-bajo { border: 1px dashed var(--amarillo); }
-.her-foto-wrap { position: relative; height: 130px; background: #fff; display: flex; align-items: center; justify-content: center; padding: 22px 12px 8px; box-sizing: border-box; }
+.her-foto-wrap { position: relative; height: 130px; background: var(--card2); display: flex; align-items: center; justify-content: center; padding: 22px 12px 8px; box-sizing: border-box; }
 .her-foto-wrap img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .her-foto-fallback { font-size: 32px; opacity: .7; }
 .her-cat-tag { position: absolute; top: 7px; left: 7px; font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }

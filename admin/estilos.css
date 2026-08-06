@@ -884,19 +884,33 @@ tr:hover td { background: var(--hover); }
 .modal-cerrar { background: var(--card); border: 1px solid var(--borde); color: var(--texto-dim); font-size: 16px; cursor: pointer; border-radius: 8px; width: 30px; height: 30px; display:flex; align-items:center; justify-content:center; transition: border-color .15s, color .15s; }
 .modal-cerrar:hover { border-color: var(--rojo); color: var(--rojo); }
 .modal-titulo-espaciador { display: none; }
-.modal-titulo-texto { display: block; width: 100%; text-align: center; padding: 0 40px; box-sizing: border-box; }
 
-/* Título de los modales de picking (Retorno, Entrega, etc.): en vez de
-   texto centrado sobre toda la barra, se divide en las mismas dos
-   columnas que .picking-layout de abajo, para que "Toca una herramienta
-   para agregarla" quede alineado con las fotos y el título original
-   (Registrar Retorno, Entregar Herramientas, etc.) quede alineado con
-   la lista — sigue siendo UNA sola barra verde continua, sin división visual.*/
-.modal-titulo-picking { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; align-items: center; }
-.modal-titulo-picking-izq { font-size: 16px; font-weight: 600; letter-spacing: -.1px; text-align: center; }
+/* Título de los modales de picking (Retorno, Entrega, etc.): dos columnas
+   con las MISMAS proporciones que .picking-layout de abajo (1.4fr / 1fr,
+   gap 20px), para que cada texto quede centrado exactamente en su propio
+   espacio: "Toca una herramienta para agregarla" centrado sobre las fotos,
+   y el título (Registrar Retorno, etc.) centrado sobre la lista. El botón
+   X se saca del flujo (position:absolute) para que no descentre el texto
+   de la derecha ni le reste espacio. */
+.modal-titulo-picking {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 20px;
+  align-items: center;
+}
+.modal-titulo-picking-izq { font-size: 16px; font-weight: 600; letter-spacing: -.1px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .modal-titulo-picking-der { position: relative; display: flex; align-items: center; min-width: 0; }
+.modal-titulo-picking-der .modal-titulo-texto,
+.modal-titulo-picking-der > span {
+  width: 100%;
+  text-align: center;
+  padding: 0 40px;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .modal-titulo-picking-der .modal-cerrar { position: absolute; right: 0; top: 50%; transform: translateY(-50%); }
-.modal-titulo-picking-der > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 @media (max-width: 720px) {
   .modal-titulo-picking { grid-template-columns: 1fr; gap: 4px; }
   .modal-titulo-picking-izq { display: none; }

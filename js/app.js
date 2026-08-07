@@ -92,7 +92,15 @@ const fotoPreviewWrap = document.getElementById("foto-preview-wrap");
 const fotoPreview     = document.getElementById("foto-preview");
 const btnQuitarFoto   = document.getElementById("btn-quitar-foto");
 
-btnCamara.addEventListener("click", () => inputCamara.click());
+// Antes de abrir la cámara se guarda lo que el estudiante ya llenó
+// (nombre, matrícula, etc.) como red de seguridad: en celulares con poca
+// RAM (ej. gama baja con MIUI) el sistema puede cerrar la pestaña del
+// navegador mientras la app de cámara está abierta. Así, si eso pasa y el
+// estudiante tiene que volver a abrir el formulario, no pierde lo ya escrito.
+btnCamara.addEventListener("click", () => {
+  guardarDatosPersonales();
+  inputCamara.click();
+});
 
 // La foto del carnet se guarda como texto (base64) directo en el documento
 // de Firestore -- no usa Firebase Storage porque tiene costo por uso. Para

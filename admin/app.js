@@ -1534,13 +1534,23 @@ window.entregar = async function(id) {
   if (!s) return;
 
   document.getElementById("info-entrega").innerHTML = `
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
       <i data-lucide=user-round style="width:16px;height:16px;color:var(--verde)"></i>
       <strong style="font-size:14px">${escapeHtml(s.nombre)} ${escapeHtml(s.apellido)}</strong>
     </div>
-    <div style="display:flex;flex-wrap:wrap;gap:6px 14px;font-size:11.5px;color:var(--texto-dim)">
-      <span><b style="color:var(--texto);font-weight:600">Matrícula:</b> ${escapeHtml(s.matricula)}</span>
-      <span><b style="color:var(--texto);font-weight:600">Taller:</b> ${escapeHtml(s.laboratorio) || "—"}</span>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px">
+      <div style="background:var(--card2);border:1px solid var(--borde);border-radius:8px;padding:6px 10px">
+        <div style="font-size:9.5px;font-weight:700;color:var(--texto-dim);text-transform:uppercase">Matrícula</div>
+        <div style="font-size:12.5px;font-weight:600">${escapeHtml(s.matricula)}</div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--borde);border-radius:8px;padding:6px 10px">
+        <div style="font-size:9.5px;font-weight:700;color:var(--texto-dim);text-transform:uppercase">Taller</div>
+        <div style="font-size:12.5px;font-weight:600">${escapeHtml(s.laboratorio) || "—"}</div>
+      </div>
+      <div style="background:var(--card2);border:1px solid var(--borde);border-radius:8px;padding:6px 10px">
+        <div style="font-size:9.5px;font-weight:700;color:var(--texto-dim);text-transform:uppercase">Profesor</div>
+        <div style="font-size:12.5px;font-weight:600">${escapeHtml(s.profesor) || "—"}</div>
+      </div>
     </div>`;
 
   _entregaAdicionales = {};

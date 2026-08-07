@@ -160,6 +160,33 @@ async function comprimirImagenACarnet(file, maxAncho = 360, calidad = 0.55) {
   });
 }
 
+// Envoltorio con reintentos: en celulares con poca memoria, la primera
+// pasada (360px) a veces truena o cierra el navegador con fotos de cámara
+// muy grandes (12-50 megapíxeles sin comprimir). En vez de morir de una
+// vez, se reintenta pidiendo tamaños cada vez más chicos -- cada intento
+// nuevo le pide MENOS memoria al navegador, no más, así que es seguro
+// reintentar después de un fallo. Si el archivo en sí es sospechosamente
+// grande, se avisa antes de intentar nada.
+async function comprimirImagenACarnetConReintentos(file) {
+  // Aviso temprano, no bloqueante: no cancela el intento, pero ayuda a
+  // entender en consola si el archivo venía enorme de la cámara.
+  if (file.size > 15 * 1024 * 1024) {
+    console.warn(`Foto de carnet muy pesada (${(file.size / 1024 / 1024).toFixed(1)}MB) -- puede tardar o fallar en equipos con poca memoria.`);
+  }
+
+  const intentos = [360, 240, 160];
+  let ultimoError = null;
+  for (const maxAncho of intentos) {
+    try {
+      return await comprimirImagenACarnet(file, maxAncho, 0.55);
+    } catch (err) {
+      ultimoError = err;
+      console.warn(`Falló comprimir a ${maxAncho}px, reintentando más chico si queda otro intento...`, err);
+    }
+  }
+  throw ultimoError;
+}
+
 inputCamara.addEventListener("change", async () => {
   const file = inputCamara.files[0];
   if (!file) return;
@@ -168,13 +195,13 @@ inputCamara.addEventListener("change", async () => {
   fotoPreview.src = ""; // limpio mientras procesa -- ya no se muestra la foto sin comprimir
 
   try {
-    fotoCarnetBase64 = await comprimirImagenACarnet(file);
+    fotoCarnetBase64 = await comprimirImagenACarnetConReintentos(file);
     fotoPreview.src = fotoCarnetBase64; // el preview usa la versión ya comprimida
   } catch (err) {
     console.error("Error al procesar la foto del carnet:", err);
     fotoCarnetBase64 = null;
     fotoPreviewWrap.classList.add("oculto");
-    mostrarError("No se pudo procesar la foto (puede ser memoria insuficiente en el equipo). Intenta tomarla de nuevo, con mejor luz y evitando acercarte demasiado.");
+    mostrarError("No se pudo procesar la foto incluso reduciendo el tamaño varias veces -- puede ser memoria insuficiente en el equipo. Intenta cerrar otras pestañas/apps, o tomar la foto con menos zoom/resolución.");
   } finally {
     // La foto original (varios MB) ya no hace falta -- se limpia del <input>
     // apenas se tiene la versión comprimida, para no retenerla en memoria

@@ -137,9 +137,11 @@
               <div class="input-icono-wrap"><span class="icono-input"><i data-lucide="id-card"></i></span>
                 <input type="text" id="matricula" placeholder="0-00-0000" required></div>
               <button type="button" id="btn-camara" class="btn-camara" title="Tomar foto de carnet">📷</button>
+              <button type="button" id="btn-galeria" class="btn-camara" title="Subir foto desde galería">📁</button>
             </div>
-            <small>Haga clic en el icono de la cámara para tomar una foto.</small>
+            <small>Haga clic en el icono de la cámara para tomar una foto, o en la carpeta para subir una que ya tengas.</small>
             <input type="file" id="input-camara" accept="image/*" capture="environment" style="display:none">
+            <input type="file" id="input-galeria" accept="image/*" style="display:none">
             <div id="foto-preview-wrap" class="foto-preview-wrap oculto">
               <img id="foto-preview" src="" alt="Foto del carnet">
               <button type="button" id="btn-quitar-foto" class="btn-quitar-foto">✕ Quitar foto</button>
@@ -311,6 +313,6 @@
   <script type="module" src="js/app.js"></script>
 
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-  <script>lucide.createIcons();</script>
+  <script>if (window.lucide) lucide.createIcons();</script>
 </body>
 </html>

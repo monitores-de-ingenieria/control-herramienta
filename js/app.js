@@ -193,12 +193,15 @@ async function comprimirImagenACarnetConReintentos(file) {
   throw ultimoError;
 }
 
-inputCamara.addEventListener("change", async () => {
-  const file = inputCamara.files[0];
+// Procesa un archivo de imagen (venga de la cámara o de la galería) con el
+// mismo pipeline de compresión con reintentos. Compartido entre los dos
+// inputs para no duplicar la lógica de error/preview.
+async function procesarFotoSeleccionada(file, inputQueLaDisparo) {
   if (!file) return;
 
   fotoPreviewWrap.classList.remove("oculto");
   fotoPreview.src = ""; // limpio mientras procesa -- ya no se muestra la foto sin comprimir
+  ocultarBtnGaleriaEmergencia();
 
   try {
     fotoCarnetBase64 = await comprimirImagenACarnetConReintentos(file);
@@ -207,13 +210,46 @@ inputCamara.addEventListener("change", async () => {
     console.error("Error al procesar la foto del carnet:", err);
     fotoCarnetBase64 = null;
     fotoPreviewWrap.classList.add("oculto");
-    mostrarError("No se pudo procesar la foto incluso reduciendo el tamaño varias veces -- puede ser memoria insuficiente en el equipo. Intenta cerrar otras pestañas/apps, o tomar la foto con menos zoom/resolución.");
+    // Si fue la cámara la que falló, se ofrece la salida de emergencia:
+    // elegir una foto ya existente (galería) en vez de capturar una nueva.
+    // Una foto de galería puede venir ya comprimida por otra app (WhatsApp,
+    // el propio Fotos del teléfono), o el usuario puede tomarla con la app
+    // nativa de cámara a menor resolución y luego elegirla aquí.
+    if (inputQueLaDisparo === inputCamara) {
+      mostrarError("No se pudo procesar la foto incluso reduciendo el tamaño varias veces -- puede ser memoria insuficiente en el equipo. Puedes intentar 'Subir desde galería' en su lugar (abajo), usando una foto que ya tengas o que tomes con la cámara nativa del teléfono.");
+      mostrarBtnGaleriaEmergencia();
+    } else {
+      mostrarError("No se pudo procesar esa foto incluso reduciendo el tamaño varias veces. Intenta con otra foto, idealmente más liviana.");
+    }
   } finally {
     // La foto original (varios MB) ya no hace falta -- se limpia del <input>
     // apenas se tiene la versión comprimida, para no retenerla en memoria
     // el resto del formulario hasta que se envíe la solicitud.
-    inputCamara.value = "";
+    inputQueLaDisparo.value = "";
   }
+}
+
+function mostrarBtnGaleriaEmergencia() {
+  const btn = document.getElementById("btn-galeria-emergencia");
+  if (btn) btn.classList.remove("oculto");
+}
+function ocultarBtnGaleriaEmergencia() {
+  const btn = document.getElementById("btn-galeria-emergencia");
+  if (btn) btn.classList.add("oculto");
+}
+
+inputCamara.addEventListener("change", () => {
+  procesarFotoSeleccionada(inputCamara.files[0], inputCamara);
+});
+
+// Input alterno sin el atributo "capture": en vez de forzar la cámara,
+// abre el selector de archivos/galería normal del teléfono.
+const inputGaleria = document.getElementById("input-galeria");
+inputGaleria?.addEventListener("change", () => {
+  procesarFotoSeleccionada(inputGaleria.files[0], inputGaleria);
+});
+document.getElementById("btn-galeria-emergencia")?.addEventListener("click", () => {
+  inputGaleria?.click();
 });
 
 btnQuitarFoto.addEventListener("click", () => {
@@ -1152,3 +1188,4 @@ btnNuevaSolicitud.addEventListener("click", () => {
 });
 
 inicializar();
+

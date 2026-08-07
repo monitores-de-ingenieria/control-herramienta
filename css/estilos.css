@@ -470,7 +470,7 @@ h1, h2, h3 { font-family: var(--fuente-titulo); }
 }
 
 /* Icono dentro de los inputs */
-.input-icono-wrap { position: relative; flex: 1; }
+.input-icono-wrap { position: relative; flex: 1; min-width: 0; }
 .icono-input {
   position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
   font-size: 15px; opacity: 0.5; pointer-events: none;

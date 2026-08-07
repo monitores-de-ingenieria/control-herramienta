@@ -1533,25 +1533,8 @@ window.entregar = async function(id) {
   const s = todasSolicitudes.find(x => x.id === id);
   if (!s) return;
 
-  document.getElementById("info-entrega").innerHTML = `
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-      <i data-lucide=user-round style="width:16px;height:16px;color:var(--verde)"></i>
-      <strong style="font-size:14px">${escapeHtml(s.nombre)} ${escapeHtml(s.apellido)}</strong>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px">
-      <div style="background:var(--card2);border:1px solid var(--borde);border-radius:8px;padding:6px 10px">
-        <div style="font-size:9.5px;font-weight:700;color:var(--texto-dim);text-transform:uppercase">Matrícula</div>
-        <div style="font-size:12.5px;font-weight:600">${escapeHtml(s.matricula)}</div>
-      </div>
-      <div style="background:var(--card2);border:1px solid var(--borde);border-radius:8px;padding:6px 10px">
-        <div style="font-size:9.5px;font-weight:700;color:var(--texto-dim);text-transform:uppercase">Taller</div>
-        <div style="font-size:12.5px;font-weight:600">${escapeHtml(s.laboratorio) || "—"}</div>
-      </div>
-      <div style="background:var(--card2);border:1px solid var(--borde);border-radius:8px;padding:6px 10px">
-        <div style="font-size:9.5px;font-weight:700;color:var(--texto-dim);text-transform:uppercase">Profesor</div>
-        <div style="font-size:12.5px;font-weight:600">${escapeHtml(s.profesor) || "—"}</div>
-      </div>
-    </div>`;
+  document.getElementById("info-entrega").innerHTML =
+    `<strong>${escapeHtml(s.nombre)} ${escapeHtml(s.apellido)}</strong> · ${escapeHtml(s.matricula)} · ${escapeHtml(s.laboratorio) || ""}${s.profesor ? " · " + escapeHtml(s.profesor) : ""}`;
 
   _entregaAdicionales = {};
   document.getElementById("btn-toggle-entrega").textContent = "Desmarcar todas";

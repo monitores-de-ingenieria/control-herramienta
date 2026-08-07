@@ -201,7 +201,6 @@ async function procesarFotoSeleccionada(file, inputQueLaDisparo) {
 
   fotoPreviewWrap.classList.remove("oculto");
   fotoPreview.src = ""; // limpio mientras procesa -- ya no se muestra la foto sin comprimir
-  ocultarBtnGaleriaEmergencia();
 
   try {
     fotoCarnetBase64 = await comprimirImagenACarnetConReintentos(file);
@@ -210,14 +209,11 @@ async function procesarFotoSeleccionada(file, inputQueLaDisparo) {
     console.error("Error al procesar la foto del carnet:", err);
     fotoCarnetBase64 = null;
     fotoPreviewWrap.classList.add("oculto");
-    // Si fue la cámara la que falló, se ofrece la salida de emergencia:
-    // elegir una foto ya existente (galería) en vez de capturar una nueva.
-    // Una foto de galería puede venir ya comprimida por otra app (WhatsApp,
-    // el propio Fotos del teléfono), o el usuario puede tomarla con la app
-    // nativa de cámara a menor resolución y luego elegirla aquí.
+    // Si fue la cámara la que falló, se recuerda la alternativa de galería
+    // (una foto de galería puede venir ya comprimida por otra app, o el
+    // usuario puede tomarla con la cámara nativa a menor resolución primero).
     if (inputQueLaDisparo === inputCamara) {
-      mostrarError("No se pudo procesar la foto incluso reduciendo el tamaño varias veces -- puede ser memoria insuficiente en el equipo. Puedes intentar 'Subir desde galería' en su lugar (abajo), usando una foto que ya tengas o que tomes con la cámara nativa del teléfono.");
-      mostrarBtnGaleriaEmergencia();
+      mostrarError("No se pudo procesar la foto incluso reduciendo el tamaño varias veces -- puede ser memoria insuficiente en el equipo. Prueba con 'Subir desde galería' usando una foto que ya tengas o que tomes con la cámara nativa del teléfono.");
     } else {
       mostrarError("No se pudo procesar esa foto incluso reduciendo el tamaño varias veces. Intenta con otra foto, idealmente más liviana.");
     }
@@ -229,26 +225,19 @@ async function procesarFotoSeleccionada(file, inputQueLaDisparo) {
   }
 }
 
-function mostrarBtnGaleriaEmergencia() {
-  const btn = document.getElementById("btn-galeria-emergencia");
-  if (btn) btn.classList.remove("oculto");
-}
-function ocultarBtnGaleriaEmergencia() {
-  const btn = document.getElementById("btn-galeria-emergencia");
-  if (btn) btn.classList.add("oculto");
-}
-
 inputCamara.addEventListener("change", () => {
   procesarFotoSeleccionada(inputCamara.files[0], inputCamara);
 });
 
 // Input alterno sin el atributo "capture": en vez de forzar la cámara,
-// abre el selector de archivos/galería normal del teléfono.
+// abre el selector de archivos/galería normal del teléfono. Visible desde
+// el inicio como opción, no solo cuando falla la cámara -- así el usuario
+// elige de entrada la vía que le resulte más liviana.
 const inputGaleria = document.getElementById("input-galeria");
 inputGaleria?.addEventListener("change", () => {
   procesarFotoSeleccionada(inputGaleria.files[0], inputGaleria);
 });
-document.getElementById("btn-galeria-emergencia")?.addEventListener("click", () => {
+document.getElementById("btn-galeria")?.addEventListener("click", () => {
   inputGaleria?.click();
 });
 
@@ -1188,4 +1177,5 @@ btnNuevaSolicitud.addEventListener("click", () => {
 });
 
 inicializar();
+
 

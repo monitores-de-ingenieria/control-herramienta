@@ -272,6 +272,17 @@ body:not(.tema-claro) .switch-tema-icono-luna { opacity: 1; }
   color: var(--verde-dim);
 }
 
+/* Chip de datos (solo lectura): mismo lenguaje visual que .chip-toggle,
+   para mostrar matrícula/taller/profesor en los modales de entrega y
+   retorno en vez de texto corrido con "·". */
+.chip-dato {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11.5px; font-weight: 600; color: var(--texto-dim);
+  padding: 4px 11px; border-radius: 999px;
+  border: 1px solid var(--borde); background: var(--card2);
+}
+.chip-dato b { color: var(--texto); font-weight: 700; }
+
 /* ═══════════════════════════════════════════
    SIDEBAR — más limpio, sin bloques sólidos pesados
 ═══════════════════════════════════════════ */
@@ -830,8 +841,9 @@ tr:hover td { background: var(--hover); }
 .btn:active { transform: scale(.97); }
 .btn-verde { background: var(--gradiente-verde); color: #fff; box-shadow: var(--sombra-verde); border-color: transparent; }
 .btn-verde:hover { box-shadow: 0 10px 22px rgba(34,197,94,0.3); color: #fff; filter: brightness(1.03); }
-.btn-outline { background: var(--card); border: 1px solid var(--borde); color: var(--texto-dim); }
+.btn-outline { background: var(--card2); border: 1px solid var(--borde); color: var(--texto-dim); font-weight: 700; }
 .btn-outline:hover { border-color: var(--verde); color: var(--verde); background: var(--verde-glow); }
+.modal-acciones .btn { border-radius: 999px; padding: 8px 16px; }
 .btn-rojo { background: rgba(248,113,113,0.16); color: var(--rojo); border: 1px solid rgba(248,113,113,0.3); }
 .btn-rojo:hover { background: var(--rojo); color: #fff; border-color: var(--rojo); }
 .btn-azul { background: rgba(96,165,250,0.16); color: var(--azul); border: 1px solid rgba(96,165,250,0.3); }

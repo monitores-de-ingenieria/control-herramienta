@@ -1533,8 +1533,13 @@ window.entregar = async function(id) {
   const s = todasSolicitudes.find(x => x.id === id);
   if (!s) return;
 
-  document.getElementById("info-entrega").innerHTML =
-    `<strong>${escapeHtml(s.nombre)} ${escapeHtml(s.apellido)}</strong> · ${escapeHtml(s.matricula)} · ${escapeHtml(s.laboratorio) || ""}${s.profesor ? " · " + escapeHtml(s.profesor) : ""}`;
+  document.getElementById("info-entrega").innerHTML = `
+    <div style="font-size:14.5px;font-weight:700;margin-bottom:8px">${escapeHtml(s.nombre)} ${escapeHtml(s.apellido)}</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px">
+      <span class="chip-dato"><b>Matrícula:</b> ${escapeHtml(s.matricula)}</span>
+      <span class="chip-dato"><b>Taller:</b> ${escapeHtml(s.laboratorio) || "—"}</span>
+      ${s.profesor ? `<span class="chip-dato"><b>Profesor:</b> ${escapeHtml(s.profesor)}</span>` : ""}
+    </div>`;
 
   _entregaAdicionales = {};
   document.getElementById("btn-toggle-entrega").textContent = "Desmarcar todas";
@@ -1918,8 +1923,12 @@ window.retornar = function(id) {
   const s = todasSolicitudes.find(x => x.id === id);
   if (!s) return;
 
-  document.getElementById("info-retorno").innerHTML =
-    `<strong>${escapeHtml(s.nombre)} ${escapeHtml(s.apellido)}</strong> · ${escapeHtml(s.matricula)} · ${escapeHtml(s.laboratorio) || ""}`;
+  document.getElementById("info-retorno").innerHTML = `
+    <div style="font-size:14.5px;font-weight:700;margin-bottom:8px">${escapeHtml(s.nombre)} ${escapeHtml(s.apellido)}</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px">
+      <span class="chip-dato"><b>Matrícula:</b> ${escapeHtml(s.matricula)}</span>
+      <span class="chip-dato"><b>Taller:</b> ${escapeHtml(s.laboratorio) || "—"}</span>
+    </div>`;
 
   const herramientas = s.herramientasEntregadas || s.herramientas || [];
   const lista = document.getElementById("lista-retorno");

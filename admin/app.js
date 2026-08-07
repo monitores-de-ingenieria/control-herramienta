@@ -1533,8 +1533,15 @@ window.entregar = async function(id) {
   const s = todasSolicitudes.find(x => x.id === id);
   if (!s) return;
 
-  document.getElementById("info-entrega").innerHTML =
-    `<strong>${escapeHtml(s.nombre)} ${escapeHtml(s.apellido)}</strong> · ${escapeHtml(s.matricula)} · ${escapeHtml(s.laboratorio) || ""}`;
+  document.getElementById("info-entrega").innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+      <i data-lucide=user-round style="width:16px;height:16px;color:var(--verde)"></i>
+      <strong style="font-size:14px">${escapeHtml(s.nombre)} ${escapeHtml(s.apellido)}</strong>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px 14px;font-size:11.5px;color:var(--texto-dim)">
+      <span><b style="color:var(--texto);font-weight:600">Matrícula:</b> ${escapeHtml(s.matricula)}</span>
+      <span><b style="color:var(--texto);font-weight:600">Taller:</b> ${escapeHtml(s.laboratorio) || "—"}</span>
+    </div>`;
 
   _entregaAdicionales = {};
   document.getElementById("btn-toggle-entrega").textContent = "Desmarcar todas";

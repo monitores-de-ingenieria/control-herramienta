@@ -125,6 +125,49 @@ function vacioHTML({ icono = "inbox", titulo, texto = "", ctaTexto = "", ctaOncl
   </div>`;
 }
 
+// Tarjeta de "vista previa del carné": combina los datos que el estudiante
+// llenó en el formulario (nombre, matrícula, ciclo) con la foto tal cual la
+// tomó (no es una foto de perfil recortada, es la foto completa del carné
+// físico) dentro de un diseño que imita una tarjeta de identificación.
+// Colores fijos (no usan las variables de tema claro/oscuro) a propósito:
+// la idea es que se vea como una tarjeta física, igual en cualquier tema.
+function carneHTML(s) {
+  if (!s.fotoCarnet) return "";
+  const idPreview = "carne-" + (s.id || Math.random().toString(36).slice(2, 8));
+  return `
+    <div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <span style="font-size:11px;font-weight:700;color:var(--texto-dim);text-transform:uppercase">Vista previa del carné</span>
+        <button type="button" class="btn-toggle-mini" onclick="toggleCarnePreview('${idPreview}', this)">
+          <i data-lucide=eye-off style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Ocultar vista previa
+        </button>
+      </div>
+      <div id="${idPreview}" class="carne-preview">
+        <div class="carne-preview-header">
+          <span class="carne-preview-marca">UTESA</span>
+          <span class="carne-preview-tipo">CARNÉ ESTUDIANTIL</span>
+        </div>
+        <div class="carne-preview-cuerpo">
+          <div class="carne-preview-datos">
+            <div class="carne-preview-nombre">${escapeHtml(s.nombre)} ${escapeHtml(s.apellido)}</div>
+            <div class="carne-preview-campo"><b>Matrícula:</b> ${escapeHtml(s.matricula) || "—"}</div>
+            ${s.ciclo ? `<div class="carne-preview-campo"><b>Ciclo:</b> ${escapeHtml(s.ciclo)}</div>` : ""}
+          </div>
+          <img src="${s.fotoCarnet}" alt="Foto del carné de ${escapeAttr(s.nombre || "")}" class="carne-preview-foto foto-zoom">
+        </div>
+      </div>
+    </div>`;
+}
+window.toggleCarnePreview = function(idPreview, btn) {
+  const cont = document.getElementById(idPreview);
+  if (!cont) return;
+  const ocultar = cont.style.display !== "none";
+  cont.style.display = ocultar ? "none" : "";
+  btn.innerHTML = ocultar
+    ? '<i data-lucide=eye style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Ver vista previa'
+    : '<i data-lucide=eye-off style=width:1em;height:1em;vertical-align:-0.15em;display:inline-block></i> Ocultar vista previa';
+};
+
 function mostrarToast(msg, tipo = "verde") {
   const t = document.getElementById("toast");
   t.innerHTML = msg;
@@ -1285,6 +1328,12 @@ window.abrirModal = function(id) {
       </div>
     </div>
     <div class="modal-campo"><label>Fecha</label><div class="valor">${formatFecha(s.creadoEn)}</div></div>
+    ${s.fotoCarnet ? `
+    <div class="modal-campo">
+      <label><i data-lucide="id-card" style="width:1em;height:1em;vertical-align:-2px"></i> Foto del carnet</label>
+      <img src="${s.fotoCarnet}" alt="Carnet de ${escapeAttr(s.nombre || "")}" class="foto-zoom"
+        style="width:120px;height:80px;border-radius:10px;object-fit:cover;border:1px solid var(--borde);cursor:zoom-in;display:block">
+    </div>` : ""}
     <div class="modal-campo">
       <label>Herramientas solicitadas</label>
       <div class="modal-herramientas">${herramientas || "—"}</div>
@@ -1534,6 +1583,7 @@ window.entregar = async function(id) {
   if (!s) return;
 
   document.getElementById("info-entrega").innerHTML = `
+    ${carneHTML(s)}
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
       <i data-lucide=user-round style="width:16px;height:16px;color:var(--verde)"></i>
       <strong style="font-size:14.5px">${escapeHtml(s.nombre)} ${escapeHtml(s.apellido)}</strong>
@@ -1927,6 +1977,7 @@ window.retornar = function(id) {
   if (!s) return;
 
   document.getElementById("info-retorno").innerHTML = `
+    ${carneHTML(s)}
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
       <i data-lucide=user-round style="width:16px;height:16px;color:var(--verde)"></i>
       <strong style="font-size:14.5px">${escapeHtml(s.nombre)} ${escapeHtml(s.apellido)}</strong>

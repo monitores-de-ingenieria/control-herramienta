@@ -94,18 +94,82 @@ const btnQuitarFoto   = document.getElementById("btn-quitar-foto");
 
 btnCamara.addEventListener("click", () => inputCamara.click());
 
-inputCamara.addEventListener("change", () => {
+// La foto del carnet se guarda como texto (base64) directo en el documento
+// de Firestore -- no usa Firebase Storage porque tiene costo por uso. Para
+// que quepa sin problema (Firestore limita cada documento a 1MB), se
+// redimensiona y comprime antes de guardarla: un carnet no necesita
+// resolución alta para verse legible.
+//
+// IMPORTANTE (memoria): las fotos de cámara vienen en resolución completa
+// (varias decenas de MB una vez descomprimidas), y decodificar esa imagen
+// dos veces a la vez -- una para el preview, otra para comprimir -- podía
+// agotar la memoria en celulares con poco RAM ("memoria insuficiente").
+// Por eso ahora se decodifica UNA sola vez: se usa createImageBitmap con
+// resize integrado cuando el navegador lo soporta (le pide al navegador
+// que decodifique directo a tamaño chico, sin pasar por la resolución
+// completa), y el resultado comprimido se reutiliza también como preview.
+let fotoCarnetBase64 = null;
+
+async function comprimirImagenACarnet(file, maxAncho = 480, calidad = 0.6) {
+  if ("createImageBitmap" in window) {
+    try {
+      const bitmap = await createImageBitmap(file, { resizeWidth: maxAncho, resizeQuality: "medium" });
+      const canvas = document.createElement("canvas");
+      canvas.width = bitmap.width;
+      canvas.height = bitmap.height;
+      canvas.getContext("2d").drawImage(bitmap, 0, 0);
+      bitmap.close(); // libera la memoria del bitmap de inmediato
+      return canvas.toDataURL("image/jpeg", calidad);
+    } catch (err) {
+      console.warn("createImageBitmap con resize falló, se usa el método de respaldo:", err);
+    }
+  }
+
+  // Respaldo para navegadores sin soporte de resize en createImageBitmap
+  // (ej. Safari viejo). Decodifica a resolución completa, así que en
+  // fotos gigantes puede seguir siendo pesado, pero cubre esos casos.
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const escala = Math.min(1, maxAncho / img.width);
+      const w = Math.max(1, Math.round(img.width * escala));
+      const h = Math.max(1, Math.round(img.height * escala));
+      const canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+      canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+      URL.revokeObjectURL(url);
+      resolve(canvas.toDataURL("image/jpeg", calidad));
+    };
+    img.onerror = (err) => { URL.revokeObjectURL(url); reject(err); };
+    img.src = url;
+  });
+}
+
+inputCamara.addEventListener("change", async () => {
   const file = inputCamara.files[0];
   if (!file) return;
-  const url = URL.createObjectURL(file);
-  fotoPreview.src = url;
+
   fotoPreviewWrap.classList.remove("oculto");
+  fotoPreview.src = ""; // limpio mientras procesa -- ya no se muestra la foto sin comprimir
+
+  try {
+    fotoCarnetBase64 = await comprimirImagenACarnet(file);
+    fotoPreview.src = fotoCarnetBase64; // el preview usa la versión ya comprimida
+  } catch (err) {
+    console.error("Error al procesar la foto del carnet:", err);
+    fotoCarnetBase64 = null;
+    fotoPreviewWrap.classList.add("oculto");
+    mostrarError("No se pudo procesar la foto (puede ser memoria insuficiente en el equipo). Intenta tomarla de nuevo, con mejor luz y evitando acercarte demasiado.");
+  }
 });
 
 btnQuitarFoto.addEventListener("click", () => {
   fotoPreview.src = "";
   inputCamara.value = "";
   fotoPreviewWrap.classList.add("oculto");
+  fotoCarnetBase64 = null;
 });
 
 // ---- Recordar datos personales en este dispositivo (localStorage) ----
@@ -969,6 +1033,7 @@ btnEnviar.addEventListener("click", async (e) => {
     profesor:     document.getElementById("profesor").value,
     laboratorio:  document.getElementById("laboratorio").value,
     herramientas: herramientasElegidas,
+    fotoCarnet:   fotoCarnetBase64 || null,
     estado:       "pendiente",
     token:        generarToken(),
     creadoEn:     serverTimestamp()
@@ -1023,6 +1088,7 @@ btnNuevaSolicitud.addEventListener("click", () => {
   fotoPreview.src = "";
   inputCamara.value = "";
   fotoPreviewWrap.classList.add("oculto");
+  fotoCarnetBase64 = null;
   selectTipo.value = "solicitando";
   toggleSecciones();
   precargarCamposTexto();  // form.reset() borró los inputs; los recuperamos

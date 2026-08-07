@@ -838,6 +838,14 @@ tr:hover td { background: var(--hover); }
 .btn-azul:hover { background: var(--azul); color: #fff; border-color: var(--azul); }
 .btn-amarillo { background: rgba(234,179,8,0.18); color: var(--amarillo); border: 1px solid rgba(234,179,8,0.32); }
 .btn-amarillo:hover { background: var(--amarillo); color: #1a1200; border-color: var(--amarillo); }
+.btn-toggle-mini {
+  background: var(--verde-glow); border: none; color: var(--verde-dim);
+  font-size: 11px; font-weight: 700; padding: 5px 13px; border-radius: 999px;
+  cursor: pointer; transition: background .15s, color .15s, transform .1s;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.btn-toggle-mini:hover { background: var(--gradiente-verde); color: #fff; }
+.btn-toggle-mini:active { transform: scale(.96); }
 .btn:disabled { opacity: .35; cursor: not-allowed; transform: none; }
 
 /* En la columna de Acciones, cuando ya no hay ninguna acción pendiente

@@ -191,8 +191,8 @@ h1, h2, h3,
 ═══════════════════════════════════════════ */
 .topbar {
   grid-column: 1/-1;
-  background: var(--card);
-  border-bottom: 1px solid var(--borde);
+  background: var(--gradiente-verde);
+  border-bottom: none;
   box-shadow: none;
   display: flex;
   align-items: center;
@@ -202,32 +202,32 @@ h1, h2, h3,
   z-index: 5;
 }
 
-.topbar-titulo { font-weight: 600; font-size: 13.5px; color: var(--texto); letter-spacing: -.2px; }
-.topbar-sub { font-size: 11px; color: var(--texto-dim); }
+.topbar-titulo { font-weight: 600; font-size: 13.5px; color: #fff; letter-spacing: -.2px; }
+.topbar-sub { font-size: 11px; color: rgba(255,255,255,.78); }
 .topbar-spacer { flex: 1; }
-.topbar-admin { display:flex; align-items:center; gap:9px; color:var(--texto); font-size:12px; }
+.topbar-admin { display:flex; align-items:center; gap:9px; color: #fff; font-size:12px; }
 
 .avatar {
   width: 30px; height: 30px; border-radius: 8px;
-  background: var(--av-bg);
+  background: var(--card);
   display: flex; align-items: center; justify-content: center;
-  font-weight: 700; font-size: 12px; color: var(--av-txt);
+  font-weight: 700; font-size: 12px; color: var(--verde-dim);
   flex-shrink: 0;
 }
 
 .btn-toggle-sidebar {
   background: transparent; border: 1px solid transparent;
-  color: var(--texto-dim); font-size: 16px; cursor: pointer;
+  color: rgba(255,255,255,.85); font-size: 16px; cursor: pointer;
   padding: 6px 9px; border-radius: 8px; line-height: 1; flex-shrink: 0;
   transition: background .15s, color .15s;
 }
-.btn-toggle-sidebar:hover { background: var(--hover); color: var(--texto); }
+.btn-toggle-sidebar:hover { background: rgba(255,255,255,.15); color: #fff; }
 
 .switch-tema {
   position: relative;
   width: 52px; height: 28px;
-  background: var(--card2);
-  border: 1px solid var(--borde);
+  background: rgba(255,255,255,.18);
+  border: 1px solid rgba(255,255,255,.35);
   border-radius: 999px;
   cursor: pointer;
   padding: 0;
@@ -235,12 +235,12 @@ h1, h2, h3,
   margin-right: 12px;
   transition: border-color .15s, background .15s;
 }
-.switch-tema:hover { border-color: var(--verde); }
+.switch-tema:hover { border-color: #fff; }
 .switch-tema-perilla {
   position: absolute; top: 2px; left: 2px;
   width: 22px; height: 22px;
   border-radius: 50%;
-  background: var(--gradiente-verde);
+  background: #fff;
   box-shadow: var(--sombra-sm);
   transform: translateX(24px); /* por defecto: tema oscuro activo → cerca de la luna */
   transition: transform .25s cubic-bezier(.4,0,.2,1);

@@ -160,21 +160,27 @@ async function comprimirImagenACarnet(file, maxAncho = 360, calidad = 0.55) {
   });
 }
 
-// Envoltorio con reintentos: en celulares con poca memoria, la primera
-// pasada (360px) a veces truena o cierra el navegador con fotos de cámara
-// muy grandes (12-50 megapíxeles sin comprimir). En vez de morir de una
-// vez, se reintenta pidiendo tamaños cada vez más chicos -- cada intento
-// nuevo le pide MENOS memoria al navegador, no más, así que es seguro
-// reintentar después de un fallo. Si el archivo en sí es sospechosamente
-// grande, se avisa antes de intentar nada.
+// Envoltorio con reintentos: en celulares con poca memoria (ej. gama baja
+// con cámara de 50MP+ y 4GB de RAM), un archivo de foto sin comprimir
+// puede pesar ~190MB ya descomprimido en crudo -- eso puede tumbar la
+// pestaña del navegador de un tirón (el sistema operativo mata el proceso
+// por falta de memoria), sin dar tiempo siquiera a que salte un error de
+// JavaScript que se pueda atrapar con try/catch. Por eso NO se arranca
+// siempre en 360px esperando a que falle: el tamaño de arranque se elige
+// según qué tan pesado es el archivo, para que el primer intento en fotos
+// de cámaras muy grandes ya sea chico de entrada.
 async function comprimirImagenACarnetConReintentos(file) {
-  // Aviso temprano, no bloqueante: no cancela el intento, pero ayuda a
-  // entender en consola si el archivo venía enorme de la cámara.
-  if (file.size > 15 * 1024 * 1024) {
-    console.warn(`Foto de carnet muy pesada (${(file.size / 1024 / 1024).toFixed(1)}MB) -- puede tardar o fallar en equipos con poca memoria.`);
+  const pesoMB = file.size / 1024 / 1024;
+  if (pesoMB > 15) {
+    console.warn(`Foto de carnet muy pesada (${pesoMB.toFixed(1)}MB) -- puede tardar o fallar en equipos con poca memoria.`);
   }
 
-  const intentos = [360, 240, 160];
+  // Arranca más chico mientras más pesado es el archivo original.
+  let intentos;
+  if (pesoMB > 8) intentos = [200, 140];
+  else if (pesoMB > 4) intentos = [280, 200, 140];
+  else intentos = [360, 240, 160];
+
   let ultimoError = null;
   for (const maxAncho of intentos) {
     try {

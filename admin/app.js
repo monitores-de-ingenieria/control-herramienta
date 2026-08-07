@@ -1285,12 +1285,6 @@ window.abrirModal = function(id) {
       </div>
     </div>
     <div class="modal-campo"><label>Fecha</label><div class="valor">${formatFecha(s.creadoEn)}</div></div>
-    ${s.fotoCarnet ? `
-    <div class="modal-campo">
-      <label><i data-lucide="id-card" style="width:1em;height:1em;vertical-align:-2px"></i> Foto del carnet</label>
-      <img src="${s.fotoCarnet}" alt="Carnet de ${escapeAttr(s.nombre || "")}" class="foto-zoom"
-        style="width:120px;height:80px;border-radius:10px;object-fit:cover;border:1px solid var(--borde);cursor:zoom-in;display:block">
-    </div>` : ""}
     <div class="modal-campo">
       <label>Herramientas solicitadas</label>
       <div class="modal-herramientas">${herramientas || "—"}</div>

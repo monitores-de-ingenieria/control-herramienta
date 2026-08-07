@@ -1137,14 +1137,14 @@ function renderTabla() {
     solicitudes.forEach(s => {
       contador++;
       filas += `
-          <tr style="cursor:pointer${s.estado === "retornada" ? ";opacity:.7" : ""}" onclick="abrirModal('${s.id}')" title="${s.estado === "retornada" ? "Ya retornada" : ""}">
+          <tr style="cursor:pointer${s.estado === "retornada" ? ";opacity:.7" : ""}" onclick="if(!event.target.closest('.foto-zoom')) abrirModal('${s.id}')" title="${s.estado === "retornada" ? "Ya retornada" : ""}">
             <td style="color:var(--texto-dim)">${contador}</td>
             <td style="font-size:12px;color:var(--texto-dim)">${formatFecha(s.creadoEn)}</td>
             <td>
               <div class="est-avatar">
-                <div class="est-circulo" style="background:${colorEstudiante(s.nombre||"")}22;color:${colorEstudiante(s.nombre||"")}">
-                  ${iniciales(s.nombre, s.apellido)}
-                </div>
+                ${s.fotoCarnet
+                  ? `<img src="${s.fotoCarnet}" alt="Foto de ${escapeAttr(s.nombre || "")}" class="est-circulo foto-zoom" style="object-fit:cover;cursor:zoom-in">`
+                  : `<div class="est-circulo" style="background:${colorEstudiante(s.nombre||"")}22;color:${colorEstudiante(s.nombre||"")}">${iniciales(s.nombre, s.apellido)}</div>`}
                 <div><div class="est-nombre">${escapeHtml(s.nombre)} ${escapeHtml(s.apellido)}</div></div>
               </div>
             </td>

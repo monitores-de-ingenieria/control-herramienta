@@ -110,7 +110,7 @@ btnCamara.addEventListener("click", () => inputCamara.click());
 // completa), y el resultado comprimido se reutiliza también como preview.
 let fotoCarnetBase64 = null;
 
-async function comprimirImagenACarnet(file, maxAncho = 480, calidad = 0.6) {
+async function comprimirImagenACarnet(file, maxAncho = 360, calidad = 0.55) {
   if ("createImageBitmap" in window) {
     try {
       const bitmap = await createImageBitmap(file, { resizeWidth: maxAncho, resizeQuality: "medium" });
@@ -119,7 +119,9 @@ async function comprimirImagenACarnet(file, maxAncho = 480, calidad = 0.6) {
       canvas.height = bitmap.height;
       canvas.getContext("2d").drawImage(bitmap, 0, 0);
       bitmap.close(); // libera la memoria del bitmap de inmediato
-      return canvas.toDataURL("image/jpeg", calidad);
+      const resultado = canvas.toDataURL("image/jpeg", calidad);
+      canvas.width = 0; canvas.height = 0; // ayuda al navegador a liberar el canvas antes
+      return resultado;
     } catch (err) {
       console.warn("createImageBitmap con resize falló, se usa el método de respaldo:", err);
     }
@@ -140,7 +142,10 @@ async function comprimirImagenACarnet(file, maxAncho = 480, calidad = 0.6) {
       canvas.height = h;
       canvas.getContext("2d").drawImage(img, 0, 0, w, h);
       URL.revokeObjectURL(url);
-      resolve(canvas.toDataURL("image/jpeg", calidad));
+      const resultado = canvas.toDataURL("image/jpeg", calidad);
+      canvas.width = 0; canvas.height = 0;
+      img.src = ""; // suelta la imagen decodificada de memoria
+      resolve(resultado);
     };
     img.onerror = (err) => { URL.revokeObjectURL(url); reject(err); };
     img.src = url;
@@ -162,6 +167,11 @@ inputCamara.addEventListener("change", async () => {
     fotoCarnetBase64 = null;
     fotoPreviewWrap.classList.add("oculto");
     mostrarError("No se pudo procesar la foto (puede ser memoria insuficiente en el equipo). Intenta tomarla de nuevo, con mejor luz y evitando acercarte demasiado.");
+  } finally {
+    // La foto original (varios MB) ya no hace falta -- se limpia del <input>
+    // apenas se tiene la versión comprimida, para no retenerla en memoria
+    // el resto del formulario hasta que se envíe la solicitud.
+    inputCamara.value = "";
   }
 });
 

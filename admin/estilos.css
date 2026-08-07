@@ -276,6 +276,16 @@ body:not(.tema-claro) .switch-tema-icono-luna { opacity: 1; }
    SIDEBAR — más limpio, sin bloques sólidos pesados
 ═══════════════════════════════════════════ */
 .sidebar {
+  /* Fijo, oscuro, independiente del tema claro/oscuro de la app: se
+     redefinen aquí las variables que el resto de las reglas de abajo
+     ya usa (--texto, --texto-dim, --borde, --card2, --hover), así el
+     sidebar no cambia aunque el usuario cambie a tema claro. */
+  --texto: #e9ebef;
+  --texto-dim: #8b93a1;
+  --borde: #262b33;
+  --card2: #1b1f26;
+  --hover: #1d2129;
+  --sidebar: #101317;
   background: var(--sidebar);
   border-right: 1px solid var(--borde);
   overflow-y: auto;

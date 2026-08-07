@@ -1534,7 +1534,10 @@ window.entregar = async function(id) {
   if (!s) return;
 
   document.getElementById("info-entrega").innerHTML = `
-    <div style="font-size:14.5px;font-weight:700;margin-bottom:8px">${escapeHtml(s.nombre)} ${escapeHtml(s.apellido)}</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <i data-lucide=user-round style="width:16px;height:16px;color:var(--verde)"></i>
+      <strong style="font-size:14.5px">${escapeHtml(s.nombre)} ${escapeHtml(s.apellido)}</strong>
+    </div>
     <div style="display:flex;flex-wrap:wrap;gap:6px">
       <span class="chip-dato"><b>Matrícula:</b> ${escapeHtml(s.matricula)}</span>
       <span class="chip-dato"><b>Taller:</b> ${escapeHtml(s.laboratorio) || "—"}</span>
@@ -1924,7 +1927,10 @@ window.retornar = function(id) {
   if (!s) return;
 
   document.getElementById("info-retorno").innerHTML = `
-    <div style="font-size:14.5px;font-weight:700;margin-bottom:8px">${escapeHtml(s.nombre)} ${escapeHtml(s.apellido)}</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <i data-lucide=user-round style="width:16px;height:16px;color:var(--verde)"></i>
+      <strong style="font-size:14.5px">${escapeHtml(s.nombre)} ${escapeHtml(s.apellido)}</strong>
+    </div>
     <div style="display:flex;flex-wrap:wrap;gap:6px">
       <span class="chip-dato"><b>Matrícula:</b> ${escapeHtml(s.matricula)}</span>
       <span class="chip-dato"><b>Taller:</b> ${escapeHtml(s.laboratorio) || "—"}</span>

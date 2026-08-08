@@ -456,7 +456,11 @@ h1, h2, h3 { font-family: var(--fuente-titulo); }
 }
 .btn-olvidar-datos:hover { background: #fdeceb; color: var(--rojo); }
 @media (max-width: 380px) {
-  .btn-olvidar-datos .txt-olvidar { display: none; }
+  .btn-olvidar-datos {
+    font-size: 9.5px;
+    padding: 4px 6px;
+    gap: 2px;
+  }
 }
 
 .campos-grid {

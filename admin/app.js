@@ -1334,7 +1334,7 @@ window.abrirModal = function(id) {
       <div class="modal-campo">
         <label><i data-lucide="id-card" style="width:1em;height:1em;vertical-align:-2px"></i> Foto del carnet</label>
         <img src="${s.fotoCarnet}" alt="Carnet de ${escapeAttr(s.nombre || "")}" class="foto-zoom"
-          style="width:100%;max-width:220px;height:150px;border-radius:10px;object-fit:cover;border:1px solid var(--borde);cursor:zoom-in;display:block">
+          style="width:100%;max-width:220px;height:150px;border-radius:10px;object-fit:contain;background:var(--bg);border:1px solid var(--borde);cursor:zoom-in;display:block">
       </div>` : ""}
     </div>
     <div class="modal-campo">
@@ -5094,6 +5094,12 @@ window.abrirModalHist = function(id, tipo) {
     <div class="modal-campo"><label>Fecha de solicitud</label><div class="valor">${formatFecha(r.creadoEn)}</div></div>
     ${r.entregadoEn  ? `<div class="modal-campo"><label>Fecha de entrega</label><div class="valor">${formatFecha(r.entregadoEn)}</div></div>` : ""}
     ${r.retornadoEn  ? `<div class="modal-campo"><label>Fecha de retorno</label><div class="valor">${formatFecha(r.retornadoEn)}</div></div>` : ""}
+    ${r.fotoCarnet ? `
+    <div class="modal-campo">
+      <label><i data-lucide="id-card" style="width:1em;height:1em;vertical-align:-2px"></i> Foto del carnet</label>
+      <img src="${r.fotoCarnet}" alt="Carnet" class="foto-zoom"
+        style="width:220px;height:150px;border-radius:10px;object-fit:contain;background:var(--bg);border:1px solid var(--borde);cursor:zoom-in;display:block">
+    </div>` : ""}
     <div class="modal-campo">
       <label>Herramientas solicitadas <span style="color:var(--verde);font-weight:800">(${totalHerHist} en total)</span></label>
       <div class="modal-herramientas">${herramientasHtml}</div>

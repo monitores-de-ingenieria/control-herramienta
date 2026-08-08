@@ -986,3 +986,14 @@ h1, h2, h3 { font-family: var(--fuente-titulo); }
 #modal-duplicado > div {
   animation: apareceCard .3s var(--easing);
 }
+
+/* ── FIX matrícula: el input llena su contenedor y el contenedor puede encogerse ── */
+.input-icono-wrap {
+  flex: 1 1 0%;
+  min-width: 0;
+}
+.input-icono-wrap input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
